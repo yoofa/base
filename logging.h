@@ -9,11 +9,13 @@
 #define AVE_LOGGING_H
 
 #include <atomic>
+#include <concepts>
 #include <cstdint>
 #include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 
 #include "base/constructor_magic.h"
@@ -250,9 +252,8 @@ inline Val<LogArgType::kLogMetadataErr, LogMetadataErr> MakeVal(
 }
 
 // The enum class types are not implicitly convertible to arithmetic types.
-template <
-    typename T,
-    std::enable_if_t<std::is_enum_v<T> && !std::is_arithmetic_v<T>>* = nullptr>
+template <typename T>
+  requires std::is_enum_v<T>
 inline decltype(MakeVal(std::declval<std::underlying_type_t<T>>())) MakeVal(
     T x) {
   return {static_cast<std::underlying_type_t<T>>(x)};
@@ -265,29 +266,26 @@ inline Val<LogArgType::kLogMetadataTag, LogMetadataTag> MakeVal(
 }
 #endif
 
-template <typename T, class = std::void_t<>>
-struct has_to_log_string : std::false_type {};
 template <typename T>
-struct has_to_log_string<T,
-                         std::void_t<decltype(ToLogString(std::declval<T>()))>>
-    : std::true_type {};
+concept HasToLogString = requires(const T& value) {
+  { ToLogString(value) } -> std::convertible_to<std::string>;
+};
 
-template <
-    typename T,
-    typename T1 = std::decay_t<T>,
-    typename = std::enable_if_t<
-        std::is_class_v<T1> && !std::is_same_v<T1, std::string> &&
+template <typename T>
+  requires(std::is_class_v<std::decay_t<T>> &&
+           !std::same_as<std::decay_t<T>, std::string> &&
 #ifdef AVE_ANDROID
-        !std::is_same_v<T1, LogMetadataTag> &&
+           !std::same_as<std::decay_t<T>, LogMetadataTag> &&
 #endif
-        !std::is_same_v<T1, LogMetadata> && !has_to_log_string<T1>::value>>
+           !std::same_as<std::decay_t<T>, LogMetadata> &&
+           !HasToLogString<std::decay_t<T>>)
 ToStringVal MakeVal(const T& x) {
   std::ostringstream os;
   os << x;
   return {os.str()};
 }
 
-template <typename T, typename = std::enable_if_t<has_to_log_string<T>::value>>
+template <HasToLogString T>
 ToStringVal MakeVal(const T& x) {
   return {ToLogString(x)};
 }
@@ -306,18 +304,14 @@ class LogStreamer;
 template <>
 class LogStreamer<> final {
  public:
-  template <
-      typename U,
-      typename V = decltype(MakeVal(std::declval<U>())),
-      std::enable_if_t<std::is_arithmetic_v<U> || std::is_enum_v<U>>* = nullptr>
+  template <typename U, typename V = decltype(MakeVal(std::declval<U>()))>
+    requires(std::is_arithmetic_v<U> || std::is_enum_v<U>)
   inline LogStreamer<V> operator<<(U arg) const {
     return LogStreamer<V>(MakeVal(arg), this);
   }
 
-  template <typename U,
-            typename V = decltype(MakeVal(std::declval<U>())),
-            std::enable_if_t<!std::is_arithmetic_v<U> && !std::is_enum_v<U>>* =
-                nullptr>
+  template <typename U, typename V = decltype(MakeVal(std::declval<U>()))>
+    requires(!std::is_arithmetic_v<U> && !std::is_enum_v<U>)
   inline LogStreamer<V> operator<<(const U& arg) const {
     return LogStreamer<V>(MakeVal(arg), this);
   }
@@ -337,18 +331,14 @@ class LogStreamer<T, Ts...> final {
   inline LogStreamer(T arg, const LogStreamer<Ts...>* prior)
       : arg_(arg), prior_(prior) {}
 
-  template <
-      typename U,
-      typename V = decltype(MakeVal(std::declval<U>())),
-      std::enable_if_t<std::is_arithmetic_v<U> || std::is_enum_v<U>>* = nullptr>
+  template <typename U, typename V = decltype(MakeVal(std::declval<U>()))>
+    requires(std::is_arithmetic_v<U> || std::is_enum_v<U>)
   inline LogStreamer<V, T, Ts...> operator<<(U arg) const {
     return LogStreamer<V, T, Ts...>(MakeVal(arg), this);
   }
 
-  template <typename U,
-            typename V = decltype(MakeVal(std::declval<U>())),
-            std::enable_if_t<!std::is_arithmetic_v<U> && !std::is_enum_v<U>>* =
-                nullptr>
+  template <typename U, typename V = decltype(MakeVal(std::declval<U>()))>
+    requires(!std::is_arithmetic_v<U> && !std::is_enum_v<U>)
   inline LogStreamer<V, T, Ts...> operator<<(const U& arg) const {
     return LogStreamer<V, T, Ts...>(MakeVal(arg), this);
   }
@@ -502,9 +492,25 @@ class LogMessage {
       ::ave::base::logging_impl::LogStreamer<>() \
           << ::ave::base::logging_impl::LogMetadata(file, line, sev)
 
-#define AVE_LOG(sev)                       \
-  !ave::base::LogMessage::IsNoop<sev>() && \
+#define AVE_LOG(sev)                         \
+  !::ave::base::LogMessage::IsNoop<sev>() && \
       AVE_LOG_FILE_LINE(sev, __FILE__, __LINE__)
+
+// `condition` is evaluated once, only after the severity check. When either
+// check fails, the stream expression is not evaluated or constructed.
+#define AVE_LOG_IF(sev, condition)                          \
+  !::ave::base::LogMessage::IsNoop<sev>() && (condition) && \
+      AVE_LOG_FILE_LINE(sev, __FILE__, __LINE__)
+
+// AVE_LOG_V accepts a runtime severity, unlike AVE_LOG whose severity is a
+// template argument and must therefore be a compile-time constant.
+#define AVE_LOG_V(sev)                     \
+  !::ave::base::LogMessage::IsNoop(sev) && \
+      AVE_LOG_FILE_LINE(sev, __FILE__, __LINE__)
+
+#define AVE_LOG_F(sev) AVE_LOG(sev) << __func__ << ": "
+#define AVE_LOG_IF_F(sev, condition) \
+  AVE_LOG_IF(sev, condition) << __func__ << ": "
 
 #if AVE_DLOG_IS_ON
 #define AVE_DLOG(sev) AVE_LOG(sev)
