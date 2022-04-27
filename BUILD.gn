@@ -211,53 +211,6 @@ ave_library("sequence_checker") {
   ]
 }
 
-ave_library("numerics") {
-  sources = [
-    "numerics/exp_filter.cc",
-    "numerics/exp_filter.h",
-  ]
-}
-
-ave_source_set("safe_conversions") {
-  sources = [
-    "numerics/safe_conversions.h",
-    "numerics/safe_conversions_impl.h",
-  ]
-  deps = [ ":checks" ]
-}
-
-ave_source_set("safe_compare") {
-  sources = [
-    "numerics/safe_compare.h",
-    "numerics/safe_compare_impl.h",
-  ]
-  deps = [ ":type_traits" ]
-}
-
-ave_source_set("safe_minmax") {
-  sources = [ "numerics/safe_minmax.h" ]
-  deps = [
-    ":checks",
-    ":safe_compare",
-    ":type_traits",
-  ]
-}
-
-ave_source_set("divide_round") {
-  sources = [ "numerics/divide_round.h" ]
-  deps = [
-    ":checks",
-    ":safe_compare",
-  ]
-}
-
-ave_source_set("statistics") {
-  sources = [
-    "numerics/kahan_sum.h",
-    "numerics/statistics.h",
-  ]
-}
-
 #--------------------
 
 #ave_source_set("unit_base") {
@@ -276,15 +229,6 @@ ave_executable("logging_benchmark") {
   sources = [ "logging_benchmark.cc" ]
   deps = [
     ":logging",
-    "//third_party/google_benchmark",
-  ]
-}
-
-ave_executable("statistics_benchmark") {
-  testonly = true
-  sources = [ "numerics/statistics_benchmark.cc" ]
-  deps = [
-    ":statistics",
     "//third_party/google_benchmark",
   ]
 }
@@ -328,21 +272,6 @@ executable("task_test") {
   ]
 }
 
-ave_source_set("numerics_unittest") {
-  testonly = true
-  sources = [
-    "numerics/exp_filter_unittest.cc",
-    #"numerics/statistics_unittest.cc",
-  ]
-  deps = [
-    ":logging",
-    ":numerics",
-
-    #":statistics",
-    "//test:test_support",
-  ]
-}
-
 ave_source_set("checks_unittest") {
   testonly = true
   sources = [ "test/checks_unittest.cc" ]
@@ -367,11 +296,11 @@ executable("base_unittests") {
   deps = [
     ":checks_unittest",
     ":clock_unittest",
-    ":numerics_unittest",
     ":task_runner_unittest",
     ":task_util",
 
     #"data_source:data_source_tests",
+    "numerics:numerics_unittests_source",
     "units:units_unittests_source",
     "//test:test_main",
     "//test:test_support",

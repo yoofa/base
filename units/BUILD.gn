@@ -15,8 +15,8 @@ source_set("units_base") {
   sources = [ "unit_base.h" ]
   deps = [
     "..:checks",
-    "..:divide_round",
-    "..:safe_conversions",
+    "../numerics:divide_round",
+    "../numerics:safe_conversions",
   ]
 }
 
@@ -28,8 +28,8 @@ source_set("time_delta") {
   deps = [
     ":units_base",
     "..:checks",
-    "..:divide_round",
-    "..:safe_conversions",
+    "../numerics:divide_round",
+    "../numerics:safe_conversions",
   ]
 }
 

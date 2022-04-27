@@ -1,0 +1,111 @@
+import("../build/ave.gni")
+
+group("numerics") {
+  deps = [
+    ":divide_round",
+    ":exp_filter",
+    ":mod_ops",
+    ":moving_percentile_filter",
+    ":percentile_filter",
+    ":safe_compare",
+    ":safe_conversions",
+    ":safe_minmax",
+    ":sequence_number_unwrapper",
+    ":sequence_number_util",
+    ":statistics",
+  ]
+}
+
+ave_library("exp_filter") {
+  sources = [
+    "exp_filter.cc",
+    "exp_filter.h",
+  ]
+}
+
+ave_source_set("safe_conversions") {
+  sources = [
+    "safe_conversions.h",
+    "safe_conversions_impl.h",
+  ]
+  deps = [ "..:checks" ]
+}
+
+ave_source_set("safe_compare") {
+  sources = [
+    "safe_compare.h",
+    "safe_compare_impl.h",
+  ]
+  deps = [ "..:type_traits" ]
+}
+
+ave_source_set("safe_minmax") {
+  sources = [ "safe_minmax.h" ]
+  deps = [
+    ":safe_compare",
+    "..:checks",
+    "..:type_traits",
+  ]
+}
+
+ave_source_set("divide_round") {
+  sources = [ "divide_round.h" ]
+  deps = [
+    ":safe_compare",
+    "..:checks",
+  ]
+}
+
+ave_source_set("statistics") {
+  sources = [
+    "kahan_sum.h",
+    "statistics.h",
+  ]
+}
+
+ave_library("mod_ops") {
+  sources = [ "mod_ops.h" ]
+  deps = [ "..:checks" ]
+}
+
+ave_library("percentile_filter") {
+  sources = [ "percentile_filter.h" ]
+  deps = [ "..:checks" ]
+}
+
+ave_library("moving_percentile_filter") {
+  sources = [ "moving_percentile_filter.h" ]
+  deps = [
+    ":percentile_filter",
+    "..:checks",
+  ]
+}
+
+ave_library("sequence_number_util") {
+  sources = [ "sequence_number_util.h" ]
+  deps = [ ":mod_ops" ]
+}
+
+ave_library("sequence_number_unwrapper") {
+  sources = [ "sequence_number_unwrapper.h" ]
+  deps = [ ":sequence_number_util" ]
+}
+
+source_set("numerics_unittests_source") {
+  testonly = true
+  sources = [ "exp_filter_unittest.cc" ]
+  deps = [
+    ":numerics",
+    "..:logging",
+    "//test:test_support",
+  ]
+}
+
+ave_executable("statistics_benchmark") {
+  testonly = true
+  sources = [ "statistics_benchmark.cc" ]
+  deps = [
+    ":statistics",
+    "//third_party/google_benchmark",
+  ]
+}
