@@ -1,0 +1,80 @@
+import("//build/buildflag_header.gni")
+import("//build/config/arm.gni")
+import("//build/config/c++/c++.gni")
+import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/compiler/compiler.gni")
+import("//build/config/dcheck_always_on.gni")
+import("//build/config/logging.gni")
+import("//build/config/nacl/config.gni")
+import("//build/config/profiling/profiling.gni")
+import("//build/config/sysroot.gni")
+import("//build/config/ui.gni")
+import("//build/nocompile.gni")
+import("//build/timestamp.gni")
+import("//build_overrides/build.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
+
+component("base") {
+  visibility = [ "*" ]
+
+  sources = [ "null.cc" ]
+  deps = [
+    ":count_down_latch",
+    ":ignore_wundef",
+    ":logging",
+    ":macromagic",
+    ":utils",
+  ]
+}
+
+source_set("macromagic") {
+  visibility = [ "*" ]
+  sources = [
+    "constructor_magic.h",
+    "thread_annotation.h",
+  ]
+}
+
+static_library("utils") {
+  sources = [
+    "byte_utils.cc",
+    "byte_utils.h",
+    "checks.h",
+    "errors.cc",
+    "errors.h",
+    "hexdump.cc",
+    "hexdump.h",
+    "types.h",
+    "unique_fd.h",
+    "utils.cc",
+    "utils.h",
+  ]
+}
+
+static_library("count_down_latch") {
+  visibility = [ "*" ]
+  sources = [
+    "count_down_latch.cc",
+    "count_down_latch.h",
+  ]
+}
+
+source_set("ignore_wundef") {
+  sources = [ "ignore_wundef.h" ]
+}
+
+static_library("logging") {
+  sources = [
+    "logging.cc",
+    "logging.h",
+  ]
+}
+
+executable("logging_test") {
+  visibility = [ "*" ]
+  sources = [ "logging_test.cc" ]
+
+  deps = [ ":logging" ]
+}
