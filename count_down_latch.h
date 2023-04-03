@@ -16,19 +16,19 @@
 namespace avp {
 
 class CountDownLatch : noncopyable {
-public:
+ public:
   explicit CountDownLatch(int count);
 
-  void wait();
-  void countDown();
-  int getCount() const;
+  void Wait();
+  void CountDown();
+  int GetCount() const;
 
-private:
-  mutable std::mutex mMutex;
-  std::condition_variable mCondition;
-  int mCount;
+ private:
+  mutable std::mutex mutex_;
+  std::condition_variable condition_;
+  int count_;
 };
 
-} // namespace avp
+}  // namespace avp
 
 #endif /* !AVP_COUNT_DOWN_LATCH_H */

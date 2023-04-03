@@ -35,7 +35,7 @@ RepeatingTaskBase::RepeatingTaskBase(TaskRunnerBase* task_runner,
       alive_flag_(std::move(alive)) {}
 RepeatingTaskBase::~RepeatingTaskBase() = default;
 
-bool RepeatingTaskBase::run() {
+bool RepeatingTaskBase::Run() {
   if (!alive_flag_->Alive()) {
     return true;
   }
@@ -51,7 +51,7 @@ bool RepeatingTaskBase::run() {
     return true;
   }
 
-  task_runner_->postDelayedTask(std::unique_ptr<RepeatingTaskBase>(this),
+  task_runner_->PostDelayedTask(std::unique_ptr<RepeatingTaskBase>(this),
                                 delay);
 
   // Return false to tell the TaskQueue to not destruct this object since we

@@ -13,7 +13,7 @@
 
 namespace avp {
 
-std::string statusToString(status_t s) {
+std::string StatusToString(status_t s) {
 #define STATUS_CASE(STATUS) \
   case STATUS:              \
     return #STATUS

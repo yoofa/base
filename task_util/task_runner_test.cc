@@ -20,8 +20,8 @@ int main() {
           "task_runner_test", base::TaskRunnerFactory::Priority::NORMAL));
   LOG(avp::LS_INFO) << "main thread";
 
-  runner->postTask([]() { LOG(avp::LS_INFO) << "test post task"; });
-  runner->postDelayedTask(
+  runner->PostTask([]() { LOG(avp::LS_INFO) << "test post task"; });
+  runner->PostDelayedTask(
       []() { LOG(avp::LS_INFO) << "test post delayed task"; }, 100 * 1000);
   sleep(2);
 }

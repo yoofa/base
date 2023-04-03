@@ -23,9 +23,9 @@ class TaskRunner {
   ~TaskRunner();
 
   // post a task to be run
-  void postTask(std::unique_ptr<base::Task> task);
+  void PostTask(std::unique_ptr<base::Task> task);
 
-  void postDelayedTask(std::unique_ptr<base::Task> task, uint64_t timeUs);
+  void PostDelayedTask(std::unique_ptr<base::Task> task, uint64_t time_us);
 
   TaskRunnerBase* Get() { return impl_; }
 
@@ -33,16 +33,16 @@ class TaskRunner {
             typename std::enable_if<!std::is_convertible<
                 Closure,
                 std::unique_ptr<base::Task>>::value>::type* = nullptr>
-  void postTask(Closure&& closure) {
-    return postTask(base::toTask(std::forward<Closure>(closure)));
+  void PostTask(Closure&& closure) {
+    return PostTask(base::toTask(std::forward<Closure>(closure)));
   }
 
   template <class Closure,
             typename std::enable_if<!std::is_convertible<
                 Closure,
                 std::unique_ptr<base::Task>>::value>::type* = nullptr>
-  void postDelayedTask(Closure&& closure, uint64_t timeUs) {
-    return postDelayedTask(base::toTask(std::forward<Closure>(closure)),
+  void PostDelayedTask(Closure&& closure, uint64_t timeUs) {
+    return PostDelayedTask(base::toTask(std::forward<Closure>(closure)),
                            timeUs);
   }
 

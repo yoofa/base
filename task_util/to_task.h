@@ -23,7 +23,7 @@ class ClosureTask : public Task {
       : closure_(std::forward<Closure>(closure)) {}
 
  private:
-  bool run() override {
+  bool Run() override {
     closure_();
     return true;
   }

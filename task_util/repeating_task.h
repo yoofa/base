@@ -30,7 +30,7 @@ class RepeatingTaskBase : public Task {
  private:
   virtual uint64_t RunClosure() = 0;
 
-  bool run() final;
+  bool Run() final;
 
   TaskRunnerBase* const task_runner_;
   uint64_t next_run_time_;
@@ -74,7 +74,7 @@ class RepeatingTaskHandle {
   static RepeatingTaskHandle Start(TaskRunnerBase* task_runner,
                                    Closure&& closure) {
     auto alive_flag = PendingTaskFlag::Create();
-    task_runner->postTask(
+    task_runner->PostTask(
         std::make_unique<repeating_task_impl::RepeatingTaskImpl<Closure>>(
             task_runner, 0LL, std::forward<Closure>(closure), alive_flag));
     return RepeatingTaskHandle(std::move(alive_flag));
@@ -87,7 +87,7 @@ class RepeatingTaskHandle {
                                           uint64_t first_delay_us,
                                           Closure&& closure) {
     auto alive_flag = PendingTaskFlag::Create();
-    task_runner->postDelayedTask(
+    task_runner->PostDelayedTask(
         std::make_unique<repeating_task_impl::RepeatingTaskImpl<Closure>>(
             task_runner, first_delay_us, std::forward<Closure>(closure),
             alive_flag),

@@ -15,13 +15,14 @@
 namespace base {
 class TaskRunnerBase {
  public:
-  virtual void destruct() = 0;
+  virtual void Destruct() = 0;
 
   // post a task to be run, return true if the task maybe run at some point int
   // the future, and false the task will not be run.
-  virtual void postTask(std::unique_ptr<Task> task) = 0;
+  virtual void PostTask(std::unique_ptr<Task> task) = 0;
 
-  virtual void postDelayedTask(std::unique_ptr<Task> task, uint64_t timeUs) = 0;
+  virtual void PostDelayedTask(std::unique_ptr<Task> task,
+                               uint64_t time_us) = 0;
 
   // virtual bool postTaskAndReplay(const Task& task, const Task& reply);
 
@@ -31,7 +32,7 @@ class TaskRunnerBase {
 
 struct TaskRunnerDeleter {
   void operator()(TaskRunnerBase* task_runner) const {
-    task_runner->destruct();
+    task_runner->Destruct();
   }
 };
 

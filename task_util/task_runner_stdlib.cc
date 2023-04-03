@@ -51,9 +51,9 @@ class TaskRunnerStdlib final : public TaskRunnerBase {
   TaskRunnerStdlib(const char* name, int priority);
   virtual ~TaskRunnerStdlib() override = default;
 
-  void destruct() override;
-  void postTask(std::unique_ptr<Task> task) override;
-  void postDelayedTask(std::unique_ptr<Task> task, uint64_t timeUs) override;
+  void Destruct() override;
+  void PostTask(std::unique_ptr<Task> task) override;
+  void PostDelayedTask(std::unique_ptr<Task> task, uint64_t time_us) override;
 
  private:
   using OrderId = uint64_t;
@@ -104,7 +104,7 @@ TaskRunnerStdlib::TaskRunnerStdlib(const char* name, int priority)
   thread_->start(false);
 }
 
-void TaskRunnerStdlib::destruct() {
+void TaskRunnerStdlib::Destruct() {
   {
     std::lock_guard<std::mutex> guard(mutex_);
     need_quit_ = true;
@@ -112,11 +112,11 @@ void TaskRunnerStdlib::destruct() {
   task_condition_.notify_one();
 }
 
-void TaskRunnerStdlib::postTask(std::unique_ptr<Task> task) {
-  return postDelayedTask(std::move(task), 0LL);
+void TaskRunnerStdlib::PostTask(std::unique_ptr<Task> task) {
+  return PostDelayedTask(std::move(task), 0LL);
 }
 
-void TaskRunnerStdlib::postDelayedTask(std::unique_ptr<Task> task,
+void TaskRunnerStdlib::PostDelayedTask(std::unique_ptr<Task> task,
                                        uint64_t delay_us) {
   std::lock_guard<std::mutex> guard(mutex_);
   if (need_quit_) {
@@ -170,7 +170,7 @@ void TaskRunnerStdlib::ProcessTask() {
     }
     Task* release_ptr = task.release();
     // if return true , task runner take the ownership
-    if (release_ptr->run()) {
+    if (release_ptr->Run()) {
       delete release_ptr;
     }
     continue;

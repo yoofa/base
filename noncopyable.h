@@ -10,15 +10,15 @@
 
 namespace avp {
 class noncopyable {
-public:
-  noncopyable(const noncopyable &) = delete;
+ public:
+  noncopyable(const noncopyable&) = delete;
   void operator=(const noncopyable) = delete;
 
-protected:
+ protected:
   noncopyable() = default;
   ~noncopyable() = default;
 };
 
-} // namespace avp
+}  // namespace avp
 
 #endif /* !AVP_NONCOPYABLE_H */

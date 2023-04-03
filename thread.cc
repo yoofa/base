@@ -38,7 +38,7 @@ struct ThreadData {
   void runInThread() {
     *tid_ = gettid();
     tid_ = nullptr;
-    latch_->countDown();
+    latch_->CountDown();
     latch_ = nullptr;
 
     ::prctl(PR_SET_NAME, name_.empty() ? "thread" : name_.c_str());
@@ -93,7 +93,7 @@ void Thread::start(bool async) {
     delete data;
   } else {
     if (!async) {
-      latch_.wait();
+      latch_.Wait();
       assert(tid_ > 0);
     }
   }

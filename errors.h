@@ -51,7 +51,7 @@ enum {
   UNEXPECTED_NULL = (UNKNOWN_ERROR + 8),
 };
 
-std::string statusToString(status_t status);
+std::string StatusToString(status_t status);
 
 } /* namespace avp */
 

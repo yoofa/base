@@ -15,7 +15,7 @@ class Task {
   virtual ~Task() = default;
 
   // return true to delete task.
-  virtual bool run() = 0;
+  virtual bool Run() = 0;
 };
 
 }  // namespace base

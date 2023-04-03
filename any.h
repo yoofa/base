@@ -17,13 +17,13 @@ class Any {
   virtual ~Any() = default;
 
   template <typename T, typename... Args>
-  void set(Args&&... args) {
+  void Set(Args&&... args) {
     mData.reset(new T(std::forward<Args>(args)...),
                 [](void* ptr) { delete (T*)ptr; });
   }
 
   template <typename T>
-  T& get() {
+  T& Get() {
     if (!mData) {
       return nullptr;
     }
@@ -33,7 +33,7 @@ class Any {
 
   operator bool() { return mData.operator bool(); }
 
-  bool empty() { return !bool(); }
+  bool Empty() { return !bool(); }
 
  private:
   std::shared_ptr<void> mData;

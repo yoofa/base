@@ -52,18 +52,18 @@ TEST_P(TaskRunnerTest, PostATask) {
     explicit CustomTask(std::condition_variable* cv) : cv_(cv) {}
 
    private:
-    bool run() override {
+    bool Run() override {
       cv_->notify_one();
       return true;
     }
 
     std::condition_variable* cv_;
   };
-  runner->postTask(std::make_unique<CustomTask>(&cv));
+  runner->PostTask(std::make_unique<CustomTask>(&cv));
   std::unique_lock<std::mutex> l(mutex);
   EXPECT_TRUE(cv.wait_for(l, 1000ms) == std::cv_status::no_timeout);
 
-  runner->postTask([&cv]() { cv.notify_one(); });
+  runner->PostTask([&cv]() { cv.notify_one(); });
   EXPECT_TRUE(cv.wait_for(l, 1000ms) == std::cv_status::no_timeout);
 }
 
@@ -78,18 +78,18 @@ TEST_P(TaskRunnerTest, PostDelayedTask) {
     explicit CustomTask(std::condition_variable* cv) : cv_(cv) {}
 
    private:
-    bool run() override {
+    bool Run() override {
       cv_->notify_one();
       return true;
     }
 
     std::condition_variable* cv_;
   };
-  runner->postDelayedTask(std::make_unique<CustomTask>(&cv), 100 * 1000);
+  runner->PostDelayedTask(std::make_unique<CustomTask>(&cv), 100 * 1000);
   std::unique_lock<std::mutex> l(mutex);
   EXPECT_TRUE(cv.wait_for(l, 500ms) == std::cv_status::no_timeout);
 
-  runner->postDelayedTask([&cv]() { cv.notify_one(); }, 100 * 1000);
+  runner->PostDelayedTask([&cv]() { cv.notify_one(); }, 100 * 1000);
   EXPECT_TRUE(cv.wait_for(l, 500ms) == std::cv_status::no_timeout);
 }
 

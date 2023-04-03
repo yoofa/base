@@ -9,26 +9,26 @@
 
 namespace avp {
 
-CountDownLatch::CountDownLatch(int count) : mCount(count) {}
+CountDownLatch::CountDownLatch(int count) : count_(count) {}
 
-void CountDownLatch::wait() {
-  std::unique_lock<std::mutex> l(mMutex);
-  while (mCount > 0) {
-    mCondition.wait(l);
+void CountDownLatch::Wait() {
+  std::unique_lock<std::mutex> l(mutex_);
+  while (count_ > 0) {
+    condition_.wait(l);
   }
 }
 
-void CountDownLatch::countDown() {
-  std::unique_lock<std::mutex> l(mMutex);
-  --mCount;
-  if (mCount == 0) {
-    mCondition.notify_all();
+void CountDownLatch::CountDown() {
+  std::unique_lock<std::mutex> l(mutex_);
+  --count_;
+  if (count_ == 0) {
+    condition_.notify_all();
   }
 }
 
-int CountDownLatch::getCount() const {
-  std::lock_guard<std::mutex> l(mMutex);
-  return mCount;
+int CountDownLatch::GetCount() const {
+  std::lock_guard<std::mutex> l(mutex_);
+  return count_;
 }
 
 }  // namespace avp

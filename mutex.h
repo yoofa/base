@@ -19,23 +19,23 @@ class Condition;
 
 class CAPABILITY("mutex") Mutex {
  public:
-  Mutex() { pthread_mutex_init(&mMutex, nullptr); }
-  virtual ~Mutex() { pthread_mutex_destroy(&mMutex); }
+  Mutex() { pthread_mutex_init(&mutex_, nullptr); }
+  virtual ~Mutex() { pthread_mutex_destroy(&mutex_); }
 
-  status_t lock() ACQUIRE() { return -pthread_mutex_lock(&mMutex); }
-  status_t unlock() RELEASE() { return -pthread_mutex_unlock(&mMutex); }
+  status_t Lock() ACQUIRE() { return -pthread_mutex_lock(&mutex_); }
+  status_t Unlock() RELEASE() { return -pthread_mutex_unlock(&mutex_); }
 
-  status_t tryLock() TRY_ACQUIRE(0) { return -pthread_mutex_trylock(&mMutex); }
+  status_t TryLock() TRY_ACQUIRE(0) { return -pthread_mutex_trylock(&mutex_); }
 
   class SCOPED_CAPABILITY LockGuard {
    public:
     inline explicit LockGuard(Mutex& mutex) ACQUIRE(mutex) : mLock(mutex) {
-      mLock.lock();
+      mLock.Lock();
     }
     inline explicit LockGuard(Mutex* mutex) ACQUIRE(mutex) : mLock(*mutex) {
-      mLock.lock();
+      mLock.Lock();
     }
-    inline ~LockGuard() RELEASE() { mLock.unlock(); }
+    inline ~LockGuard() RELEASE() { mLock.Unlock(); }
 
    private:
     Mutex& mLock;
@@ -49,7 +49,7 @@ class CAPABILITY("mutex") Mutex {
   Mutex(const Mutex&);
   Mutex& operator=(const Mutex&);
 
-  pthread_mutex_t mMutex;
+  pthread_mutex_t mutex_;
 };
 
 using lock_guard = Mutex::LockGuard;

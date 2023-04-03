@@ -20,13 +20,13 @@
 namespace avp {
 class Condition {
  public:
-  Condition() { pthread_cond_init(&mCond, nullptr); }
-  virtual ~Condition() { pthread_cond_destroy(&mCond); }
+  Condition() { pthread_cond_init(&cond_, nullptr); }
+  virtual ~Condition() { pthread_cond_destroy(&cond_); }
 
-  status_t wait(Mutex& mutex) {
-    return -pthread_cond_wait(&mCond, &mutex.mMutex);
+  status_t Wait(Mutex& mutex) {
+    return -pthread_cond_wait(&cond_, &mutex.mMutex);
   }
-  status_t waitRelative(Mutex& mutex, nsecs_t reltime) {
+  status_t WaitRelative(Mutex& mutex, nsecs_t reltime) {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
     int64_t reltime_sec = reltime / 1000000000;
@@ -46,15 +46,15 @@ class Condition {
 
     ts.tv_sec = (time_sec > LONG_MAX) ? LONG_MAX : static_cast<long>(time_sec);
 
-    return -pthread_cond_timedwait(&mCond, &mutex.mMutex, &ts);
+    return -pthread_cond_timedwait(&cond_, &mutex.mMutex, &ts);
   }
 
-  void signal() { pthread_cond_signal(&mCond); }
+  void Signal() { pthread_cond_signal(&cond_); }
 
-  void broadcast() { pthread_cond_broadcast(&mCond); }
+  void Broadcast() { pthread_cond_broadcast(&cond_); }
 
  private:
-  pthread_cond_t mCond;
+  pthread_cond_t cond_;
 };
 
 }  // namespace avp
