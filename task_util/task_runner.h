@@ -27,7 +27,7 @@ class TaskRunner {
 
   void postDelayedTask(std::unique_ptr<base::Task> task, uint64_t timeUs);
 
-  // bool postTaskAndReplay(const Task& task, const Task& reply);
+  TaskRunnerBase* Get() { return impl_; }
 
   template <class Closure,
             typename std::enable_if<!std::is_convertible<

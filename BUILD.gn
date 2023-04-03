@@ -104,6 +104,10 @@ source_set("thread") {
 static_library("task_util") {
   sources = [
     "task_util/default_task_runner_factory.h",
+    "task_util/pending_task_flag.cc",
+    "task_util/pending_task_flag.h",
+    "task_util/repeating_task.cc",
+    "task_util/repeating_task.h",
     "task_util/task.h",
     "task_util/task_runner.cc",
     "task_util/task_runner.h",
@@ -117,6 +121,9 @@ static_library("task_util") {
     "task_util/task_runner_stdlib.cc",
     "task_util/task_runner_stdlib.h",
   ]
+
+  configs += [ "//build/config/compiler:rtti" ]
+
   deps = [
     ":logging",
     ":thread",
@@ -141,6 +148,9 @@ executable("thread_test") {
 source_set("task_runner_unittest") {
   testonly = true
   sources = [
+    "test/repeating_task_unittest.cc",
+    "test/task_runner_for_test.cc",
+    "test/task_runner_for_test.h",
     "test/task_runner_unittest.cc",
     "test/task_runner_unittest.h",
   ]

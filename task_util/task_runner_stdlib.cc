@@ -168,7 +168,12 @@ void TaskRunnerStdlib::ProcessTask() {
       task = std::move(entry->task_);
       task_queue_.pop();
     }
-    task->run();
+    Task* release_ptr = task.release();
+    // if return true , task runner take the ownership
+    if (release_ptr->run()) {
+      delete release_ptr;
+    }
+    continue;
   }
 }
 
