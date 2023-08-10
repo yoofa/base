@@ -1,0 +1,9 @@
+import("//opencamera.gni")
+
+oc_library("aligned_malloc") {
+  sources = [
+    "aligned_memory.cc",
+    "aligned_memory.h",
+  ]
+  deps = [ "..:utils" ]
+}
