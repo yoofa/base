@@ -14,13 +14,17 @@
 #include "base/task_util/task.h"
 #include "base/task_util/task_runner_base.h"
 #include "base/task_util/to_task.h"
+#include "base/thread_annotation.h"
 
 namespace base {
-class TaskRunner {
+class CAPABILITY("TaskRunner") TaskRunner {
  public:
   explicit TaskRunner(
       std::unique_ptr<TaskRunnerBase, TaskRunnerDeleter> task_runner);
   ~TaskRunner();
+
+  // Used for DCHECKing the current runner.
+  bool IsCurrent() const;
 
   // post a task to be run
   void PostTask(std::unique_ptr<base::Task> task);

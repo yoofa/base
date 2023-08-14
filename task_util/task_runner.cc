@@ -17,6 +17,10 @@ TaskRunner::~TaskRunner() {
   impl_->Destruct();
 }
 
+bool TaskRunner::IsCurrent() const {
+  return impl_->IsCurrent();
+}
+
 void TaskRunner::PostTask(std::unique_ptr<base::Task> task) {
   return impl_->PostTask(std::move(task));
 }

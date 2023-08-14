@@ -96,9 +96,13 @@ class TaskRunnerStdlib final : public TaskRunnerBase {
 TaskRunnerStdlib::TaskRunnerStdlib(const char* name, int priority)
     : name_(name),
       priority_(priority),
-      thread_(std::make_unique<Thread>([this] { ProcessTask(); },
-                                       name_,
-                                       priority_)),
+      thread_(std::make_unique<Thread>(
+          [this] {
+            CurrentTaskRunnerSetter set_current(this);
+            ProcessTask();
+          },
+          name_,
+          priority_)),
       need_quit_(false),
       task_order_id_(0LL) {
   thread_->start(false);

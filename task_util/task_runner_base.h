@@ -26,7 +26,21 @@ class TaskRunnerBase {
 
   // virtual bool postTaskAndReplay(const Task& task, const Task& reply);
 
+  static TaskRunnerBase* Current();
+  bool IsCurrent() const { return Current() == this; }
+
  protected:
+  class CurrentTaskRunnerSetter {
+   public:
+    explicit CurrentTaskRunnerSetter(TaskRunnerBase* task_runner);
+    CurrentTaskRunnerSetter(const CurrentTaskRunnerSetter&) = delete;
+    CurrentTaskRunnerSetter& operator=(const CurrentTaskRunnerSetter&) = delete;
+    ~CurrentTaskRunnerSetter();
+
+   private:
+    TaskRunnerBase* const previous_;
+  };
+
   virtual ~TaskRunnerBase() = default;
 };
 

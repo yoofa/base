@@ -111,6 +111,7 @@ static_library("task_util") {
     "task_util/task.h",
     "task_util/task_runner.cc",
     "task_util/task_runner.h",
+    "task_util/task_runner_base.cc",
     "task_util/task_runner_base.h",
     "task_util/task_runner_factory.h",
     "task_util/to_task.h",
@@ -127,6 +128,18 @@ static_library("task_util") {
   deps = [
     ":logging",
     ":thread",
+  ]
+}
+
+static_library("sequence_checker") {
+  sources = [
+    "sequence_checker.h",
+    "sequence_checker_internal.cc",
+    "sequence_checker_internal.h",
+  ]
+  deps = [
+    ":logging",
+    ":task_util",
   ]
 }
 

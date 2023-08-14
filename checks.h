@@ -70,6 +70,9 @@
 
 #endif
 
+#define AVP_UNREACHABLE_CODE_HIT false
+#define AVP_NOTREACHED() DCHECK(AVP_UNREACHABLE_CODE_HIT)
+
 class LogMessage {
  public:
   LogMessage(const char* file, int line) {}
