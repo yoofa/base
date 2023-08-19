@@ -8,6 +8,7 @@
 #ifndef SEQUENCE_CHECKER_H
 #define SEQUENCE_CHECKER_H
 
+#include "base/checks.h"
 #include "base/sequence_checker_internal.h"
 #include "base/thread_annotation.h"
 
