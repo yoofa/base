@@ -14,13 +14,21 @@ import("//build/nocompile.gni")
 import("//build/timestamp.gni")
 import("//build_overrides/build.gni")
 import("//opencamera.gni")
+import("//opencamera.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
-component("base") {
+oc_library("base") {
   visibility = [ "*" ]
 
-  sources = [ "null.cc" ]
+  sources = [
+    "array_view.h",
+    "buffer.h",
+    "null.cc",
+    "type_traits.h",
+    "zero_memory.cc",
+    "zero_memory.h",
+  ]
   deps = [
     ":count_down_latch",
     ":ignore_wundef",
@@ -28,6 +36,7 @@ component("base") {
     ":macromagic",
     ":task_util",
     ":thread",
+    ":timeutils",
     ":utils",
   ]
 
@@ -38,6 +47,17 @@ component("base") {
       ":thread_test",
     ]
   }
+}
+
+oc_library("timeutils") {
+  visibility = [ "*" ]
+  sources = [
+    "system_time.cc",
+    "system_time.h",
+    "time_utils.cc",
+    "time_utils.h",
+  ]
+  deps = [ ":utils" ]
 }
 
 source_set("macromagic") {
