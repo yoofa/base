@@ -16,6 +16,12 @@
 
 #include "base/constructor_magic.h"
 
+#if !defined(NDEBUG) || defined(DLOG_ALWAYS_ON)
+#define AVP_DLOG_IS_ON 1
+#else
+#define AVP_DLOG_IS_ON 0
+#endif
+
 #if defined(AVP_DISABLE_LOGGING)
 #define AVP_LOG_ENABLED() 0
 #else
@@ -276,6 +282,18 @@ class Logger final {
   }
 };
 
+// This class is used to explicitly ignore values in the conditional
+// logging macros.  This avoids compiler warnings like "value computed
+// is not used" and "statement has no effect".
+class LogMessageVoidify {
+ public:
+  LogMessageVoidify() = default;
+  // This has to be an operator with a precedence lower than << but
+  // higher than ?:
+  template <typename... Ts>
+  void operator&(LogStreamer<Ts...>&& streamer) {}
+};
+
 } /* namespace logging_impl */
 
 class LogMessage {
@@ -381,6 +399,24 @@ class LogMessage {
 
 #define LOG(sev) \
   !avp::LogMessage::IsNoop<sev>() && LOG_FILE_LINE(sev, __FILE__, __LINE__)
+
+#if AVP_DLOG_IS_ON
+#define DLOG(sev) LOG(sev)
+#define DLOG_IF(sev, condition) LOG_IF(sev, condition)
+#define DLOG_V(sev) LOG_V(sev)
+#define DLOG_F(sev) LOG_F(sev)
+#define DLOG_IF_F(sev, condition) LOG_IF_F(sev, condition)
+#else
+#define DLOG_EAT_STREAM_PARAMS()             \
+  while (false)                              \
+  ::avp::logging_impl::LogMessageVoidify() & \
+      (::avp::logging_impl::LogStreamer<>())
+#define DLOG(sev) DLOG_EAT_STREAM_PARAMS()
+#define DLOG_IF(sev, condition) DLOG_EAT_STREAM_PARAMS()
+#define DLOG_V(sev) DLOG_EAT_STREAM_PARAMS()
+#define DLOG_F(sev) DLOG_EAT_STREAM_PARAMS()
+#define DLOG_IF_F(sev, condition) DLOG_EAT_STREAM_PARAMS()
+#endif
 
 } /* namespace avp */
 
