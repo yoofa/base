@@ -30,6 +30,7 @@ oc_library("base") {
     "zero_memory.h",
   ]
   deps = [
+    ":attributes",
     ":count_down_latch",
     ":ignore_wundef",
     ":logging",
@@ -99,6 +100,10 @@ static_library("count_down_latch") {
 
 source_set("ignore_wundef") {
   sources = [ "ignore_wundef.h" ]
+}
+
+source_set("attributes") {
+  sources = [ "attributes.h" ]
 }
 
 static_library("logging") {
