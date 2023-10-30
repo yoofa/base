@@ -5,15 +5,16 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#include "base/task_util/repeating_task.h"
 #include <unistd.h>
 #include <condition_variable>
 #include <cstdint>
 #include <mutex>
+
 #include "base/logging.h"
+#include "base/task_util/repeating_task.h"
 #include "base/task_util/task_runner_base.h"
 #include "base/test/task_runner_for_test.h"
-#include "gtest/gtest.h"
+
 #include "test/gtest.h"
 
 namespace avp {
@@ -35,4 +36,5 @@ TEST(RepeatingTaskTest, Example) {
   cv.wait(l);
   EXPECT_TRUE(i == 101);
 }
+
 }  // namespace avp
