@@ -1,0 +1,7 @@
+static_library("sigslot") {
+  visibility = [ "*" ]
+  sources = [
+    "sigslot.cc",
+    "sigslot.h",
+  ]
+}

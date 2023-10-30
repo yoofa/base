@@ -41,6 +41,8 @@ oc_library("base") {
     ":utils",
   ]
 
+  deps += [ "third_party/sigslot" ]
+
   if (avp_include_test) {
     deps += [
       ":logging_test",
