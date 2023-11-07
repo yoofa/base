@@ -256,8 +256,9 @@ int64_t TimeUTCMicros() {
   // Convert from second (1.0) and milliseconds (1e-3).
   return (static_cast<int64_t>(time.time) * avp::kNumMicrosecsPerSec +
           static_cast<int64_t>(time.millitm) * avp::kNumMicrosecsPerMillisec);
-#endif
+#else
   return -1;
+#endif
 }
 
 int64_t TimeUTCMillis() {

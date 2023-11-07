@@ -48,8 +48,8 @@ class RepeatingTaskImpl final : public RepeatingTaskBase {
         closure_(std::forward<Closure>(closure)) {
     static_assert(
         std::is_same<uint64_t,
-                     typename std::result_of<decltype (&Closure::operator())(
-                         Closure)>::type>::value,
+                     typename std::invoke_result<decltype(&Closure::operator()),
+                                                 Closure>::type>::value,
         "");
   }
 
