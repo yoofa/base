@@ -170,6 +170,13 @@ static_library("sequence_checker") {
   ]
 }
 
+static_library("numerics") {
+  sources = [
+    "numerics/exp_filter.cc",
+    "numerics/exp_filter.h",
+  ]
+}
+
 executable("logging_test") {
   visibility = [ "*" ]
   sources = [ "logging_test.cc" ]
@@ -209,9 +216,20 @@ executable("task_test") {
   ]
 }
 
+source_set("numerics_unittest") {
+  testonly = true
+  sources = [ "numerics/exp_filter_unittest.cc" ]
+  deps = [
+    ":logging",
+    ":numerics",
+    "//test:test_support",
+  ]
+}
+
 executable("base_unittests") {
   testonly = true
   deps = [
+    ":numerics_unittest",
     ":task_runner_unittest",
     ":task_util",
     "//test:test_main",
