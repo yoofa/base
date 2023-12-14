@@ -1,0 +1,26 @@
+import("//opencamera.gni")
+
+oc_library("net") {
+  sources = [
+    "ip_address.cc",
+    "ip_address.h",
+  ]
+}
+
+source_set("ip_address_unittests") {
+  testonly = true
+  sources = [ "ip_address_unittest.cc" ]
+  deps = [
+    ":net",
+    "//test:test_support",
+  ]
+}
+
+executable("net_unittests") {
+  testonly = true
+  deps = [
+    ":ip_address_unittests",
+    "//test:test_main",
+    "//test:test_support",
+  ]
+}
