@@ -8,6 +8,7 @@
 #include "ip_address.h"
 
 #include <arpa/inet.h>
+#include <cstring>
 
 namespace avp {
 namespace base {
