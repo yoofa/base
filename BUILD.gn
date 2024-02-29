@@ -14,7 +14,6 @@ import("//build/nocompile.gni")
 import("//build/timestamp.gni")
 import("//build_overrides/build.gni")
 import("//opencamera.gni")
-import("//opencamera.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 

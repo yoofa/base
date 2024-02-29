@@ -23,7 +23,7 @@ SocketAddress::SocketAddress(const std::string& hostname, uint16_t port) {
   SetPort(port);
 }
 
-SocketAddress::SocketAddress(const IpAddress& ip, uint16_t port) {
+SocketAddress::SocketAddress(const IPAddress& ip, uint16_t port) {
   SetIP(ip);
   SetPort(port);
 }
@@ -38,36 +38,60 @@ SocketAddress::SocketAddress(const SocketAddress& other) {
   hostname_ = other.hostname_;
   ip_ = other.ip_;
   port_ = other.port_;
+  scope_id_ = other.scope_id_;
+  literal_ = other.literal_;
 }
 
 SocketAddress& SocketAddress::operator=(const SocketAddress& other) {
   hostname_ = other.hostname_;
   ip_ = other.ip_;
   port_ = other.port_;
+  scope_id_ = other.scope_id_;
+  literal_ = other.literal_;
   return *this;
 }
 
 void SocketAddress::Clear() {
   hostname_.clear();
-  ip_ = IpAddress();
+  ip_ = IPAddress();
   port_ = 0;
+  scope_id_ = 0;
+  literal_ = false;
+}
+
+bool SocketAddress::IsNil() const {
+  return hostname_.empty() && IPIsUnspec(ip_) && 0 == port_;
+}
+
+bool SocketAddress::IsComplete() const {
+  return (!IPIsAny(ip_)) && (0 != port_);
 }
 
 void SocketAddress::SetIP(const std::string& hostname) {
   hostname_ = hostname;
-  if (IpFromString(hostname, &ip_) == false) {
-    ip_ = IpAddress();
+  if (IPFromString(hostname, &ip_) == false) {
+    ip_ = IPAddress();
   }
 }
 
-void SocketAddress::SetIP(const IpAddress& ip) {
+void SocketAddress::SetIP(const IPAddress& ip) {
   hostname_.clear();
   ip_ = ip;
 }
 
 void SocketAddress::SetIP(const uint32_t ip_as_host_order_integer) {
   hostname_.clear();
-  ip_ = IpAddress(ip_as_host_order_integer);
+  ip_ = IPAddress(ip_as_host_order_integer);
+}
+
+void SocketAddress::SetResolvedIP(uint32_t ip_as_host_order_integer) {
+  ip_ = IPAddress(ip_as_host_order_integer);
+  scope_id_ = 0;
+}
+
+void SocketAddress::SetResolvedIP(const IPAddress& ip) {
+  ip_ = ip;
+  scope_id_ = 0;
 }
 
 void SocketAddress::SetPort(uint16_t port) {
@@ -78,7 +102,7 @@ const std::string& SocketAddress::hostname() const {
   return hostname_;
 }
 
-const IpAddress& SocketAddress::ipaddr() const {
+const IPAddress& SocketAddress::ipaddr() const {
   return ip_;
 }
 
@@ -99,7 +123,7 @@ uint16_t SocketAddress::port() const {
 
 std::string SocketAddress::ToString() const {
   std::stringstream ss;
-  ss << HostOrIpAsString() << ":" << port_;
+  ss << HostOrIPAsString() << ":" << port_;
   return ss.str();
 }
 
@@ -130,11 +154,11 @@ bool SocketAddress::FromString(const std::string& address) {
 }
 
 bool SocketAddress::IsAnyIP() const {
-  return IpIsAny(ip_);
+  return IPIsAny(ip_);
 }
 
 bool SocketAddress::IsLoopbackIP() const {
-  return IpIsLoopback(ip_);
+  return IPIsLoopback(ip_);
 }
 
 bool SocketAddress::operator==(const SocketAddress& other) const {
@@ -142,7 +166,7 @@ bool SocketAddress::operator==(const SocketAddress& other) const {
          port_ == other.port_;
 }
 
-std::string SocketAddress::HostOrIpAsString() const {
+std::string SocketAddress::HostOrIPAsString() const {
   if (!hostname_.empty()) {
     return hostname_;
   }

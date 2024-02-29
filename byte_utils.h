@@ -40,6 +40,30 @@ uint64_t ntoh64(uint64_t x);
 uint64_t hton64(uint64_t x);
 
 void MakeFourCCString(uint32_t x, char* s);
+
+inline uint16_t HostToNetwork16(uint16_t n) {
+  return htobe16(n);
+}
+
+inline uint32_t HostToNetwork32(uint32_t n) {
+  return htobe32(n);
+}
+
+inline uint64_t HostToNetwork64(uint64_t n) {
+  return htobe64(n);
+}
+
+inline uint16_t NetworkToHost16(uint16_t n) {
+  return be16toh(n);
+}
+
+inline uint32_t NetworkToHost32(uint32_t n) {
+  return be32toh(n);
+}
+
+inline uint64_t NetworkToHost64(uint64_t n) {
+  return be64toh(n);
+}
 } /* namespace avp */
 
 #endif /* !BYTE_UTILS_H */
