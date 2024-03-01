@@ -29,6 +29,8 @@ class IPAddress {
 
   bool operator==(const IPAddress& rhs) const;
   bool operator!=(const IPAddress& rhs) const;
+  bool operator<(const IPAddress& other) const;
+  bool operator>(const IPAddress& other) const;
 
   int family() const;
   in_addr ipv4() const;

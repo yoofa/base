@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <sstream>
 
+#include <base/byte_utils.h>
+
 namespace avp {
 namespace base {
 namespace net {
@@ -121,9 +123,60 @@ uint16_t SocketAddress::port() const {
   return port_;
 }
 
+std::string SocketAddress::HostAsURIString() const {
+  // If the hostname was a literal IP string, it may need to have square
+  // brackets added (for SocketAddress::ToString()).
+  if (!literal_ && !hostname_.empty())
+    return hostname_;
+  if (ip_.family() == AF_INET6) {
+    return "[" + ip_.ToString() + "]";
+  } else {
+    return ip_.ToString();
+  }
+}
+
+std::string SocketAddress::HostAsSensitiveURIString() const {
+  // If the hostname was a literal IP string, it may need to have square
+  // brackets added (for SocketAddress::ToString()).
+  if (!literal_ && !hostname_.empty())
+    return hostname_;
+  if (ip_.family() == AF_INET6) {
+    return "[" + ip_.ToSensitiveString() + "]";
+  } else {
+    return ip_.ToSensitiveString();
+  }
+}
+
+std::string SocketAddress::PortAsString() const {
+  return std::to_string(port_);
+}
+
 std::string SocketAddress::ToString() const {
   std::stringstream ss;
-  ss << HostOrIPAsString() << ":" << port_;
+  ss << HostAsURIString() << ":" << port_;
+  return ss.str();
+}
+
+std::string SocketAddress::ToSensitiveString() const {
+  std::stringstream ss;
+  ss << HostAsSensitiveURIString() << ":" << port();
+  return ss.str();
+}
+
+std::string SocketAddress::ToSensitiveNameAndAddressString() const {
+  if (IsUnresolvedIP() || literal_ || hostname_.empty()) {
+    return ToSensitiveString();
+  }
+  std::stringstream ss;
+  ss << HostAsSensitiveURIString() << ":" << port();
+  ss << " (";
+  if (ip_.family() == AF_INET6) {
+  } else {
+    ss << "[" << ipaddr().ToSensitiveString() << "]";
+    ss << ipaddr().ToSensitiveString();
+  }
+  ss << ":" << port() << ")";
+
   return ss.str();
 }
 
@@ -158,19 +211,81 @@ bool SocketAddress::IsAnyIP() const {
 }
 
 bool SocketAddress::IsLoopbackIP() const {
-  return IPIsLoopback(ip_);
+  return IPIsLoopback(ip_) ||
+         (IPIsAny(ip_) && 0 == strcmp(hostname_.c_str(), "localhost"));
 }
 
-bool SocketAddress::operator==(const SocketAddress& other) const {
-  return hostname_ == other.hostname_ && ip_ == other.ip_ &&
-         port_ == other.port_;
+bool SocketAddress::IsPrivateIP() const {
+  return IPIsPrivate(ip_);
 }
 
-std::string SocketAddress::HostOrIPAsString() const {
-  if (!hostname_.empty()) {
-    return hostname_;
+bool SocketAddress::IsUnresolvedIP() const {
+  return IPIsUnspec(ip_) && !literal_ && !hostname_.empty();
+}
+
+bool SocketAddress::operator==(const SocketAddress& addr) const {
+  return EqualIPs(addr) && EqualPorts(addr);
+}
+
+bool SocketAddress::operator<(const SocketAddress& addr) const {
+  if (ip_ != addr.ip_)
+    return ip_ < addr.ip_;
+
+  // We only check hostnames if both IPs are ANY or unspecified.  This matches
+  // EqualIPs().
+  if ((IPIsAny(ip_) || IPIsUnspec(ip_)) && hostname_ != addr.hostname_)
+    return hostname_ < addr.hostname_;
+
+  return port_ < addr.port_;
+}
+
+bool SocketAddress::EqualIPs(const SocketAddress& addr) const {
+  return (ip_ == addr.ip_) &&
+         ((!IPIsAny(ip_) && !IPIsUnspec(ip_)) || (hostname_ == addr.hostname_));
+}
+
+bool SocketAddress::EqualPorts(const SocketAddress& addr) const {
+  return (port_ == addr.port_);
+}
+
+size_t SocketAddress::Hash() const {
+  size_t h = 0;
+  h ^= HashIP(ip_);
+  h ^= port_ | (port_ << 16);
+  return h;
+}
+
+void SocketAddress::ToSockAddr(sockaddr_in* saddr) const {
+  memset(saddr, 0, sizeof(*saddr));
+  if (ip_.family() != AF_INET) {
+    saddr->sin_family = AF_UNSPEC;
+    return;
   }
-  return ip_.ToString();
+  saddr->sin_family = AF_INET;
+  saddr->sin_port = HostToNetwork16(port_);
+  if (IPIsAny(ip_)) {
+    saddr->sin_addr.s_addr = INADDR_ANY;
+  } else {
+    saddr->sin_addr = ip_.ipv4();
+  }
+}
+
+bool SocketAddress::FromSockAddr(const sockaddr_in& saddr) {
+  if (saddr.sin_family != AF_INET)
+    return false;
+  SetIP(NetworkToHost32(saddr.sin_addr.s_addr));
+  SetPort(NetworkToHost16(saddr.sin_port));
+  literal_ = false;
+  return true;
+}
+
+SocketAddress EmptySocketAddressWithFamily(int family) {
+  if (family == AF_INET) {
+    return SocketAddress(IPAddress(INADDR_ANY), 0);
+  } else if (family == AF_INET6) {
+    return SocketAddress(IPAddress(in6addr_any), 0);
+  }
+  return SocketAddress();
 }
 
 }  // namespace net

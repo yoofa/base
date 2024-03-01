@@ -72,6 +72,36 @@ bool IPAddress::operator!=(const IPAddress& rhs) const {
   return !(*this == rhs);
 }
 
+bool IPAddress::operator>(const IPAddress& other) const {
+  return (*this) != other && !((*this) < other);
+}
+
+bool IPAddress::operator<(const IPAddress& other) const {
+  // IPv4 is 'less than' IPv6
+  if (family_ != other.family_) {
+    if (family_ == AF_UNSPEC) {
+      return true;
+    }
+    if (family_ == AF_INET && other.family_ == AF_INET6) {
+      return true;
+    }
+    return false;
+  }
+  // Comparing addresses of the same family.
+  switch (family_) {
+    case AF_INET: {
+      return NetworkToHost32(address_.ipv4_.s_addr) <
+             NetworkToHost32(other.address_.ipv4_.s_addr);
+    }
+    case AF_INET6: {
+      return memcmp(&address_.ipv6_.s6_addr, &other.address_.ipv6_.s6_addr,
+                    16) < 0;
+    }
+  }
+  // Catches AF_UNSPEC and invalid addresses.
+  return false;
+}
+
 int IPAddress::family() const {
   return family_;
 }
