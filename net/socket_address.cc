@@ -9,6 +9,7 @@
 
 #include <cstdlib>
 #include <sstream>
+#include "base/net/ip_address.h"
 
 #include <base/byte_utils.h>
 
@@ -71,19 +72,25 @@ bool SocketAddress::IsComplete() const {
 
 void SocketAddress::SetIP(const std::string& hostname) {
   hostname_ = hostname;
-  if (IPFromString(hostname, &ip_) == false) {
+  literal_ = IPFromString(hostname, &ip_);
+  if (!literal_) {
     ip_ = IPAddress();
   }
+  scope_id_ = 0;
 }
 
 void SocketAddress::SetIP(const IPAddress& ip) {
   hostname_.clear();
+  literal_ = false;
   ip_ = ip;
+  scope_id_ = 0;
 }
 
 void SocketAddress::SetIP(const uint32_t ip_as_host_order_integer) {
   hostname_.clear();
+  literal_ = false;
   ip_ = IPAddress(ip_as_host_order_integer);
+  scope_id_ = 0;
 }
 
 void SocketAddress::SetResolvedIP(uint32_t ip_as_host_order_integer) {
@@ -171,8 +178,8 @@ std::string SocketAddress::ToSensitiveNameAndAddressString() const {
   ss << HostAsSensitiveURIString() << ":" << port();
   ss << " (";
   if (ip_.family() == AF_INET6) {
-  } else {
     ss << "[" << ipaddr().ToSensitiveString() << "]";
+  } else {
     ss << ipaddr().ToSensitiveString();
   }
   ss << ":" << port() << ")";

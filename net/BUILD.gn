@@ -4,12 +4,17 @@ oc_library("net") {
   sources = [
     "ip_address.cc",
     "ip_address.h",
+    "socket_address.cc",
+    "socket_address.h",
   ]
 }
 
-source_set("ip_address_unittests") {
+source_set("base_net_unittests_source") {
   testonly = true
-  sources = [ "ip_address_unittest.cc" ]
+  sources = [
+    "ip_address_unittest.cc",
+    "socket_address_unittest.cc",
+  ]
   deps = [
     ":net",
     "//test:test_support",
@@ -19,7 +24,7 @@ source_set("ip_address_unittests") {
 executable("net_unittests") {
   testonly = true
   deps = [
-    ":ip_address_unittests",
+    ":base_net_unittests_source",
     "//test:test_main",
     "//test:test_support",
   ]
