@@ -4,8 +4,11 @@ oc_library("net") {
   sources = [
     "ip_address.cc",
     "ip_address.h",
+    "socket.cc",
+    "socket.h",
     "socket_address.cc",
     "socket_address.h",
+    "socket_factory.h",
   ]
 }
 
