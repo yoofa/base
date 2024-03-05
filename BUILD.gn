@@ -77,9 +77,12 @@ source_set("byte_utils") {
   ]
 }
 
+source_set("checks") {
+  sources = [ "checks.h" ]
+}
+
 static_library("utils") {
   sources = [
-    "checks.h",
     "errors.cc",
     "errors.h",
     "hexdump.cc",
@@ -89,6 +92,7 @@ static_library("utils") {
     "utils.cc",
     "utils.h",
   ]
+  deps = [ ":checks" ]
 }
 
 static_library("count_down_latch") {
@@ -175,6 +179,16 @@ static_library("numerics") {
     "numerics/exp_filter.h",
   ]
 }
+
+oc_source_set("safe_conversions") {
+  sources = [
+    "numerics/safe_conversions.h",
+    "numerics/safe_conversions_impl.h",
+  ]
+  deps = [ ":checks" ]
+}
+
+#--------------------
 
 executable("logging_test") {
   visibility = [ "*" ]
