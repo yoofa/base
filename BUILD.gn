@@ -24,7 +24,6 @@ oc_library("base") {
     "array_view.h",
     "buffer.h",
     "null.cc",
-    "type_traits.h",
     "zero_memory.cc",
     "zero_memory.h",
   ]
@@ -37,6 +36,7 @@ oc_library("base") {
     ":task_util",
     ":thread",
     ":timeutils",
+    ":type_traits",
     ":utils",
   ]
 
@@ -60,6 +60,10 @@ oc_library("timeutils") {
     "time_utils.h",
   ]
   deps = [ ":utils" ]
+}
+
+oc_source_set("type_traits") {
+  sources = [ "type_traits.h" ]
 }
 
 source_set("macromagic") {
@@ -186,6 +190,14 @@ oc_source_set("safe_conversions") {
     "numerics/safe_conversions_impl.h",
   ]
   deps = [ ":checks" ]
+}
+
+oc_source_set("safe_compare") {
+  sources = [
+    "numerics/safe_compare.h",
+    "numerics/safe_compare_impl.h",
+  ]
+  deps = [ ":type_traits" ]
 }
 
 #--------------------
