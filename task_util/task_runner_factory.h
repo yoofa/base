@@ -13,6 +13,7 @@
 
 #include "base/task_util/task_runner_base.h"
 
+namespace avp {
 namespace base {
 class TaskRunnerFactory {
  public:
@@ -27,5 +28,6 @@ class TaskRunnerFactory {
 };
 
 }  // namespace base
+}  // namespace avp
 
 #endif /* !TASK_RUNNER_FACTORY_H */

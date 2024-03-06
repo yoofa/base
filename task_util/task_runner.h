@@ -16,6 +16,7 @@
 #include "base/task_util/to_task.h"
 #include "base/thread_annotation.h"
 
+namespace avp {
 namespace base {
 class CAPABILITY("TaskRunner") TaskRunner {
  public:
@@ -58,5 +59,6 @@ class CAPABILITY("TaskRunner") TaskRunner {
 };
 
 }  // namespace base
+}  // namespace avp
 
 #endif /* !TASK_RUNNER_H */

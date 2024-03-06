@@ -15,6 +15,7 @@
 #include "array_view.h"
 
 namespace avp {
+namespace base {
 
 // Fill memory with zeros in a way that the compiler doesn't optimize it away
 // even if the pointer is not used afterwards.
@@ -23,10 +24,11 @@ void ExplicitZeroMemory(void* ptr, size_t len);
 template <typename T,
           typename std::enable_if<!std::is_const<T>::value &&
                                   std::is_trivial<T>::value>::type* = nullptr>
-void ExplicitZeroMemory(avp::ArrayView<T> a) {
+void ExplicitZeroMemory(ArrayView<T> a) {
   ExplicitZeroMemory(a.data(), a.size());
 }
 
+}  // namespace base
 }  // namespace avp
 
 #endif /* !ZERO_MEMORY_H */

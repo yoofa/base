@@ -18,6 +18,7 @@
 #include "test/gtest.h"
 
 namespace avp {
+namespace base {
 
 TEST(RepeatingTaskTest, Example) {
   base::TaskRunnerForTest task_runner("TestRunner");
@@ -37,4 +38,5 @@ TEST(RepeatingTaskTest, Example) {
   EXPECT_TRUE(i == 101);
 }
 
+}  // namespace base
 }  // namespace avp

@@ -16,6 +16,7 @@
 #include "base/count_down_latch.h"
 #include "base/thread_defs.h"
 
+namespace avp {
 namespace base {
 
 class Thread {
@@ -48,4 +49,5 @@ class Thread {
 };
 
 }  // namespace base
+}  // namespace avp
 #endif /* !THREAD_H */

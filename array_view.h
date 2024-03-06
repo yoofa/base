@@ -17,6 +17,7 @@
 #include "type_traits.h"
 
 namespace avp {
+namespace base {
 
 // tl;dr: avp::ArrayView is the same thing as gsl::span from the Guideline
 //        Support Library.
@@ -322,6 +323,7 @@ inline ArrayView<U, Size> reinterpret_array_view(ArrayView<T, Size> view) {
   return ArrayView<U, Size>(reinterpret_cast<U*>(view.data()), view.size());
 }
 
+}  // namespace base
 }  // namespace avp
 
 #endif /* !ARRAY_VIEW_H */

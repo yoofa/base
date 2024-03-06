@@ -20,6 +20,7 @@
 #include "base/thread.h"
 #include "base/thread_defs.h"
 
+namespace avp {
 namespace base {
 namespace {
 
@@ -197,3 +198,4 @@ std::unique_ptr<TaskRunnerFactory> CreateTaskRunnerStdlibFactory() {
 }
 
 }  // namespace base
+}  // namespace avp

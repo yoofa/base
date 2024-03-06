@@ -21,8 +21,9 @@
       << "Check failed: " #x << __FILE__ << ":" << __LINE__
 
 // TODO(youfa) use logging instead
-#define AVP_CHECK_OP(name, op, val1, val2) \
-  Safe##name((val1), (val2)) ? static_cast<void>(0) : static_cast<void>(0)
+#define AVP_CHECK_OP(name, op, val1, val2)                       \
+  ::avp::base::Safe##name((val1), (val2)) ? static_cast<void>(0) \
+                                          : static_cast<void>(0)
 
 #define CHECK_EQ(val1, val2) AVP_CHECK_OP(Eq, ==, val1, val2)
 #define CHECK_NE(val1, val2) AVP_CHECK_OP(Ne, !=, val1, val2)

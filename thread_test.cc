@@ -13,7 +13,7 @@
 
 // simple thread test
 int main() {
-  base::Thread mythread(
+  avp::base::Thread mythread(
       []() {
         for (int i = 0; i < 10; i++) {
           std::cout << "thread loop " << i << std::endl;

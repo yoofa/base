@@ -11,10 +11,13 @@
 #include <memory>
 
 #include <base/task_util/task_runner_factory.h>
+
+namespace avp {
 namespace base {
 
 std::unique_ptr<TaskRunnerFactory> CreateTaskRunnerStdlibFactory();
 
-}  // namespace base
+}
+}  // namespace avp
 
 #endif /* !TASK_RUNNER_STDLIB_H */

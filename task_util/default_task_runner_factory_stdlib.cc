@@ -9,6 +9,7 @@
 
 #include "base/task_util/task_runner_stdlib.h"
 
+namespace avp {
 namespace base {
 
 std::unique_ptr<TaskRunnerFactory> CreateDefaultTaskRunnerFactory() {
@@ -16,3 +17,4 @@ std::unique_ptr<TaskRunnerFactory> CreateDefaultTaskRunnerFactory() {
 }
 
 }  // namespace base
+}  // namespace avp

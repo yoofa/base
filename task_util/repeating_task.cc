@@ -18,6 +18,7 @@
 #include "base/task_util/pending_task_flag.h"
 
 namespace avp {
+namespace base {
 
 namespace repeating_task_impl {
 static uint64_t GetNowUs() {
@@ -71,4 +72,5 @@ bool RepeatingTaskHandle::Running() const {
   return repeating_task_ != nullptr;
 }
 
+}  // namespace base
 }  // namespace avp

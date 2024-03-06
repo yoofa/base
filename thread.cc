@@ -14,8 +14,8 @@
 
 #include <string>
 
+namespace avp {
 namespace base {
-
 namespace {
 
 pid_t gettid() {
@@ -107,3 +107,4 @@ int Thread::join() {
 }
 
 }  // namespace base
+}  // namespace avp

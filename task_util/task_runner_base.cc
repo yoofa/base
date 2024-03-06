@@ -11,6 +11,7 @@
 
 #include "base/checks.h"
 
+namespace avp {
 namespace base {
 namespace {
 
@@ -43,3 +44,4 @@ TaskRunnerBase::CurrentTaskRunnerSetter::~CurrentTaskRunnerSetter() {
 }
 
 }  // namespace base
+}  // namespace avp

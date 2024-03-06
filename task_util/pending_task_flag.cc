@@ -8,6 +8,7 @@
 #include "pending_task_flag.h"
 #include <memory>
 
+namespace avp {
 namespace base {
 
 // static
@@ -28,3 +29,4 @@ bool PendingTaskFlag::Alive() const {
 }
 
 }  // namespace base
+}  // namespace avp

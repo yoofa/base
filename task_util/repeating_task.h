@@ -15,6 +15,7 @@
 #include "base/task_util/task_runner_base.h"
 
 namespace avp {
+namespace base {
 using base::PendingTaskFlag;
 using base::Task;
 using base::TaskRunnerBase;
@@ -105,6 +106,7 @@ class RepeatingTaskHandle {
   std::shared_ptr<PendingTaskFlag> repeating_task_;
 };
 
+}  // namespace base
 }  // namespace avp
 
 #endif /* !REPEATING_TASK_H */

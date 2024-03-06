@@ -13,6 +13,7 @@
 
 #include "base/task_util/task.h"
 
+namespace avp {
 namespace base {
 
 namespace base_closure_impl {
@@ -57,5 +58,6 @@ std::unique_ptr<Task> toTask(Closure&& closure, Cleanup&& cleanup) {
 }
 
 }  // namespace base
+}  // namespace avp
 
 #endif /* !TO_TASK_H */
