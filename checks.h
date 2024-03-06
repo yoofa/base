@@ -12,6 +12,7 @@
 #include <iostream>  // NOLINT
 
 #include "base/constructor_magic.h"
+#include "base/numerics/safe_compare.h"
 
 // TODO(youfa) use logging instead
 #define CHECK(x)                               \
@@ -19,12 +20,16 @@
   LogMessageFatal(__FILE__, __LINE__).stream() \
       << "Check failed: " #x << __FILE__ << ":" << __LINE__
 
-#define CHECK_EQ(x, y) CHECK((x) == (y))
-#define CHECK_NE(x, y) CHECK((x) != (y))
-#define CHECK_LE(x, y) CHECK((x) <= (y))
-#define CHECK_LT(x, y) CHECK((x) < (y))
-#define CHECK_GE(x, y) CHECK((x) >= (y))
-#define CHECK_GT(x, y) CHECK((x) > (y))
+// TODO(youfa) use logging instead
+#define AVP_CHECK_OP(name, op, val1, val2) \
+  Safe##name((val1), (val2)) ? static_cast<void>(0) : static_cast<void>(0)
+
+#define CHECK_EQ(val1, val2) AVP_CHECK_OP(Eq, ==, val1, val2)
+#define CHECK_NE(val1, val2) AVP_CHECK_OP(Ne, !=, val1, val2)
+#define CHECK_LE(val1, val2) AVP_CHECK_OP(Le, <=, val1, val2)
+#define CHECK_LT(val1, val2) AVP_CHECK_OP(Lt, <, val1, val2)
+#define CHECK_GE(val1, val2) AVP_CHECK_OP(Ge, >=, val1, val2)
+#define CHECK_GT(val1, val2) AVP_CHECK_OP(Gt, >, val1, val2)
 
 #ifndef NDEBUG
 #define DCHECK(x) CHECK(x)
