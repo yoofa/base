@@ -200,6 +200,15 @@ oc_source_set("safe_compare") {
   deps = [ ":type_traits" ]
 }
 
+oc_source_set("safe_minmax") {
+  sources = [ "numerics/safe_minmax.h" ]
+  deps = [
+    ":checks",
+    ":safe_compare",
+    ":type_traits",
+  ]
+}
+
 oc_source_set("divide_round") {
   sources = [ "numerics/divide_round.h" ]
   deps = [
