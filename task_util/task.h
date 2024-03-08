@@ -8,7 +8,7 @@
 #ifndef BASE_TASK_TASK_H
 #define BASE_TASK_TASK_H
 
-namespace avp {
+namespace ave {
 namespace base {
 
 class Task {
@@ -20,5 +20,5 @@ class Task {
 };
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 #endif /* !BASE_TASK_TASK_H */

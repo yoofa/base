@@ -17,7 +17,7 @@
 
 #include "test/gtest.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 
 TEST(RepeatingTaskTest, Example) {
@@ -28,7 +28,7 @@ TEST(RepeatingTaskTest, Example) {
   int i = 0;
 
   RepeatingTaskHandle::Start(task_runner.Get(), [&i, &cv]() {
-    // LOG(LS_INFO) << "RepeatingTaskTest";
+    // AVE_LOG(LS_INFO) << "RepeatingTaskTest";
     if (i++ == 100) {
       cv.notify_one();
     }
@@ -39,4 +39,4 @@ TEST(RepeatingTaskTest, Example) {
 }
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave

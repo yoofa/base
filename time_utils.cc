@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
-#if defined(AVP_POSIX)
+#if defined(AVE_POSIX)
 #include <sys/time.h>
 #endif
 
-#if defined(AVP_WIN)
+#if defined(AVE_WIN)
 #include <sys/timeb.h>
 #endif
 
@@ -19,7 +19,8 @@
 #include "base/system_time.h"
 #include "base/time_utils.h"
 
-namespace avp {
+namespace ave {
+namespace base {
 
 ClockInterface* g_clock = nullptr;
 
@@ -159,7 +160,7 @@ int64_t TimeMicros() {
 }
 
 int64_t TimeAfter(int64_t elapsed) {
-  DCHECK_GE(elapsed, 0);
+  AVE_DCHECK_GE(elapsed, 0);
   return TimeMillis() + elapsed;
 }
 
@@ -243,19 +244,19 @@ int64_t TimeUTCMicros() {
   if (g_clock) {
     return g_clock->TimeNanos() / kNumNanosecsPerMicrosec;
   }
-#if defined(AVP_POSIX)
+#if defined(AVE_POSIX)
   struct timeval time;
   gettimeofday(&time, nullptr);
   // Convert from second (1.0) and microsecond (1e-6).
-  return (static_cast<int64_t>(time.tv_sec) * avp::kNumMicrosecsPerSec +
+  return (static_cast<int64_t>(time.tv_sec) * kNumMicrosecsPerSec +
           time.tv_usec);
 
-#elif defined(AVP_WIN)
+#elif defined(AVE_WIN)
   struct _timeb time;
   _ftime(&time);
   // Convert from second (1.0) and milliseconds (1e-3).
-  return (static_cast<int64_t>(time.time) * avp::kNumMicrosecsPerSec +
-          static_cast<int64_t>(time.millitm) * avp::kNumMicrosecsPerMillisec);
+  return (static_cast<int64_t>(time.time) * kNumMicrosecsPerSec +
+          static_cast<int64_t>(time.millitm) * kNumMicrosecsPerMillisec);
 #else
   return -1;
 #endif
@@ -265,4 +266,5 @@ int64_t TimeUTCMillis() {
   return TimeUTCMicros() / kNumMicrosecsPerMillisec;
 }
 
-}  // namespace avp
+}  // namespace base
+}  // namespace ave

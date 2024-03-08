@@ -20,7 +20,7 @@
 #include "base/thread.h"
 #include "base/thread_defs.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace {
 
@@ -34,14 +34,14 @@ static uint64_t GetNowUs() {
 int TaskRunnerPriorityToStdlibPriority(TaskRunnerFactory::Priority priority) {
   switch (priority) {
     case TaskRunnerFactory::Priority::LOW:
-      return AVP_PRIORITY_BACKGROUND;
+      return AVE_PRIORITY_BACKGROUND;
 
     case TaskRunnerFactory::Priority::HIGH:
-      return AVP_PRIORITY_AUDIO;
+      return AVE_PRIORITY_AUDIO;
 
     case TaskRunnerFactory::Priority::NORMAL:
     default:
-      return AVP_PRIORITY_NORMAL;
+      return AVE_PRIORITY_NORMAL;
   }
 }
 
@@ -91,7 +91,7 @@ class TaskRunnerStdlib final : public TaskRunnerBase {
 
   bool Looping();
   void ProcessTask();
-  AVP_DISALLOW_COPY_AND_ASSIGN(TaskRunnerStdlib);
+  AVE_DISALLOW_COPY_AND_ASSIGN(TaskRunnerStdlib);
 };
 
 TaskRunnerStdlib::TaskRunnerStdlib(const char* name, int priority)
@@ -198,4 +198,4 @@ std::unique_ptr<TaskRunnerFactory> CreateTaskRunnerStdlibFactory() {
 }
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave

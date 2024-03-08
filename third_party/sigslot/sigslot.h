@@ -29,7 +29,7 @@
 //    PLATFORM NOTES
 //
 //      Win32:
-//        On Win32, the AVP_WIN symbol must be #defined. Most mainstream
+//        On Win32, the AVE_WIN symbol must be #defined. Most mainstream
 //        compilers do this by default, but you may need to define it yourself
 //        if your build environment is less standard. This causes the Win32
 //        thread support to be compiled in and used automatically.
@@ -93,8 +93,8 @@
 // If signalx is single threaded the user must ensure that disconnect, connect
 // or signal is not happening concurrently or data race may occur.
 
-#ifndef AVP_BASE_THIRD_PARTY_SIGSLOT_SIGSLOT_H_
-#define AVP_BASE_THIRD_PARTY_SIGSLOT_SIGSLOT_H_
+#ifndef AVE_BASE_THIRD_PARTY_SIGSLOT_SIGSLOT_H_
+#define AVE_BASE_THIRD_PARTY_SIGSLOT_SIGSLOT_H_
 
 #include <cstring>
 #include <list>
@@ -103,10 +103,10 @@
 // On our copy of sigslot.h, we set single threading as default.
 #define SIGSLOT_DEFAULT_MT_POLICY single_threaded
 
-#if defined(SIGSLOT_PURE_ISO) || (!defined(AVP_WIN) && !defined(__GNUG__) && \
+#if defined(SIGSLOT_PURE_ISO) || (!defined(AVE_WIN) && !defined(__GNUG__) && \
                                   !defined(SIGSLOT_USE_POSIX_THREADS))
 #define _SIGSLOT_SINGLE_THREADED
-#elif defined(AVP_WIN)
+#elif defined(AVE_WIN)
 #define _SIGSLOT_HAS_WIN32_THREADS
 #include "windows.h"
 #elif defined(__GNUG__) || defined(SIGSLOT_USE_POSIX_THREADS)
@@ -645,4 +645,4 @@ using signal8 =
 
 }  // namespace sigslot
 
-#endif /* AVP_BASE_THIRD_PARTY_SIGSLOT_SIGSLOT_H_ */
+#endif /* AVE_BASE_THIRD_PARTY_SIGSLOT_SIGSLOT_H_ */

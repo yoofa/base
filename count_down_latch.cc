@@ -7,7 +7,8 @@
 
 #include "count_down_latch.h"
 
-namespace avp {
+namespace ave {
+namespace base {
 
 CountDownLatch::CountDownLatch(int count) : count_(count) {}
 
@@ -31,4 +32,5 @@ int CountDownLatch::GetCount() const {
   return count_;
 }
 
-}  // namespace avp
+}  // namespace base
+}  // namespace ave

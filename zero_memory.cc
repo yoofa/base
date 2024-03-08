@@ -8,13 +8,15 @@
 #include "zero_memory.h"
 
 #include <string.h>
+
 #include "checks.h"
 
-namespace avp {
+namespace ave {
+namespace base {
 
 // Code and comment taken from "OPENSSL_cleanse" of BoringSSL.
 void ExplicitZeroMemory(void* ptr, size_t len) {
-  DCHECK(ptr || !len);
+  AVE_DCHECK(ptr || !len);
   memset(ptr, 0, len);
 #if !defined(__pnacl__)
   /* As best as we can tell, this is sufficient to break any optimisations that
@@ -24,4 +26,5 @@ void ExplicitZeroMemory(void* ptr, size_t len) {
 #endif
 }
 
-}  // namespace avp
+}  // namespace base
+}  // namespace ave

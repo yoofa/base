@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace avp {
+namespace ave {
 namespace base {
 
 class PendingTaskFlag final {
@@ -31,5 +31,5 @@ class PendingTaskFlag final {
   bool alive_ = true;
 };
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 #endif /* !PENDING_TASK_FLAG_H */

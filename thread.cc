@@ -14,7 +14,7 @@
 
 #include <string>
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace {
 
@@ -27,12 +27,12 @@ struct ThreadData {
   ThreadFunc func_;
   std::string name_;
   pid_t* tid_;
-  avp::CountDownLatch* latch_;
+  CountDownLatch* latch_;
 
   ThreadData(ThreadFunc func,
              const std::string& name,
              pid_t* tid,
-             avp::CountDownLatch* latch)
+             CountDownLatch* latch)
       : func_(std::move(func)), name_(name), tid_(tid), latch_(latch) {}
 
   void runInThread() {
@@ -107,4 +107,4 @@ int Thread::join() {
 }
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave

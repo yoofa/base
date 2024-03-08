@@ -10,10 +10,12 @@
 
 #include <string>
 
-namespace avp {
+namespace ave {
+namespace base {
 
 std::string nameForFd(int fd);
 
-} /* namespace avp */
+}
+} /* namespace ave */
 
 #endif /* !UTILS_H */

@@ -12,7 +12,8 @@
 
 #include "base/constructor_magic.h"
 
-namespace avp {
+namespace ave {
+namespace base {
 
 class unique_fd final {
  public:
@@ -55,9 +56,10 @@ class unique_fd final {
  private:
   int value_;
 
-  AVP_DISALLOW_COPY_AND_ASSIGN(unique_fd);
+  AVE_DISALLOW_COPY_AND_ASSIGN(unique_fd);
 };
 
-} /* namespace avp */
+}  // namespace base
+} /* namespace ave */
 
 #endif /* !UNIQUE_FD_H */

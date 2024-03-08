@@ -5,15 +5,16 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#ifndef AVP_COUNT_DOWN_LATCH_H
-#define AVP_COUNT_DOWN_LATCH_H
+#ifndef AVE_COUNT_DOWN_LATCH_H
+#define AVE_COUNT_DOWN_LATCH_H
 
 #include <condition_variable>
 #include <mutex>
 
 #include "noncopyable.h"
 
-namespace avp {
+namespace ave {
+namespace base {
 
 class CountDownLatch : noncopyable {
  public:
@@ -29,6 +30,7 @@ class CountDownLatch : noncopyable {
   int count_;
 };
 
-}  // namespace avp
+}  // namespace base
+}  // namespace ave
 
-#endif /* !AVP_COUNT_DOWN_LATCH_H */
+#endif /* !AVE_COUNT_DOWN_LATCH_H */

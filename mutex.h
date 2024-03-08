@@ -5,15 +5,15 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#ifndef AVP_MUTEX_H
-#define AVP_MUTEX_H
+#ifndef AVE_MUTEX_H
+#define AVE_MUTEX_H
 
 #include <pthread.h>
 
 #include "thread_annotation.h"
 #include "types.h"
 
-namespace avp {
+namespace ave {
 
 class Condition;
 
@@ -54,6 +54,6 @@ class CAPABILITY("mutex") Mutex {
 
 using lock_guard = Mutex::LockGuard;
 
-}  // namespace avp
+}  // namespace ave
 
-#endif /* !AVP_MUTEX_H */
+#endif /* !AVE_MUTEX_H */

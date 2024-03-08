@@ -12,7 +12,7 @@
 
 #include "test/gtest.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace net {
 
@@ -310,4 +310,4 @@ TEST(SocketAddressTest, TestToSensitiveNameAndAddressString) {
 
 }  // namespace net
 }  // namespace base
-}  // namespace avp
+}  // namespace ave

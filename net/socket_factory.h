@@ -10,7 +10,7 @@
 
 #include "base/net/socket.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace net {
 
@@ -24,6 +24,6 @@ class SocketFactory {
 
 }  // namespace net
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !BASE_NET_SOCKET_FACTORY_H */

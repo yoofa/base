@@ -11,7 +11,7 @@
 
 #include <string.h>
 
-namespace avp {
+namespace ave {
 
 std::string StatusToString(status_t s) {
 #define STATUS_CASE(STATUS) \
@@ -43,4 +43,4 @@ std::string StatusToString(status_t s) {
 
   return std::to_string(s) + " (" + strerror(-s) + ")";
 }
-} /* namespace avp */
+} /* namespace ave */

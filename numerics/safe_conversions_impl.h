@@ -12,7 +12,7 @@
 
 #include <limits>
 
-namespace avp {
+namespace ave {
 namespace base {
 
 namespace internal {
@@ -172,6 +172,6 @@ inline constexpr RangeCheckResult RangeCheck(Src value) {
 
 }  // namespace internal
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !SAFE_CONVERSIONS_IMPL_H */

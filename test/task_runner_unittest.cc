@@ -24,8 +24,8 @@
 
 using namespace std::chrono_literals;
 
-namespace avp {
-using namespace base;
+namespace ave {
+namespace base {
 
 namespace {
 INSTANTIATE_TEST_SUITE_P(Default,
@@ -94,4 +94,5 @@ TEST_P(TaskRunnerTest, PostDelayedTask) {
 }
 
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(TaskRunnerTest);
-}  // namespace avp
+}  // namespace base
+}  // namespace ave

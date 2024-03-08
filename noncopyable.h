@@ -5,10 +5,10 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#ifndef AVP_NONCOPYABLE_H
-#define AVP_NONCOPYABLE_H
+#ifndef AVE_NONCOPYABLE_H
+#define AVE_NONCOPYABLE_H
 
-namespace avp {
+namespace ave {
 class noncopyable {
  public:
   noncopyable(const noncopyable&) = delete;
@@ -19,6 +19,6 @@ class noncopyable {
   ~noncopyable() = default;
 };
 
-}  // namespace avp
+}  // namespace ave
 
-#endif /* !AVP_NONCOPYABLE_H */
+#endif /* !AVE_NONCOPYABLE_H */

@@ -12,7 +12,7 @@
 
 #include <base/byte_utils.h>
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace net {
 
@@ -550,4 +550,4 @@ int CountIPMaskBits(const IPAddress& mask) {
 
 }  // namespace net
 }  // namespace base
-}  // namespace avp
+}  // namespace ave

@@ -11,7 +11,7 @@
 #include "base/checks.h"
 #include "base/numerics/safe_conversions_impl.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 
 // Convenience function that returns true if the supplied value is in range
@@ -27,18 +27,18 @@ inline constexpr bool IsValueInRangeForNumericType(Src value) {
 // the [D]CHECK.
 template <typename Dst, typename Src>
 inline constexpr Dst checked_cast(Src value) {
-  CHECK(IsValueInRangeForNumericType<Dst>(value));
+  AVE_CHECK(IsValueInRangeForNumericType<Dst>(value));
   return static_cast<Dst>(value);
 }
 template <typename Dst, typename Src>
 inline constexpr Dst dchecked_cast(Src value) {
-  DCHECK(IsValueInRangeForNumericType<Dst>(value));
+  AVE_DCHECK(IsValueInRangeForNumericType<Dst>(value));
   return static_cast<Dst>(value);
 }
 
 // saturated_cast<> is analogous to static_cast<> for numeric types, except
 // that the specified numeric conversion will saturate rather than overflow or
-// underflow. NaN assignment to an integral will trigger a CHECK condition.
+// underflow. NaN assignment to an integral will trigger a AVE_CHECK condition.
 template <typename Dst, typename Src>
 inline constexpr Dst saturated_cast(Src value) {
   // Optimization for floating point values, which already saturate.
@@ -57,13 +57,13 @@ inline constexpr Dst saturated_cast(Src value) {
 
     // Should fail only on attempting to assign NaN to a saturated integer.
     case internal::TYPE_INVALID:
-      AVP_NOTREACHED();
+      AVE_NOTREACHED();
   }
 
-  AVP_NOTREACHED();
+  AVE_NOTREACHED();
 }
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !SAFE_CONVERSIONS_H */

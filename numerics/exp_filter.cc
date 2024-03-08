@@ -9,7 +9,7 @@
 
 #include <cmath>
 
-namespace yf {
+namespace ave {
 namespace base {
 
 const float ExpFilter::kValueUndefined = -1.0f;
@@ -43,4 +43,4 @@ void ExpFilter::UpdateBase(float alpha) {
 }
 
 }  // namespace base
-}  // namespace yf
+}  // namespace ave

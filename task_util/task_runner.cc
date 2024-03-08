@@ -7,7 +7,7 @@
 
 #include "task_runner.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 
 TaskRunner::TaskRunner(
@@ -32,4 +32,4 @@ void TaskRunner::PostDelayedTask(std::unique_ptr<base::Task> task,
 }
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave

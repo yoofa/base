@@ -13,15 +13,15 @@
 
 // simple task runner test
 int main() {
-  std::unique_ptr<avp::base::TaskRunnerFactory> factory =
-      avp::base::CreateDefaultTaskRunnerFactory();
-  std::unique_ptr<avp::base::TaskRunner> runner =
-      std::make_unique<avp::base::TaskRunner>(factory->CreateTaskRunner(
-          "task_runner_test", avp::base::TaskRunnerFactory::Priority::NORMAL));
-  LOG(avp::LS_INFO) << "main thread";
+  std::unique_ptr<ave::base::TaskRunnerFactory> factory =
+      ave::base::CreateDefaultTaskRunnerFactory();
+  std::unique_ptr<ave::base::TaskRunner> runner =
+      std::make_unique<ave::base::TaskRunner>(factory->CreateTaskRunner(
+          "task_runner_test", ave::base::TaskRunnerFactory::Priority::NORMAL));
+  AVE_LOG(ave::LS_INFO) << "main thread";
 
-  runner->PostTask([]() { LOG(avp::LS_INFO) << "test post task"; });
+  runner->PostTask([]() { AVE_LOG(ave::LS_INFO) << "test post task"; });
   runner->PostDelayedTask(
-      []() { LOG(avp::LS_INFO) << "test post delayed task"; }, 100 * 1000);
+      []() { AVE_LOG(ave::LS_INFO) << "test post delayed task"; }, 100 * 1000);
   sleep(2);
 }

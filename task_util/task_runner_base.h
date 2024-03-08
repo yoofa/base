@@ -12,7 +12,7 @@
 
 #include "task.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 class TaskRunnerBase {
  public:
@@ -52,6 +52,6 @@ struct TaskRunnerDeleter {
 };
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !TASK_RUNNER_BASE_H */

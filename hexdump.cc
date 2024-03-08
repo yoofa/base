@@ -10,14 +10,15 @@
 #include "base/checks.h"
 #include "base/logging.h"
 
-namespace avp {
+namespace ave {
+namespace base {
 
 static void appendIndent(std::string& s, int32_t indent) {
   static const char kWhitespace[] =
       "                                        "
       "                                        ";
 
-  CHECK_LT((size_t)indent, sizeof(kWhitespace));
+  AVE_CHECK_LT((size_t)indent, sizeof(kWhitespace));
 
   s.append(kWhitespace, indent);
 }
@@ -61,9 +62,10 @@ void hexdump(const void* _data, size_t size, size_t indent) {
       }
     }
 
-    LOG(LS_INFO) << line.c_str();
+    AVE_LOG(LS_INFO) << line.c_str();
 
     offset += 16;
   }
 }
-} /* namespace avp */
+}  // namespace base
+} /* namespace ave */

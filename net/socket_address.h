@@ -5,14 +5,14 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#ifndef AVP_BASE_NET_SOCKET_ADDRESS_H
-#define AVP_BASE_NET_SOCKET_ADDRESS_H
+#ifndef AVE_BASE_NET_SOCKET_ADDRESS_H
+#define AVE_BASE_NET_SOCKET_ADDRESS_H
 
 #include <string>
 
 #include "base/net/ip_address.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace net {
 
@@ -143,6 +143,6 @@ SocketAddress EmptySocketAddressWithFamily(int family);
 
 }  // namespace net
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
-#endif /* !AVP_BASE_NET_SOCKET_ADDRESS_H */
+#endif /* !AVE_BASE_NET_SOCKET_ADDRESS_H */

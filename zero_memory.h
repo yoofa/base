@@ -14,7 +14,7 @@
 
 #include "array_view.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 
 // Fill memory with zeros in a way that the compiler doesn't optimize it away
@@ -29,6 +29,6 @@ void ExplicitZeroMemory(ArrayView<T> a) {
 }
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !ZERO_MEMORY_H */

@@ -15,7 +15,8 @@
 #include <thread>
 #include <vector>
 
-namespace avp {
+namespace ave {
+namespace base {
 
 namespace {
 #if !defined(NDEBUG)
@@ -291,9 +292,11 @@ void Log(const LogArgType* fmt, ...) {
   va_end(args);
 }
 }  // namespace logging_impl
-}  // namespace avp
+}  // namespace base
+}  // namespace ave
 
-namespace avp {
+namespace ave {
+namespace base {
 void LogSink::OnLogMessage(const std::string& msg,
                            LogSeverity severity,
                            const char* tag) {
@@ -303,4 +306,6 @@ void LogSink::OnLogMessage(const std::string& msg,
 void LogSink::OnLogMessage(const std::string& msg, LogSeverity /* severity */) {
   OnLogMessage(msg);
 }
-}  // namespace avp
+
+}  // namespace base
+}  // namespace ave

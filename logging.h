@@ -5,8 +5,8 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#ifndef LOGGING_H
-#define LOGGING_H
+#ifndef AVE_LOGGING_H
+#define AVE_LOGGING_H
 
 #include <atomic>
 #include <cstdint>
@@ -17,18 +17,20 @@
 #include "base/constructor_magic.h"
 
 #if !defined(NDEBUG) || defined(DLOG_ALWAYS_ON)
-#define AVP_DLOG_IS_ON 1
+#define AVE_DLOG_IS_ON 1
 #else
-#define AVP_DLOG_IS_ON 0
+#define AVE_DLOG_IS_ON 0
 #endif
 
-#if defined(AVP_DISABLE_LOGGING)
-#define AVP_LOG_ENABLED() 0
+#if defined(AVE_DISABLE_LOGGING)
+#define AVE_LOG_ENABLED() 0
 #else
-#define AVP_LOG_ENABLED() 1
+#define AVE_LOG_ENABLED() 1
 #endif
 
-namespace avp {
+namespace ave {
+
+namespace base {
 enum LogSeverity {
   LS_VERBOSE,
   LS_DEBUG,
@@ -56,8 +58,8 @@ class LogSink {
   virtual void OnLogMessage(const std::string& message) = 0;
 
  private:
-  friend class ::avp::LogMessage;
-#if AVP_LOG_ENABLED()
+  friend class ::ave::base::LogMessage;
+#if AVE_LOG_ENABLED()
   LogSink* next_ = nullptr;
   LogSeverity min_severity_;
 #endif
@@ -304,7 +306,7 @@ class LogMessage {
                     std::integral_constant<LogSeverity, S>)
       : LogMessage(file, line, S) {}
 
-#if AVP_LOG_ENABLED()
+#if AVE_LOG_ENABLED()
   LogMessage(const char* file, int line, LogSeverity sev);
   LogMessage(const char* file,
              int line,
@@ -362,7 +364,7 @@ class LogMessage {
 #endif
 
  private:
-#if AVP_LOG_ENABLED()
+#if AVE_LOG_ENABLED()
   static void UpdateMinLogSeverity();
 
   static void OutputToDebug(const std::string& msg, LogSeverity severity);
@@ -389,35 +391,45 @@ class LogMessage {
 
   std::stringstream print_stream_;
 
-  AVP_DISALLOW_COPY_AND_ASSIGN(LogMessage);
+  AVE_DISALLOW_COPY_AND_ASSIGN(LogMessage);
 };
 
-#define LOG_FILE_LINE(sev, file, line)     \
-  ::avp::logging_impl::Logger() &          \
-      ::avp::logging_impl::LogStreamer<>() \
-          << ::avp::logging_impl::LogMetadata(file, line, sev)
+#define AVE_LOG_FILE_LINE(sev, file, line)       \
+  ::ave::base::logging_impl::Logger() &          \
+      ::ave::base::logging_impl::LogStreamer<>() \
+          << ::ave::base::logging_impl::LogMetadata(file, line, sev)
 
-#define LOG(sev) \
-  !avp::LogMessage::IsNoop<sev>() && LOG_FILE_LINE(sev, __FILE__, __LINE__)
+#define AVE_LOG(sev)                       \
+  !ave::base::LogMessage::IsNoop<sev>() && \
+      AVE_LOG_FILE_LINE(sev, __FILE__, __LINE__)
 
-#if AVP_DLOG_IS_ON
-#define DLOG(sev) LOG(sev)
-#define DLOG_IF(sev, condition) LOG_IF(sev, condition)
-#define DLOG_V(sev) LOG_V(sev)
-#define DLOG_F(sev) LOG_F(sev)
-#define DLOG_IF_F(sev, condition) LOG_IF_F(sev, condition)
+#if AVE_DLOG_IS_ON
+#define AVE_DLOG(sev) AVE_LOG(sev)
+#define AVE_DLOG_IF(sev, condition) AVE_LOG_IF(sev, condition)
+#define AVE_DLOG_V(sev) AVE_LOG_V(sev)
+#define AVE_DLOG_F(sev) AVE_LOG_F(sev)
+#define AVE_DLOG_IF_F(sev, condition) AVE_LOG_IF_F(sev, condition)
 #else
-#define DLOG_EAT_STREAM_PARAMS()             \
-  while (false)                              \
-  ::avp::logging_impl::LogMessageVoidify() & \
-      (::avp::logging_impl::LogStreamer<>())
-#define DLOG(sev) DLOG_EAT_STREAM_PARAMS()
-#define DLOG_IF(sev, condition) DLOG_EAT_STREAM_PARAMS()
-#define DLOG_V(sev) DLOG_EAT_STREAM_PARAMS()
-#define DLOG_F(sev) DLOG_EAT_STREAM_PARAMS()
-#define DLOG_IF_F(sev, condition) DLOG_EAT_STREAM_PARAMS()
+#define AVE_DLOG_EAT_STREAM_PARAMS()               \
+  while (false)                                    \
+  ::ave::base::logging_impl::LogMessageVoidify() & \
+      (::ave::base::logging_impl::LogStreamer<>())
+#define AVE_DLOG(sev) AVE_DLOG_EAT_STREAM_PARAMS()
+#define AVE_DLOG_IF(sev, condition) AVE_DLOG_EAT_STREAM_PARAMS()
+#define AVE_DLOG_V(sev) AVE_DLOG_EAT_STREAM_PARAMS()
+#define AVE_DLOG_F(sev) AVE_DLOG_EAT_STREAM_PARAMS()
+#define AVE_DLOG_IF_F(sev, condition) AVE_DLOG_EAT_STREAM_PARAMS()
 #endif
 
-} /* namespace avp */
+}  // namespace base
+// LS_VERBOSE, LS_DEBUG, LS_INFO, LS_WARNING, LS_ERROR
+
+using base::LS_DEBUG;
+using base::LS_ERROR;
+using base::LS_INFO;
+using base::LS_VERBOSE;
+using base::LS_WARNING;
+
+}  // namespace ave
 
 #endif /* !LOGGING_H */

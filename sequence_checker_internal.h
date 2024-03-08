@@ -14,8 +14,9 @@
 #include "base/task_util/task_runner_base.h"
 #include "base/thread_annotation.h"
 
-namespace avp {
-namespace avp_sequence_checker_internal {
+namespace ave {
+namespace base {
+namespace ave_sequence_checker_internal {
 
 class SequenceCheckerImpl {
  public:
@@ -47,7 +48,7 @@ class SequenceCheckerDoNothing {
   void Detach() {}
 };
 
-// Helper class used by AVP_DCHECK_RUN_ON (see example usage below).
+// Helper class used by AVE_DCHECK_RUN_ON (see example usage below).
 class SCOPED_CAPABILITY SequenceCheckerScope {
  public:
   template <typename ThreadLikeObject>
@@ -71,7 +72,8 @@ std::string ExpectationToString(const ThreadLikeObject*) {
   return std::string();
 }
 
-}  // namespace avp_sequence_checker_internal
-}  // namespace avp
+}  // namespace ave_sequence_checker_internal
+}  // namespace base
+}  // namespace ave
 
 #endif /* !SEQUENCE_CHECKER_IMPL_H */

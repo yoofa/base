@@ -14,7 +14,7 @@
 #include "base/task_util/pending_task_flag.h"
 #include "base/task_util/task_runner_base.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 using base::PendingTaskFlag;
 using base::Task;
@@ -107,6 +107,6 @@ class RepeatingTaskHandle {
 };
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !REPEATING_TASK_H */

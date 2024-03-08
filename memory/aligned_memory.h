@@ -10,7 +10,8 @@
 
 #include <stddef.h>
 
-namespace avp {
+namespace ave {
+namespace base {
 
 // Returns a pointer to the first boundry of `alignment` bytes following the
 // address of `ptr`.
@@ -43,6 +44,7 @@ struct AlignedFreeDeleter {
   inline void operator()(void* ptr) const { AlignedFree(ptr); }
 };
 
-}  // namespace avp
+}  // namespace base
+}  // namespace ave
 
 #endif /* !ALIGNED_MEMORY_H */

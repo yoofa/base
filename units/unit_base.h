@@ -19,7 +19,7 @@
 #include "base/numerics/divide_round.h"
 #include "base/numerics/safe_conversions.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace unit_impl {
 // UnitBase is a base class for implementing custom value types with a specific
@@ -68,23 +68,23 @@ class UnitBase {
     return value_ < other.value_;
   }
   constexpr Unit_T RoundTo(const Unit_T& resolution) const {
-    DCHECK(IsFinite());
-    DCHECK(resolution.IsFinite());
-    DCHECK_GT(resolution.value_, 0);
+    AVE_DCHECK(IsFinite());
+    AVE_DCHECK(resolution.IsFinite());
+    AVE_DCHECK_GT(resolution.value_, 0);
     return Unit_T((value_ + resolution.value_ / 2) / resolution.value_) *
            resolution.value_;
   }
   constexpr Unit_T RoundUpTo(const Unit_T& resolution) const {
-    DCHECK(IsFinite());
-    DCHECK(resolution.IsFinite());
-    DCHECK_GT(resolution.value_, 0);
+    AVE_DCHECK(IsFinite());
+    AVE_DCHECK(resolution.IsFinite());
+    AVE_DCHECK_GT(resolution.value_, 0);
     return Unit_T((value_ + resolution.value_ - 1) / resolution.value_) *
            resolution.value_;
   }
   constexpr Unit_T RoundDownTo(const Unit_T& resolution) const {
-    DCHECK(IsFinite());
-    DCHECK(resolution.IsFinite());
-    DCHECK_GT(resolution.value_, 0);
+    AVE_DCHECK(IsFinite());
+    AVE_DCHECK(resolution.IsFinite());
+    AVE_DCHECK_GT(resolution.value_, 0);
     return Unit_T(value_ / resolution.value_) * resolution.value_;
   }
 
@@ -94,9 +94,9 @@ class UnitBase {
       typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
   static constexpr Unit_T FromValue(T value) {
     if (Unit_T::one_sided)
-      DCHECK_GE(value, 0);
-    DCHECK_GT(value, MinusInfinityVal());
-    DCHECK_LT(value, PlusInfinityVal());
+      AVE_DCHECK_GE(value, 0);
+    AVE_DCHECK_GT(value, MinusInfinityVal());
+    AVE_DCHECK_LT(value, PlusInfinityVal());
     return Unit_T(dchecked_cast<int64_t>(value));
   }
   template <typename T,
@@ -108,7 +108,7 @@ class UnitBase {
     } else if (value == -std::numeric_limits<T>::infinity()) {
       return MinusInfinity();
     } else {
-      DCHECK(!std::isnan(value));
+      AVE_DCHECK(!std::isnan(value));
       return FromValue(dchecked_cast<int64_t>(value));
     }
   }
@@ -118,9 +118,9 @@ class UnitBase {
       typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
   static constexpr Unit_T FromFraction(int64_t denominator, T value) {
     if (Unit_T::one_sided)
-      DCHECK_GE(value, 0);
-    DCHECK_GT(value, MinusInfinityVal() / denominator);
-    DCHECK_LT(value, PlusInfinityVal() / denominator);
+      AVE_DCHECK_GE(value, 0);
+    AVE_DCHECK_GT(value, MinusInfinityVal() / denominator);
+    AVE_DCHECK_LT(value, PlusInfinityVal() / denominator);
     return Unit_T(dchecked_cast<int64_t>(value * denominator));
   }
   template <typename T,
@@ -133,7 +133,7 @@ class UnitBase {
   template <typename T = int64_t>
   constexpr typename std::enable_if<std::is_integral<T>::value, T>::type
   ToValue() const {
-    DCHECK(IsFinite());
+    AVE_DCHECK(IsFinite());
     return dchecked_cast<T>(value_);
   }
   template <typename T>
@@ -151,7 +151,7 @@ class UnitBase {
   template <int64_t Denominator, typename T = int64_t>
   constexpr typename std::enable_if<std::is_integral<T>::value, T>::type
   ToFraction() const {
-    DCHECK(IsFinite());
+    AVE_DCHECK(IsFinite());
     return dchecked_cast<T>(DivideRoundToNearest(value_, Denominator));
   }
   template <int64_t Denominator, typename T>
@@ -169,8 +169,8 @@ class UnitBase {
   template <int64_t Factor, typename T = int64_t>
   constexpr typename std::enable_if<std::is_integral<T>::value, T>::type
   ToMultiple() const {
-    DCHECK_GE(ToValue(), std::numeric_limits<T>::min() / Factor);
-    DCHECK_LE(ToValue(), std::numeric_limits<T>::max() / Factor);
+    AVE_DCHECK_GE(ToValue(), std::numeric_limits<T>::min() / Factor);
+    AVE_DCHECK_LE(ToValue(), std::numeric_limits<T>::max() / Factor);
     return dchecked_cast<T>(ToValue() * Factor);
   }
   template <int64_t Factor, typename T>
@@ -215,24 +215,24 @@ class RelativeUnit : public UnitBase<Unit_T> {
   }
   constexpr Unit_T operator+(const Unit_T other) const {
     if (this->IsPlusInfinity() || other.IsPlusInfinity()) {
-      DCHECK(!this->IsMinusInfinity());
-      DCHECK(!other.IsMinusInfinity());
+      AVE_DCHECK(!this->IsMinusInfinity());
+      AVE_DCHECK(!other.IsMinusInfinity());
       return this->PlusInfinity();
     } else if (this->IsMinusInfinity() || other.IsMinusInfinity()) {
-      DCHECK(!this->IsPlusInfinity());
-      DCHECK(!other.IsPlusInfinity());
+      AVE_DCHECK(!this->IsPlusInfinity());
+      AVE_DCHECK(!other.IsPlusInfinity());
       return this->MinusInfinity();
     }
     return UnitBase<Unit_T>::FromValue(this->ToValue() + other.ToValue());
   }
   constexpr Unit_T operator-(const Unit_T other) const {
     if (this->IsPlusInfinity() || other.IsMinusInfinity()) {
-      DCHECK(!this->IsMinusInfinity());
-      DCHECK(!other.IsPlusInfinity());
+      AVE_DCHECK(!this->IsMinusInfinity());
+      AVE_DCHECK(!other.IsPlusInfinity());
       return this->PlusInfinity();
     } else if (this->IsMinusInfinity() || other.IsPlusInfinity()) {
-      DCHECK(!this->IsPlusInfinity());
-      DCHECK(!other.IsMinusInfinity());
+      AVE_DCHECK(!this->IsPlusInfinity());
+      AVE_DCHECK(!other.IsMinusInfinity());
       return this->MinusInfinity();
     }
     return UnitBase<Unit_T>::FromValue(this->ToValue() - other.ToValue());
@@ -304,6 +304,6 @@ inline constexpr Unit_T operator-(RelativeUnit<Unit_T> other) {
 
 }  // namespace unit_impl
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !UNIT_BASE_H */

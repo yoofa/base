@@ -8,7 +8,7 @@
 #ifndef EXP_FILTER_H
 #define EXP_FILTER_H
 
-namespace yf {
+namespace ave {
 namespace base {
 
 // This class can be used, for example, for smoothing the result of bandwidth
@@ -39,7 +39,6 @@ class ExpFilter {
 };
 
 }  // namespace base
-
-}  // namespace yf
+}  // namespace ave
 
 #endif /* !EXP_FILTER_H */

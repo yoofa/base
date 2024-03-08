@@ -15,7 +15,7 @@
 #include "base/numerics/safe_compare.h"
 #include "base/type_traits.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace safe_minmax_impl {
 
@@ -255,13 +255,13 @@ R2 SafeClamp(T x, L min, H max) {
                 "The second argument must be integral or floating-point");
   static_assert(IsIntlike<L>::value || std::is_floating_point<L>::value,
                 "The third argument must be integral or floating-point");
-  DCHECK_LE(min, max);
+  AVE_DCHECK_LE(min, max);
   return SafeLe(x, min)   ? static_cast<R2>(min)
          : SafeGe(x, max) ? static_cast<R2>(max)
                           : static_cast<R2>(x);
 }
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !SAFE_MINMAX_H */

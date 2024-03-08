@@ -12,7 +12,7 @@
 
 #include "base/types.h"
 
-namespace avp {
+namespace ave {
 
 constexpr int FOURCC(unsigned char c1,
                      unsigned char c2,
@@ -64,6 +64,6 @@ inline uint32_t NetworkToHost32(uint32_t n) {
 inline uint64_t NetworkToHost64(uint64_t n) {
   return be64toh(n);
 }
-} /* namespace avp */
+} /* namespace ave */
 
 #endif /* !BYTE_UTILS_H */

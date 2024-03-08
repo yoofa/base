@@ -15,7 +15,7 @@
 
 #include "base/type_traits.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace safe_cmp_impl {
 
@@ -107,24 +107,24 @@ constexpr bool Cmp(T1 a, T2 b) {
   return b < 0 ? Op::Op(0, -1) : Op::Op(a, safe_cmp_impl::MakeUnsigned(b));
 }
 
-#define AVP_SAFECMP_MAKE_OP(name, op)      \
+#define AVE_SAFECMP_MAKE_OP(name, op)      \
   struct name {                            \
     template <typename T1, typename T2>    \
     static constexpr bool Op(T1 a, T2 b) { \
       return a op b;                       \
     }                                      \
   };
-AVP_SAFECMP_MAKE_OP(EqOp, ==)
-AVP_SAFECMP_MAKE_OP(NeOp, !=)
-AVP_SAFECMP_MAKE_OP(LtOp, <)
-AVP_SAFECMP_MAKE_OP(LeOp, <=)
-AVP_SAFECMP_MAKE_OP(GtOp, >)
-AVP_SAFECMP_MAKE_OP(GeOp, >=)
-#undef AVP_SAFECMP_MAKE_OP
+AVE_SAFECMP_MAKE_OP(EqOp, ==)
+AVE_SAFECMP_MAKE_OP(NeOp, !=)
+AVE_SAFECMP_MAKE_OP(LtOp, <)
+AVE_SAFECMP_MAKE_OP(LeOp, <=)
+AVE_SAFECMP_MAKE_OP(GtOp, >)
+AVE_SAFECMP_MAKE_OP(GeOp, >=)
+#undef AVE_SAFECMP_MAKE_OP
 
 }  // namespace safe_cmp_impl
 
-#define AVP_SAFECMP_MAKE_FUN(name)                                            \
+#define AVE_SAFECMP_MAKE_FUN(name)                                            \
   template <typename T1, typename T2>                                         \
   constexpr                                                                   \
       typename std::enable_if<IsIntlike<T1>::value && IsIntlike<T2>::value,   \
@@ -140,15 +140,15 @@ AVP_SAFECMP_MAKE_OP(GeOp, >=)
     return safe_cmp_impl::name##Op::Op(a, b);                                 \
   }
 
-AVP_SAFECMP_MAKE_FUN(Eq)
-AVP_SAFECMP_MAKE_FUN(Ne)
-AVP_SAFECMP_MAKE_FUN(Lt)
-AVP_SAFECMP_MAKE_FUN(Le)
-AVP_SAFECMP_MAKE_FUN(Gt)
-AVP_SAFECMP_MAKE_FUN(Ge)
-#undef AVP_SAFECMP_MAKE_FUN
+AVE_SAFECMP_MAKE_FUN(Eq)
+AVE_SAFECMP_MAKE_FUN(Ne)
+AVE_SAFECMP_MAKE_FUN(Lt)
+AVE_SAFECMP_MAKE_FUN(Le)
+AVE_SAFECMP_MAKE_FUN(Gt)
+AVE_SAFECMP_MAKE_FUN(Ge)
+#undef AVE_SAFECMP_MAKE_FUN
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !SAFE_COMPARE_H */

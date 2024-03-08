@@ -10,13 +10,14 @@
 #include <pthread.h>
 #include <sstream>
 
-namespace avp {
-namespace avp_sequence_checker_internal {
+namespace ave {
+namespace base {
+namespace ave_sequence_checker_internal {
 namespace {
 // On Mac, returns the label of the current dispatch queue; elsewhere, return
 // null.
 const void* GetSystemQueueRef() {
-#if defined(AVP_MAC)
+#if defined(AVE_MAC)
   return dispatch_runner_get_label(DISPATCH_CURRENT_runner_LABEL);
 #else
   return nullptr;
@@ -31,8 +32,7 @@ SequenceCheckerImpl::SequenceCheckerImpl()
       valid_system_runner_(GetSystemQueueRef()) {}
 
 bool SequenceCheckerImpl::IsCurrent() const {
-  const base::TaskRunnerBase* const current_runner =
-      base::TaskRunnerBase::Current();
+  const TaskRunnerBase* const current_runner = base::TaskRunnerBase::Current();
   const pthread_t current_thread = pthread_self();
   const void* const current_system_runner = GetSystemQueueRef();
   lock_guard scoped_lock(lock_);
@@ -58,7 +58,7 @@ void SequenceCheckerImpl::Detach() {
   // reset on the next call to IsCurrent().
 }
 
-#if AVP_DCHECK_IS_ON
+#if AVE_DCHECK_IS_ON
 std::string SequenceCheckerImpl::ExpectationToString() const {
   const base::TaskRunnerBase* const current_runner =
       base::TaskRunnerBase::Current();
@@ -88,15 +88,16 @@ std::string SequenceCheckerImpl::ExpectationToString() const {
 
   return message.str();
 }
-#endif  // AVP_DCHECK_IS_ON
+#endif  // AVE_DCHECK_IS_ON
 
 std::string ExpectationToString(const SequenceCheckerImpl* checker) {
-#if AVP_DCHECK_IS_ON
+#if AVE_DCHECK_IS_ON
   return checker->ExpectationToString();
 #else
   return std::string();
 #endif
 }
 
-}  // namespace avp_sequence_checker_internal
-}  // namespace avp
+}  // namespace ave_sequence_checker_internal
+}  // namespace base
+}  // namespace ave

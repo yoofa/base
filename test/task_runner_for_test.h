@@ -11,7 +11,7 @@
 #include "base/task_util/task_runner.h"
 #include "base/task_util/task_runner_factory.h"
 
-namespace avp {
+namespace ave {
 
 namespace base {
 
@@ -28,6 +28,6 @@ class TaskRunnerForTest : public TaskRunner {
 };
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !TASK_RUNNER_FOR_TEST_H */

@@ -11,10 +11,8 @@
 #include <stdint.h>
 #include <time.h>
 
-#include "base/checks.h"
-#include "base/system_time.h"
-
-namespace avp {
+namespace ave {
+namespace base {
 
 static const int64_t kNumMillisecsPerSec = INT64_C(1000);
 static const int64_t kNumMicrosecsPerSec = INT64_C(1000000);
@@ -128,7 +126,7 @@ int64_t TmToSeconds(const tm& tm);
 // Note that this function obeys the system's idea about what the time
 // is. It is not guaranteed to be monotonic; it will jump in case the
 // system time is changed, e.g., by some other process calling
-// settimeofday. Always use avp::TimeMicros(), not this function, for
+// settimeofday. Always use ave::TimeMicros(), not this function, for
 // measuring time intervals and timeouts.
 int64_t TimeUTCMicros();
 
@@ -136,6 +134,7 @@ int64_t TimeUTCMicros();
 // See above.
 int64_t TimeUTCMillis();
 
-}  // namespace avp
+}  // namespace base
+}  // namespace ave
 
 #endif /* !TIME_UTILS_H */

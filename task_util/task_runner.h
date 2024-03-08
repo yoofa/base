@@ -16,7 +16,7 @@
 #include "base/task_util/to_task.h"
 #include "base/thread_annotation.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 class CAPABILITY("TaskRunner") TaskRunner {
  public:
@@ -24,7 +24,7 @@ class CAPABILITY("TaskRunner") TaskRunner {
       std::unique_ptr<TaskRunnerBase, TaskRunnerDeleter> task_runner);
   ~TaskRunner();
 
-  // Used for DCHECKing the current runner.
+  // Used for AVE_DCHECKing the current runner.
   bool IsCurrent() const;
 
   // post a task to be run
@@ -55,10 +55,10 @@ class CAPABILITY("TaskRunner") TaskRunner {
  private:
   TaskRunnerBase* const impl_;
 
-  AVP_DISALLOW_COPY_AND_ASSIGN(TaskRunner);
+  AVE_DISALLOW_COPY_AND_ASSIGN(TaskRunner);
 };
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !TASK_RUNNER_H */

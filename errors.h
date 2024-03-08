@@ -5,15 +5,15 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#ifndef AVP_ERROR_H
-#define AVP_ERROR_H
+#ifndef AVE_ERROR_H
+#define AVE_ERROR_H
 
 #include <string>
 
 #include <errno.h>
 #include <stdint.h>
 
-namespace avp {
+namespace ave {
 
 typedef int32_t status_t;
 
@@ -53,6 +53,6 @@ enum {
 
 std::string StatusToString(status_t status);
 
-} /* namespace avp */
+} /* namespace ave */
 
-#endif /* !AVP_ERROR_H */
+#endif /* !AVE_ERROR_H */

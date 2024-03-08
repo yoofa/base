@@ -9,7 +9,7 @@
 
 #include "base/task_util/default_task_runner_factory.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 
 TaskRunnerForTest::TaskRunnerForTest(std::string name,
@@ -19,4 +19,4 @@ TaskRunnerForTest::TaskRunnerForTest(std::string name,
                                                              priority)) {}
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave

@@ -12,7 +12,8 @@
 #include "base/sequence_checker_internal.h"
 #include "base/thread_annotation.h"
 
-namespace avp {
+namespace ave {
+namespace base {
 
 // SequenceChecker is a helper class used to help verify that some methods
 // of a class are called on the same task queue or thread. A
@@ -24,7 +25,7 @@ namespace avp {
 // class MyClass {
 //  public:
 //   void Foo() {
-//     AVP_DCHECK_RUN_ON(&sequence_checker_);
+//     AVE_DCHECK_RUN_ON(&sequence_checker_);
 //     ... (do stuff) ...
 //   }
 //
@@ -34,12 +35,12 @@ namespace avp {
 //
 // In Release mode, IsCurrent will always return true.
 class CAPABILITY("SequenceChecker") SequenceChecker
-#if AVP_DCHECK_IS_ON
-    : public avp_sequence_checker_internal::SequenceCheckerImpl {
-  using Impl = avp_sequence_checker_internal::SequenceCheckerImpl;
+#if AVE_DCHECK_IS_ON
+    : public ave_sequence_checker_internal::SequenceCheckerImpl {
+  using Impl = ave_sequence_checker_internal::SequenceCheckerImpl;
 #else
-    : public avp_sequence_checker_internal::SequenceCheckerDoNothing {
-  using Impl = avp_sequence_checker_internal::SequenceCheckerDoNothing;
+    : public ave_sequence_checker_internal::SequenceCheckerDoNothing {
+  using Impl = ave_sequence_checker_internal::SequenceCheckerDoNothing;
 #endif
  public:
   // Returns true if sequence checker is attached to the current sequence.
@@ -50,14 +51,16 @@ class CAPABILITY("SequenceChecker") SequenceChecker
   void Detach() { Impl::Detach(); }
 };
 
-}  // namespace avp
+}  // namespace base
+}  // namespace ave
 
 // Document if a function expected to be called from same thread/task queue.
-#define AVP_RUN_ON(x) REQUIRES(x)
+#define AVE_RUN_ON(x) REQUIRES(x)
 
-#define AVP_DCHECK_RUN_ON(x)                                                   \
-  avp::avp_sequence_checker_internal::SequenceCheckerScope seq_check_scope(x); \
-  DCHECK((x)->IsCurrent())                                                     \
-      << avp::avp_sequence_checker_internal::ExpectationToString(x)
+#define AVE_DCHECK_RUN_ON(x)                                     \
+  ave::base::ave_sequence_checker_internal::SequenceCheckerScope \
+      seq_check_scope(x);                                        \
+  AVE_DCHECK((x)->IsCurrent())                                   \
+      << ave::base::ave_sequence_checker_internal::ExpectationToString(x)
 
 #endif /* !SEQUENCE_CHECKER_H */

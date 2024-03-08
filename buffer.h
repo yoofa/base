@@ -21,7 +21,7 @@
 #include "type_traits.h"
 #include "zero_memory.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 
 namespace internal {
@@ -65,7 +65,7 @@ class BufferT {
   using const_iterator = const T*;
 
   // An empty BufferT.
-  BufferT() : size_(0), capacity_(0), data_(nullptr) { DCHECK(IsConsistent()); }
+  BufferT() : size_(0), capacity_(0), data_(nullptr) { AVE_DCHECK(IsConsistent()); }
 
   // Disable copy construction and copy assignment, since copying a buffer is
   // expensive enough that we want to force the user to be explicit about it.
@@ -76,7 +76,7 @@ class BufferT {
       : size_(buf.size()),
         capacity_(buf.capacity()),
         data_(std::move(buf.data_)) {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     buf.OnMovedFrom();
   }
 
@@ -87,7 +87,7 @@ class BufferT {
       : size_(size),
         capacity_(std::max(size, capacity)),
         data_(capacity_ > 0 ? new T[capacity_] : nullptr) {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
   }
 
   // Construct a buffer and copy the specified number of elements into it.
@@ -120,7 +120,7 @@ class BufferT {
             typename std::enable_if<
                 internal::BufferCompat<T, U>::value>::type* = nullptr>
   const U* data() const {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     return reinterpret_cast<U*>(data_.get());
   }
 
@@ -128,27 +128,27 @@ class BufferT {
             typename std::enable_if<
                 internal::BufferCompat<T, U>::value>::type* = nullptr>
   U* data() {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     return reinterpret_cast<U*>(data_.get());
   }
 
   bool empty() const {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     return size_ == 0;
   }
 
   size_t size() const {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     return size_;
   }
 
   size_t capacity() const {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     return capacity_;
   }
 
   BufferT& operator=(BufferT&& buf) {
-    DCHECK(buf.IsConsistent());
+    AVE_DCHECK(buf.IsConsistent());
     MaybeZeroCompleteBuffer();
     size_ = buf.size_;
     capacity_ = buf.capacity_;
@@ -160,7 +160,7 @@ class BufferT {
   }
 
   bool operator==(const BufferT& buf) const {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     if (size_ != buf.size_) {
       return false;
     }
@@ -179,12 +179,12 @@ class BufferT {
   bool operator!=(const BufferT& buf) const { return !(*this == buf); }
 
   T& operator[](size_t index) {
-    DCHECK_LT(index, size_);
+    AVE_DCHECK_LT(index, size_);
     return data()[index];
   }
 
   T operator[](size_t index) const {
-    DCHECK_LT(index, size_);
+    AVE_DCHECK_LT(index, size_);
     return data()[index];
   }
 
@@ -201,7 +201,7 @@ class BufferT {
             typename std::enable_if<
                 internal::BufferCompat<T, U>::value>::type* = nullptr>
   void SetData(const U* data, size_t size) {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     const size_t old_size = size_;
     size_ = 0;
     AppendData(data, size);
@@ -239,7 +239,7 @@ class BufferT {
             typename std::enable_if<
                 internal::BufferCompat<T, U>::value>::type* = nullptr>
   size_t SetData(size_t max_elements, F&& setter) {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     const size_t old_size = size_;
     size_ = 0;
     const size_t written = AppendData<U>(max_elements, std::forward<F>(setter));
@@ -255,13 +255,13 @@ class BufferT {
             typename std::enable_if<
                 internal::BufferCompat<T, U>::value>::type* = nullptr>
   void AppendData(const U* data, size_t size) {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     const size_t new_size = size_ + size;
     EnsureCapacityWithHeadroom(new_size, true);
     static_assert(sizeof(T) == sizeof(U), "");
     std::memcpy(data_.get() + size_, data, size * sizeof(U));
     size_ = new_size;
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
   }
 
   template <typename U,
@@ -300,15 +300,15 @@ class BufferT {
             typename std::enable_if<
                 internal::BufferCompat<T, U>::value>::type* = nullptr>
   size_t AppendData(size_t max_elements, F&& setter) {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     const size_t old_size = size_;
     SetSize(old_size + max_elements);
     U* base_ptr = data<U>() + old_size;
     size_t written_elements = setter(ArrayView<U>(base_ptr, max_elements));
 
-    CHECK_LE(written_elements, max_elements);
+    AVE_CHECK_LE(written_elements, max_elements);
     size_ = old_size + written_elements;
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     return written_elements;
   }
 
@@ -339,7 +339,7 @@ class BufferT {
   void Clear() {
     MaybeZeroCompleteBuffer();
     size_ = 0;
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
   }
 
   // Swaps two buffers. Also works for buffers that have been moved from.
@@ -352,7 +352,7 @@ class BufferT {
 
  private:
   void EnsureCapacityWithHeadroom(size_t capacity, bool extra_headroom) {
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
     if (capacity <= capacity_)
       return;
 
@@ -372,7 +372,7 @@ class BufferT {
     MaybeZeroCompleteBuffer();
     data_ = std::move(new_data);
     capacity_ = new_capacity;
-    DCHECK(IsConsistent());
+    AVE_DCHECK(IsConsistent());
   }
 
   // Zero the complete buffer if template argument "ZeroOnFree" is true.
@@ -387,8 +387,8 @@ class BufferT {
 
   // Zero the first "count" elements of unused capacity.
   void ZeroTrailingData(size_t count) {
-    DCHECK(IsConsistent());
-    DCHECK_LE(count, capacity_ - size_);
+    AVE_DCHECK(IsConsistent());
+    AVE_DCHECK_LE(count, capacity_ - size_);
     ExplicitZeroMemory(data_.get() + size_, count * sizeof(T));
   }
 
@@ -403,8 +403,8 @@ class BufferT {
   // Called when *this has been moved from. Conceptually it's a no-op, but we
   // can mutate the state slightly to help subsequent sanity checks catch bugs.
   void OnMovedFrom() {
-    DCHECK(!data_);  // Our heap block should have been stolen.
-#if DCHECK_IS_ON
+    AVE_DCHECK(!data_);  // Our heap block should have been stolen.
+#if AVE_DCHECK_IS_ON
     // Ensure that *this is always inconsistent, to provoke bugs.
     size_ = 1;
     capacity_ = 0;
@@ -429,6 +429,6 @@ template <typename T>
 using ZeroOnFreeBuffer = BufferT<T, true>;
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !BASE_BUFFER_H */

@@ -5,8 +5,8 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#ifndef AVP_BASE_NET_ADDRESS_H
-#define AVP_BASE_NET_ADDRESS_H
+#ifndef AVE_BASE_NET_ADDRESS_H
+#define AVE_BASE_NET_ADDRESS_H
 
 #include <netdb.h>
 #include <netinet/in.h>
@@ -14,7 +14,7 @@
 
 #include <string>
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace net {
 
@@ -116,6 +116,6 @@ int CountIPMaskBits(const IPAddress& mask);
 }  // namespace net
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
-#endif /* !AVP_BASE_NET_ADDRESS_H */
+#endif /* !AVE_BASE_NET_ADDRESS_H */

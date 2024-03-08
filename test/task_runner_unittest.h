@@ -14,11 +14,14 @@
 #ifndef TASK_RUNNER_UNITTEST_H
 #define TASK_RUNNER_UNITTEST_H
 
-namespace avp {
+namespace ave {
+namespace base {
+
 class TaskRunnerTest
     : public ::testing::TestWithParam<
           std::function<std::unique_ptr<base::TaskRunnerFactory>()>> {};
 
-}  // namespace avp
+}  // namespace base
+}  // namespace ave
 
 #endif /* !TASK_RUNNER_UNITTEST_H */

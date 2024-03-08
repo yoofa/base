@@ -10,10 +10,12 @@
 
 #include "base/types.h"
 
-namespace avp {
+namespace ave {
+namespace base {
 
 void hexdump(const void* data, size_t size, size_t indent = 0);
 
-} /* namespace avp */
+}  // namespace base
+}  // namespace ave
 
 #endif /* !HEXDUMP_H */

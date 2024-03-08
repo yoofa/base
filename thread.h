@@ -16,7 +16,7 @@
 #include "base/count_down_latch.h"
 #include "base/thread_defs.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 
 class Thread {
@@ -24,7 +24,7 @@ class Thread {
   typedef std::function<void()> ThreadFunc;
   explicit Thread(ThreadFunc,
                   const std::string& name = std::string(),
-                  int priority = AVP_PRIORITY_DEFAULT);
+                  int priority = AVE_PRIORITY_DEFAULT);
   virtual ~Thread();
 
   void start(bool async = false);
@@ -43,11 +43,11 @@ class Thread {
   ThreadFunc func_;
   std::string name_;
   int priority_;
-  avp::CountDownLatch latch_;
+  CountDownLatch latch_;
 
-  AVP_DISALLOW_COPY_AND_ASSIGN(Thread);
+  AVE_DISALLOW_COPY_AND_ASSIGN(Thread);
 };
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 #endif /* !THREAD_H */

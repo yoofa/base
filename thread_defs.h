@@ -13,25 +13,25 @@ extern "C" {
 #endif
 
 enum {
-  AVP_PRIORITY_LOWEST = 19,
+  AVE_PRIORITY_LOWEST = 19,
 
   /* use for background tasks */
-  AVP_PRIORITY_BACKGROUND = 10,
+  AVE_PRIORITY_BACKGROUND = 10,
 
   /* most threads run at normal priority */
-  AVP_PRIORITY_NORMAL = 0,
+  AVE_PRIORITY_NORMAL = 0,
 
   /* all normal video threads */
-  AVP_PRIORITY_VIDEO = -10,
+  AVE_PRIORITY_VIDEO = -10,
 
   /* all normal audio threads */
-  AVP_PRIORITY_AUDIO = -16,
+  AVE_PRIORITY_AUDIO = -16,
 
   /* should never be used in practice. regular process might not
    * be allowed to use this level */
-  AVP_PRIORITY_HIGHEST = -20,
+  AVE_PRIORITY_HIGHEST = -20,
 
-  AVP_PRIORITY_DEFAULT = AVP_PRIORITY_NORMAL,
+  AVE_PRIORITY_DEFAULT = AVE_PRIORITY_NORMAL,
 };
 
 #if defined(__cplusplus)

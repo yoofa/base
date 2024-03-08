@@ -9,7 +9,7 @@
 
 #include "test/gtest.h"
 
-namespace yf {
+namespace ave {
 namespace base {
 TEST(ExpFilterTest, FirstTimeOutputEqualInput) {
   // No max value defined.
@@ -64,4 +64,4 @@ TEST(ExpfilterTest, OutputLimitedByMax) {
 }
 
 }  // namespace base
-}  // namespace yf
+}  // namespace ave

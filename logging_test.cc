@@ -6,15 +6,14 @@
  */
 
 #include "base/logging.h"
-#include <iostream>
 
-using namespace avp;
+using namespace ave;
 
 int main(int argc, char const* argv[]) {
-  LOG(LS_INFO) << "log info1";
-  LOG(LS_DEBUG) << "log debug1";
-  avp::LogMessage::LogToDebug(avp::LogSeverity::LS_VERBOSE);
-  LOG(LS_INFO) << "log info2";
-  LOG(LS_INFO) << "log debug2";
+  AVE_LOG(LS_INFO) << "log info1";
+  AVE_LOG(LS_DEBUG) << "log debug1";
+  ave::base::LogMessage::LogToDebug(ave::base::LogSeverity::LS_VERBOSE);
+  AVE_LOG(LS_INFO) << "log info2";
+  AVE_LOG(LS_INFO) << "log debug2";
   return 0;
 }

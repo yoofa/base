@@ -20,7 +20,8 @@
 
 // Reference on memory alignment:
 // http://stackoverflow.com/questions/227897/solve-the-memory-alignment-in-c-interview-question-that-stumped-me
-namespace avp {
+namespace ave {
+namespace base {
 
 uintptr_t GetRightAlign(uintptr_t start_pos, size_t alignment) {
   // The pointer should be aligned with `alignment` bytes. The - 1 guarantees
@@ -60,7 +61,7 @@ void* AlignedMalloc(size_t size, size_t alignment) {
   // A pointer to the start of the memory must be stored so that it can be
   // retreived for deletion, ergo the sizeof(uintptr_t).
   void* memory_pointer = malloc(size + sizeof(uintptr_t) + alignment - 1);
-  CHECK(memory_pointer) << "Couldn't allocate memory in AlignedMalloc";
+  AVE_CHECK(memory_pointer) << "Couldn't allocate memory in AlignedMalloc";
 
   // Aligning after the sizeof(uintptr_t) bytes will leave room for the header
   // in the same memory block.
@@ -91,4 +92,5 @@ void AlignedFree(void* mem_block) {
   void* memory_start = reinterpret_cast<void*>(memory_start_pos);
   free(memory_start);
 }
-}  // namespace avp
+}  // namespace base
+}  // namespace ave

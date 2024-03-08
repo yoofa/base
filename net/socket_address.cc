@@ -13,7 +13,7 @@
 
 #include <base/byte_utils.h>
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace net {
 
@@ -297,4 +297,4 @@ SocketAddress EmptySocketAddressWithFamily(int family) {
 
 }  // namespace net
 }  // namespace base
-}  // namespace avp
+}  // namespace ave

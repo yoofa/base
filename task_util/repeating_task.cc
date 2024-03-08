@@ -17,7 +17,7 @@
 #include "base/logging.h"
 #include "base/task_util/pending_task_flag.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 
 namespace repeating_task_impl {
@@ -73,4 +73,4 @@ bool RepeatingTaskHandle::Running() const {
 }
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave

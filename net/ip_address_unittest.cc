@@ -10,7 +10,7 @@
 #include "test/gtest.h"
 #include "third_party/openssl/include/openssl/x509v3.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace net {
 
@@ -273,4 +273,4 @@ TEST(IPAddressTest, TestFromString) {
 
 }  // namespace net
 }  // namespace base
-}  // namespace avp
+}  // namespace ave

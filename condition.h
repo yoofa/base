@@ -5,8 +5,8 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#ifndef AVP_CONDITION_H
-#define AVP_CONDITION_H
+#ifndef AVE_CONDITION_H
+#define AVE_CONDITION_H
 
 #include <limits.h>
 #include <pthread.h>
@@ -17,14 +17,15 @@
 #include "mutex.h"
 #include "types.h"
 
-namespace avp {
+namespace ave {
+
 class Condition {
  public:
   Condition() { pthread_cond_init(&cond_, nullptr); }
   virtual ~Condition() { pthread_cond_destroy(&cond_); }
 
   status_t Wait(Mutex& mutex) {
-    return -pthread_cond_wait(&cond_, &mutex.mMutex);
+    return -pthread_cond_wait(&cond_, &mutex.mutex_);
   }
   status_t WaitRelative(Mutex& mutex, nsecs_t reltime) {
     struct timespec ts;
@@ -46,7 +47,7 @@ class Condition {
 
     ts.tv_sec = (time_sec > LONG_MAX) ? LONG_MAX : static_cast<long>(time_sec);
 
-    return -pthread_cond_timedwait(&cond_, &mutex.mMutex, &ts);
+    return -pthread_cond_timedwait(&cond_, &mutex.mutex_, &ts);
   }
 
   void Signal() { pthread_cond_signal(&cond_); }
@@ -57,6 +58,6 @@ class Condition {
   pthread_cond_t cond_;
 };
 
-}  // namespace avp
+}  // namespace ave
 
-#endif /* !AVP_CONDITION_H */
+#endif /* !AVE_CONDITION_H */

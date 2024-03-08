@@ -13,5 +13,5 @@ class BaseNull {
   virtual ~BaseNull() = default;
 
  private:
-  AVP_DISALLOW_COPY_AND_ASSIGN(BaseNull);
+  AVE_DISALLOW_COPY_AND_ASSIGN(BaseNull);
 };

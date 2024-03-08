@@ -10,12 +10,14 @@
 
 #include <stdint.h>
 
-namespace avp {
+namespace ave {
+namespace base {
 
 // Returns the actual system time, even if a clock is set for testing.
 // Useful for timeouts while using a test clock, or for logging.
 int64_t SystemTimeNanos();
 
-}  // namespace avp
+}  // namespace base
+}  // namespace ave
 
 #endif /* !SYSTEM_TIME_H */

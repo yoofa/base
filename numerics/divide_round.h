@@ -13,15 +13,15 @@
 #include "base/checks.h"
 #include "base/numerics/safe_compare.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 
 template <typename Dividend, typename Divisor>
 inline auto constexpr DivideRoundUp(Dividend dividend, Divisor divisor) {
   static_assert(std::is_integral<Dividend>(), "");
   static_assert(std::is_integral<Divisor>(), "");
-  DCHECK_GE(dividend, 0);
-  DCHECK_GT(divisor, 0);
+  AVE_DCHECK_GE(dividend, 0);
+  AVE_DCHECK_GT(divisor, 0);
 
   auto quotient = dividend / divisor;
   auto remainder = dividend % divisor;
@@ -32,7 +32,7 @@ template <typename Dividend, typename Divisor>
 inline auto constexpr DivideRoundToNearest(Dividend dividend, Divisor divisor) {
   static_assert(std::is_integral<Dividend>(), "");
   static_assert(std::is_integral<Divisor>(), "");
-  DCHECK_GT(divisor, 0);
+  AVE_DCHECK_GT(divisor, 0);
 
   if (dividend < Dividend{0}) {
     auto half_of_divisor = divisor / 2;
@@ -54,6 +54,6 @@ inline auto constexpr DivideRoundToNearest(Dividend dividend, Divisor divisor) {
 }
 
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
 #endif /* !DIVIDE_ROUND_H */

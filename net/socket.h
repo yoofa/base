@@ -5,8 +5,8 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#ifndef AVP_BASE_NET_SOCKET_H
-#define AVP_BASE_NET_SOCKET_H
+#ifndef AVE_BASE_NET_SOCKET_H
+#define AVE_BASE_NET_SOCKET_H
 
 #include <errno.h>
 
@@ -18,7 +18,7 @@
 #include "base/net/socket_address.h"
 #include "base/third_party/sigslot/sigslot.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace net {
 
@@ -94,6 +94,6 @@ class Socket {
 
 }  // namespace net
 }  // namespace base
-}  // namespace avp
+}  // namespace ave
 
-#endif /* !AVP_BASE_NET_SOCKET_H */
+#endif /* !AVE_BASE_NET_SOCKET_H */

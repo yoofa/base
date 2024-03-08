@@ -9,13 +9,13 @@
 
 #include <string>
 
-#include <ctype.h>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
-namespace avp {
+namespace ave {
+namespace base {
 
 std::string nameForFd(int fd) {
   const size_t SIZE = 256;
@@ -48,4 +48,6 @@ std::string nameForFd(int fd) {
   }
   return result;
 }
-} /* namespace avp */
+
+}  // namespace base
+} /* namespace ave */

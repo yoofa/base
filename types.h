@@ -5,8 +5,8 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#ifndef AVP_TYPES_H
-#define AVP_TYPES_H
+#ifndef AVE_TYPES_H
+#define AVE_TYPES_H
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -15,4 +15,4 @@
 
 typedef int64_t nsecs_t;
 
-#endif /* !AVP_TYPES_H */
+#endif /* !AVE_TYPES_H */

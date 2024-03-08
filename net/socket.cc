@@ -7,8 +7,8 @@
 
 #include "socket.h"
 
-namespace avp {
+namespace ave {
 namespace base {
 namespace net {}  // namespace net
 }  // namespace base
-}  // namespace avp
+}  // namespace ave

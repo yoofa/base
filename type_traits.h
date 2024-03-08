@@ -11,7 +11,8 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace avp {
+namespace ave {
+namespace base {
 
 // Determines if the given class has zero-argument .data() and .size() methods
 // whose return values are convertible to T* and size_t, respectively.
@@ -132,6 +133,7 @@ static_assert(!IsIntlike<S>::value, "");
 
 }  // namespace test_enum_intlike
 
-}  // namespace avp
+}  // namespace base
+}  // namespace ave
 
 #endif /* !TYPE_TRAITS_H */

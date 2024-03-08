@@ -5,11 +5,11 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#ifndef AVP_CONSTRUCTOR_MAGIC_H
-#define AVP_CONSTRUCTOR_MAGIC_H
+#ifndef AVE_CONSTRUCTOR_MAGIC_H
+#define AVE_CONSTRUCTOR_MAGIC_H
 
-#define AVP_DISALLOW_COPY_AND_ASSIGN(TypeName) \
+#define AVE_DISALLOW_COPY_AND_ASSIGN(TypeName) \
   TypeName(const TypeName&) = delete;          \
   TypeName& operator=(const TypeName&) = delete
 
-#endif /* !AVP_CONSTRUCTOR_MAGIC_H */
+#endif /* !AVE_CONSTRUCTOR_MAGIC_H */
