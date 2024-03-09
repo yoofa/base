@@ -1,0 +1,39 @@
+import("//opencamera.gni")
+
+oc_library("units") {
+}
+
+source_set("units_base") {
+  sources = [ "unit_base.h" ]
+  deps = [
+    "..:checks",
+    "..:divide_round",
+    "..:safe_conversions",
+  ]
+}
+
+source_set("time_delta") {
+  sources = [
+    "time_delta.cc",
+    "time_delta.h",
+  ]
+  deps = [
+    ":units",
+    "..:checks",
+    "..:divide_round",
+    "..:safe_conversions",
+  ]
+}
+
+source_set("units_unittests_source") {
+  testonly = true
+  sources = [
+    "./time_delta_unittest.cc",
+    "unit_base_unittest.cc",
+  ]
+  deps = [
+    ":time_delta",
+    ":units_base",
+    "//test:test_support",
+  ]
+}

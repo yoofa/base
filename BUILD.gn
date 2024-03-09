@@ -219,14 +219,14 @@ oc_source_set("divide_round") {
 
 #--------------------
 
-oc_source_set("unit_base") {
-  sources = [ "units/unit_base.h" ]
-  deps = [
-    ":checks",
-    ":divide_round",
-    ":safe_conversions",
-  ]
-}
+#oc_source_set("unit_base") {
+#  sources = [ "units/unit_base.h" ]
+#  deps = [
+#    ":checks",
+#    ":divide_round",
+#    ":safe_conversions",
+#  ]
+#}
 
 #--------------------
 
@@ -285,6 +285,7 @@ executable("base_unittests") {
     ":numerics_unittest",
     ":task_runner_unittest",
     ":task_util",
+    "units:units_unittests_source",
     "//test:test_main",
     "//test:test_support",
   ]
