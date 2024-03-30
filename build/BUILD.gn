@@ -1,0 +1,67 @@
+config("library_impl_config") {
+  defines = [ "AVE_LIBRARY_IMPL" ]
+}
+
+config("common_inherited_config") {
+  defines = []
+  configs = []
+  ldflags = []
+
+  if (is_posix || is_fuchsia) {
+    defines += [ "AVE_POSIX" ]
+  }
+
+  if (is_ios) {
+    defines += [
+      "AVE_MAC",
+      "AVE_IOS",
+    ]
+  }
+  if (is_linux || is_chromeos) {
+    defines += [ "AVE_LINUX" ]
+  }
+
+  if (is_mac) {
+    defines += [ "AVE_MAC" ]
+  }
+
+  if (is_fuchsia) {
+    defines += [ "AVE_FUCHSIA" ]
+  }
+
+  if (is_win) {
+    defines += [ "AVE_WIN" ]
+  }
+
+  if (is_android) {
+    defines += [
+      "AVE_LINUX",
+      "AVE_ANDROID",
+    ]
+  }
+
+  if (is_chromeos) {
+    defines += [ "CHROMEOS" ]
+  }
+}
+
+config("no_exit_time_destructors") {
+  if (is_clang) {
+    cflags = [ "-Wno-exit-time-destructors" ]
+  }
+}
+
+config("no_global_constructors") {
+  if (is_clang) {
+    cflags = [ "-Wno-global-constructors" ]
+  }
+}
+
+config("oc_prod_config") {
+  if (is_clang) {
+    cflags = [
+      "-Wexit-time-destructors",
+      "-Wglobal-constructors",
+    ]
+  }
+}

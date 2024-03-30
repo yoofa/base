@@ -7,7 +7,7 @@ import("//build/config/ui.gni")
 import("//build_overrides/build.gni")
 
 ave_root = get_path_info(".", "abspath")
-ave_project_root = get_path_info("..", "abspath")
+ave_project_root = get_path_info("../../", "abspath")
 
 ave_common_configs = []
 
@@ -16,7 +16,7 @@ ave_common_configs = []
 # included when using the ave_* templates. It set the defines, include paths and
 # compilation warnings that should be propagated to dependents of the targets
 # depending on the target having this config.
-ave_common_inherited_config = []
+ave_common_inherited_config = [ ave_root + ":common_inherited_config" ]
 
 # Common configs to remove or add in all avp targets.
 ave_remove_configs = []
@@ -25,6 +25,7 @@ ave_remove_configs += [ "//build/config/compiler:no_exceptions" ]
 if (is_clang) {
   ave_remove_configs += [ "//build/config/clang:find_bad_constructs" ]
 }
+
 ave_add_configs = ave_common_configs
 
 #ave_add_configs += [ "//build/config/compiler:rtti" ]
