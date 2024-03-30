@@ -26,7 +26,8 @@ if (is_clang) {
   ave_remove_configs += [ "//build/config/clang:find_bad_constructs" ]
 }
 ave_add_configs = ave_common_configs
-ave_add_configs += [ "//build/config/compiler:rtti" ]
+
+#ave_add_configs += [ "//build/config/compiler:rtti" ]
 ave_add_configs += [ "//build/config/compiler:exceptions" ]
 
 ave_prod_configs = []
@@ -85,11 +86,11 @@ template("ave_test") {
     configs -= ave_remove_configs
     configs -= invoker.suppressed_configs
     public_configs = [
-      ave_common_inherited_config,
       absl_include_config,
       absl_define_config,
       absl_flags_config,
     ]
+    public_configs += ave_common_inherited_config
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
     }
@@ -129,7 +130,8 @@ template("ave_source_set") {
     configs += ave_library_impl_config
     configs -= ave_remove_configs
     configs -= invoker.suppressed_configs
-    public_configs = [ ave_common_inherited_config ]
+    public_configs = []
+    public_configs += ave_common_inherited_config
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
     }
@@ -159,7 +161,8 @@ template("ave_static_library") {
     configs += ave_library_impl_config
     configs -= ave_remove_configs
     configs -= invoker.suppressed_configs
-    public_configs = [ ave_common_inherited_config ]
+    public_configs = []
+    public_configs += ave_common_inherited_config
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
     }
@@ -194,7 +197,8 @@ template("ave_library") {
     configs += ave_library_impl_config
     configs -= ave_remove_configs
     configs -= invoker.suppressed_configs
-    public_configs = [ ave_common_inherited_config ]
+    public_configs = []
+    public_configs += ave_common_inherited_config
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
     }
@@ -221,7 +225,8 @@ template("ave_executable") {
     configs -= invoker.suppressed_configs
     deps = invoker.deps
 
-    public_configs = [ ave_common_inherited_config ]
+    public_configs = []
+    public_configs += ave_common_inherited_config
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
     }
@@ -246,7 +251,8 @@ template("ave_shared_library") {
     configs += invoker.configs
     configs -= ave_remove_configs
     configs -= invoker.suppressed_configs
-    public_configs = [ ave_common_inherited_config ]
+    public_configs = []
+    public_configs += ave_common_inherited_config
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
     }
