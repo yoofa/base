@@ -1,0 +1,8 @@
+import("../build/ave.gni")
+
+source_set("ave_export") {
+  sources = [
+    "ave_export.h",
+    "ave_export_template.h",
+  ]
+}
