@@ -1,6 +1,6 @@
-import("//opencamera.gni")
+import("../build/ave.gni")
 
-oc_library("units") {
+ave_library("units") {
 }
 
 source_set("units_base") {

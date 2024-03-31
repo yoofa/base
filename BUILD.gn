@@ -13,11 +13,12 @@ import("//build/config/ui.gni")
 import("//build/nocompile.gni")
 import("//build/timestamp.gni")
 import("//build_overrides/build.gni")
-import("//opencamera.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+import("base.gni")
+import("build/ave.gni")
 
-oc_library("base") {
+ave_library("base") {
   visibility = [ "*" ]
 
   sources = [
@@ -42,7 +43,7 @@ oc_library("base") {
 
   deps += [ "third_party/sigslot" ]
 
-  if (ave_include_test) {
+  if (ave_base_include_test) {
     deps += [
       ":logging_test",
       ":task_test",
@@ -51,7 +52,7 @@ oc_library("base") {
   }
 }
 
-oc_library("timeutils") {
+ave_library("timeutils") {
   visibility = [ "*" ]
   sources = [
     "system_time.cc",
@@ -62,7 +63,7 @@ oc_library("timeutils") {
   deps = [ ":utils" ]
 }
 
-oc_source_set("type_traits") {
+ave_source_set("type_traits") {
   sources = [ "type_traits.h" ]
 }
 
@@ -184,7 +185,7 @@ static_library("numerics") {
   ]
 }
 
-oc_source_set("safe_conversions") {
+ave_source_set("safe_conversions") {
   sources = [
     "numerics/safe_conversions.h",
     "numerics/safe_conversions_impl.h",
@@ -192,7 +193,7 @@ oc_source_set("safe_conversions") {
   deps = [ ":checks" ]
 }
 
-oc_source_set("safe_compare") {
+ave_source_set("safe_compare") {
   sources = [
     "numerics/safe_compare.h",
     "numerics/safe_compare_impl.h",
@@ -200,7 +201,7 @@ oc_source_set("safe_compare") {
   deps = [ ":type_traits" ]
 }
 
-oc_source_set("safe_minmax") {
+ave_source_set("safe_minmax") {
   sources = [ "numerics/safe_minmax.h" ]
   deps = [
     ":checks",
@@ -209,7 +210,7 @@ oc_source_set("safe_minmax") {
   ]
 }
 
-oc_source_set("divide_round") {
+ave_source_set("divide_round") {
   sources = [ "numerics/divide_round.h" ]
   deps = [
     ":checks",
@@ -219,7 +220,7 @@ oc_source_set("divide_round") {
 
 #--------------------
 
-#oc_source_set("unit_base") {
+#ave_source_set("unit_base") {
 #  sources = [ "units/unit_base.h" ]
 #  deps = [
 #    ":checks",
