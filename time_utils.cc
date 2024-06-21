@@ -5,8 +5,6 @@
  * Distributed under terms of the GPLv2 license.
  */
 
-#include <stdint.h>
-
 #if defined(AVE_POSIX)
 #include <sys/time.h>
 #endif
@@ -14,6 +12,9 @@
 #if defined(AVE_WIN)
 #include <sys/timeb.h>
 #endif
+
+#include <array>
+#include <cstdint>
 
 #include "base/checks.h"
 #include "base/system_time.h"
@@ -165,7 +166,7 @@ int64_t TimeAfter(int64_t elapsed) {
 }
 
 int32_t TimeDiff32(uint32_t later, uint32_t earlier) {
-  return later - earlier;
+  return static_cast<int32_t>(static_cast<int64_t>(later) - earlier);
 }
 
 int64_t TimeDiff(int64_t later, int64_t earlier) {
@@ -183,8 +184,9 @@ int64_t TimestampWrapAroundHandler::Unwrap(uint32_t ts) {
   }
 
   if (ts < last_ts_) {
-    if (last_ts_ >= 0xf0000000 && ts < 0x0fffffff)
+    if (last_ts_ >= 0xf0000000 && ts < 0x0fffffff) {
       ++num_wrap_;
+    }
   } else if ((ts - last_ts_) > 0xf0000000) {
     // Backwards wrap. Unwrap with last wrap count and don't update last_ts_.
     return ts + (num_wrap_ - 1) * (int64_t{1} << 32);
@@ -195,9 +197,10 @@ int64_t TimestampWrapAroundHandler::Unwrap(uint32_t ts) {
 }
 
 int64_t TmToSeconds(const tm& tm) {
-  static short int mdays[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-  static short int cumul_mdays[12] = {0,   31,  59,  90,  120, 151,
-                                      181, 212, 243, 273, 304, 334};
+  static std::array<short int, 12> mdays{31, 28, 31, 30, 31, 30,
+                                         31, 31, 30, 31, 30, 31};
+  static std::array<short int, 12> cumul_mdays{0,   31,  59,  90,  120, 151,
+                                               181, 212, 243, 273, 304, 334};
   int year = tm.tm_year + 1900;
   int month = tm.tm_mon;
   int day = tm.tm_mday - 1;  // Make 0-based like the rest.
@@ -208,18 +211,25 @@ int64_t TmToSeconds(const tm& tm) {
   bool expiry_in_leap_year =
       (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
 
-  if (year < 1970)
+  if (year < 1970) {
     return -1;
-  if (month < 0 || month > 11)
+  }
+  if (month < 0 || month > 11) {
     return -1;
-  if (day < 0 || day >= mdays[month] + (expiry_in_leap_year && month == 2 - 1))
+  }
+  if (day < 0 ||
+      day >= mdays[month] + (expiry_in_leap_year && month == 2 - 1)) {
     return -1;
-  if (hour < 0 || hour > 23)
+  }
+  if (hour < 0 || hour > 23) {
     return -1;
-  if (min < 0 || min > 59)
+  }
+  if (min < 0 || min > 59) {
     return -1;
-  if (sec < 0 || sec > 59)
+  }
+  if (sec < 0 || sec > 59) {
     return -1;
+  }
 
   day += cumul_mdays[month];
 
@@ -229,8 +239,9 @@ int64_t TmToSeconds(const tm& tm) {
 
   // We will have added one day too much above if expiration is during a leap
   // year, and expiration is in January or February.
-  if (expiry_in_leap_year && month <= 2 - 1)  // `month` is zero based.
+  if (expiry_in_leap_year && month <= 2 - 1) {  // `month` is zero based.
     day -= 1;
+  }
 
   // Combine all variables into seconds from 1970-01-01 00:00 (except `month`
   // which was accumulated into `day` above).
@@ -245,7 +256,7 @@ int64_t TimeUTCMicros() {
     return g_clock->TimeNanos() / kNumNanosecsPerMicrosec;
   }
 #if defined(AVE_POSIX)
-  struct timeval time;
+  struct timeval time {};
   gettimeofday(&time, nullptr);
   // Convert from second (1.0) and microsecond (1e-6).
   return (static_cast<int64_t>(time.tv_sec) * kNumMicrosecsPerSec +

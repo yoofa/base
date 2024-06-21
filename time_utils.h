@@ -8,8 +8,8 @@
 #ifndef TIME_UTILS_H
 #define TIME_UTILS_H
 
-#include <stdint.h>
-#include <time.h>
+#include <cstdint>
+#include <ctime>
 
 namespace ave {
 namespace base {
@@ -29,7 +29,7 @@ static const int64_t kNumNanosecsPerMicrosec =
 
 class ClockInterface {
  public:
-  virtual ~ClockInterface() {}
+  virtual ~ClockInterface() = default;
   virtual int64_t TimeNanos() const = 0;
 };
 
