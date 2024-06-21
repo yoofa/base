@@ -21,10 +21,11 @@ namespace base {
 
 class Thread {
  public:
-  typedef std::function<void()> ThreadFunc;
+  using ThreadFunc = std::function<void()>;
   explicit Thread(ThreadFunc,
-                  const std::string& name = std::string(),
-                  int priority = AVE_PRIORITY_DEFAULT);
+                  std::string name = std::string(),
+                  int priority = AVE_PRIORITY_DEFAULT,
+                  bool joinable = false);
   virtual ~Thread();
 
   void start(bool async = false);
@@ -38,6 +39,7 @@ class Thread {
  private:
   bool started_;
   bool joined_;
+  bool joinable_;
   pthread_t pthreadId_;
   pid_t tid_;
   ThreadFunc func_;

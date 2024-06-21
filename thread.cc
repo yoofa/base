@@ -7,11 +7,11 @@
 
 #include "thread.h"
 
-#include <assert.h>
 #include <sys/prctl.h>
 #include <sys/syscall.h>
 #include <unistd.h>
 
+#include <cassert>
 #include <string>
 
 namespace ave {
@@ -23,17 +23,20 @@ pid_t gettid() {
 }
 
 struct ThreadData {
-  typedef base::Thread::ThreadFunc ThreadFunc;
+  using ThreadFunc = base::Thread::ThreadFunc;
   ThreadFunc func_;
   std::string name_;
   pid_t* tid_;
   CountDownLatch* latch_;
 
   ThreadData(ThreadFunc func,
-             const std::string& name,
+             std::string name,
              pid_t* tid,
              CountDownLatch* latch)
-      : func_(std::move(func)), name_(name), tid_(tid), latch_(latch) {}
+      : func_(std::move(func)),
+        name_(std::move(name)),
+        tid_(tid),
+        latch_(latch) {}
 
   void runInThread() {
     *tid_ = gettid();
@@ -49,7 +52,7 @@ struct ThreadData {
 };
 
 void* startThread(void* obj) {
-  ThreadData* data = static_cast<ThreadData*>(obj);
+  auto* data = static_cast<ThreadData*>(obj);
   data->runInThread();
   delete data;
   return nullptr;
@@ -57,13 +60,14 @@ void* startThread(void* obj) {
 
 }  // namespace
 
-Thread::Thread(ThreadFunc func, const std::string& name, int priority)
+Thread::Thread(ThreadFunc func, std::string name, int priority, bool joinable)
     : started_(false),
       joined_(false),
+      joinable_(joinable),
       pthreadId_(0),
       tid_(0),
       func_(std::move(func)),
-      name_(name),
+      name_(std::move(name)),
       priority_(priority),
       latch_(1) {}
 
@@ -77,12 +81,15 @@ void Thread::start(bool async) {
   assert(!started_);
   started_ = true;
 
-  ThreadData* data = new ThreadData(func_, name_, &tid_, &latch_);
+  auto* data = new ThreadData(func_, name_, &tid_, &latch_);
 
   pthread_attr_t attr;
   pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-  struct sched_param sch_params;
+  // Set the stack stack size to 1M.
+  pthread_attr_setstacksize(&attr, 1024 * 1024);
+  pthread_attr_setdetachstate(
+      &attr, joinable_ ? PTHREAD_CREATE_JOINABLE : PTHREAD_CREATE_DETACHED);
+  struct sched_param sch_params {};
   pthread_attr_getschedparam(&attr, &sch_params);
   sch_params.sched_priority = priority_;
   pthread_attr_setschedpolicy(&attr, SCHED_RR);
