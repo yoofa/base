@@ -9,9 +9,7 @@
 // ave::SystemTimeNanos() must be provided externally.
 #ifndef AVE_EXCLUDE_SYSTEM_TIME
 
-#include <stdint.h>
-
-#include <limits>
+#include <cstdint>
 
 #if defined(AVE_POSIX)
 #include <sys/time.h>
@@ -30,7 +28,6 @@
 // clang-format on
 #endif
 
-#include "base/checks.h"
 #include "base/system_time.h"
 #include "base/time_utils.h"
 
@@ -38,7 +35,7 @@ namespace ave {
 namespace base {
 
 int64_t SystemTimeNanos() {
-  int64_t ticks;
+  int64_t ticks = 0;
 #if defined(AVE_MAC)
   static mach_timebase_info_data_t timebase;
   if (timebase.denom == 0) {
@@ -57,7 +54,7 @@ int64_t SystemTimeNanos() {
   };
   ticks = mul(mach_absolute_time(), timebase.numer) / timebase.denom;
 #elif defined(AVE_POSIX)
-  struct timespec ts;
+  struct timespec ts{};
   // TODO(deadbeef): Do we need to handle the case when CLOCK_MONOTONIC is not
   // supported?
   clock_gettime(CLOCK_MONOTONIC, &ts);

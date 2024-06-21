@@ -8,7 +8,7 @@
 #ifndef SYSTEM_TIME_H
 #define SYSTEM_TIME_H
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace ave {
 namespace base {
