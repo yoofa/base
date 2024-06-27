@@ -11,6 +11,10 @@
 #include <memory>
 #include <utility>
 
+namespace ave {
+namespace base {
+
+// Deprecated, use std::any maybe better
 class Any {
  public:
   Any() = default;
@@ -19,24 +23,26 @@ class Any {
   template <typename T, typename... Args>
   void Set(Args&&... args) {
     mData.reset(new T(std::forward<Args>(args)...),
-                [](void* ptr) { delete (T*)ptr; });
+                [](void* ptr) { delete static_cast<T*>(ptr); });
   }
 
   template <typename T>
-  T& Get() {
+  T* Get() {
     if (!mData) {
       return nullptr;
     }
-    T* ptr = (T*)mData.get();
-    return *ptr;
+    T* ptr = static_cast<T*>(mData.get());
+    return ptr;
   }
 
   operator bool() { return mData.operator bool(); }
 
-  bool Empty() { return !bool(); }
+  bool empty() { return !operator bool(); }
 
  private:
   std::shared_ptr<void> mData;
 };
+}  // namespace base
+}  // namespace ave
 
 #endif /* !AVE_ANY_H */
