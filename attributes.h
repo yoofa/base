@@ -46,12 +46,17 @@
 // AVE_NORETURN
 //
 // Tells the compiler that a given function never returns.
+#if __cplusplus >= 201703L
+#undef AVE_NORETURN
+#define AVE_NORETURN [[noreturn]]
+#else
 #if AVE_HAVE_ATTRIBUTE(noreturn) || (defined(__GNUC__) && !defined(__clang__))
 #define AVE_NORETURN __attribute__((noreturn))
 #elif defined(_MSC_VER)
 #define AVE_NORETURN __declspec(noreturn)
 #else
 #define AVE_NORETURN
+#endif
 #endif
 
 // AVE_FALLTHROUGH_INTENDED
@@ -130,6 +135,10 @@
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66425
 //
 // Note: past advice was to place the macro after the argument list.
+#if __cplusplus >= 201703L
+#undef AVE_NODISCARD
+#define AVE_NODISCARD [[nodiscard]]
+#else
 #if AVE_HAVE_ATTRIBUTE(nodiscard)
 #define AVE_NODISCARD [[nodiscard]]
 #elif defined(__clang__) && AVE_HAVE_ATTRIBUTE(warn_unused_result)
@@ -137,19 +146,30 @@
 #else
 #define AVE_NODISCARD
 #endif
+#endif
 
 // AVE_LIKELY
+#if __cplusplus >= 201703L
+#undef AVE_LIKELY
+#define AVE_LIKELY [[likely]
+#else
 #if AVE_HAVE_ATTRIBUTE(likely)
 #define AVE_LIKELY __attribute__((likely))
 #else
 #define AVE_LIKELY
 #endif
+#endif
 
 // AVE_UN_LIKELY
+#if __cplusplus >= 201703L
+#undef AVE_UNLIKELY
+#define AVE_UNLIKELY [[unlikely]
+#else
 #if AVE_HAVE_ATTRIBUTE(unlikely)
 #define AVE_UNLIKELY __attribute__((unlikely))
 #else
 #define AVE_UNLIKELY
+#endif
 #endif
 
 // -----------------------------------------------------------------------------
@@ -167,12 +187,24 @@
 // Due to differences in positioning requirements between the old, compiler
 // specific __attribute__ syntax and the now standard [[maybe_unused]], this
 // macro does not attempt to take advantage of '[[maybe_unused]]'.
-#if AVE_HAVE_ATTRIBUTE(maybe_unused) || \
-    (defined(__GNUC__) && !defined(__clang__))
+// #if AVE_HAVE_ATTRIBUTE(maybe_unused) || \
+//    (defined(__GNUC__) && !defined(__clang__))
+// #undef AVE_MAYBE_UNUSED
+// #define AVE_MAYBE_UNUSED __attribute__((__maybe_unused__))
+// #else
+// #define AVE_MAYBE_UNUSED
+// #endif
+
+#if __cplusplus >= 201703L
+#undef AVE_MAYBE_UNUSED
+#define AVE_MAYBE_UNUSED [[maybe_unused]]
+#else
+#if AVE_HAVE_ATTRIBUTE(maybe_unused) || (defined(__GNUC__) && !defined(__clang__))
 #undef AVE_MAYBE_UNUSED
 #define AVE_MAYBE_UNUSED __attribute__((__maybe_unused__))
 #else
 #define AVE_MAYBE_UNUSED
+#endif
 #endif
 
 #endif /* !ATTRIBUTES_H */
