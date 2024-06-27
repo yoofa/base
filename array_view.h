@@ -13,6 +13,7 @@
 #include <iterator>
 #include <type_traits>
 
+#include "attributes.h"
 #include "checks.h"
 #include "type_traits.h"
 
@@ -94,7 +95,7 @@ class ArrayViewBase {
   static_assert(Size > 0, "ArrayView size must be variable or non-negative");
 
  public:
-  ArrayViewBase(T* data, size_t size) : data_(data) {}
+  ArrayViewBase(T* data, size_t size AVE_MAYBE_UNUSED) : data_(data) {}
 
   static constexpr size_t size() { return Size; }
   static constexpr bool empty() { return false; }
@@ -156,7 +157,7 @@ class ArrayView final : public array_view_internal::ArrayViewBase<T, Size> {
     AVE_DCHECK_EQ(size == 0 ? nullptr : data, this->data());
     AVE_DCHECK_EQ(size, this->size());
     AVE_DCHECK_EQ(!this->data(),
-              this->size() == 0);  // data is null iff size == 0.
+                  this->size() == 0);  // data is null iff size == 0.
   }
 
   // Construct an empty ArrayView. Note that fixed-size ArrayViews of size > 0
@@ -166,8 +167,7 @@ class ArrayView final : public array_view_internal::ArrayViewBase<T, Size> {
       : ArrayView() {}
   ArrayView(std::nullptr_t, size_t size)
       : ArrayView(static_cast<T*>(nullptr), size) {
-    static_assert(Size == 0 || Size == array_view_internal::kArrayViewVarSize,
-                  "");
+    static_assert(Size == 0 || Size == array_view_internal::kArrayViewVarSize);
     AVE_DCHECK_EQ(0, size);
   }
 
@@ -184,8 +184,7 @@ class ArrayView final : public array_view_internal::ArrayViewBase<T, Size> {
   // used ctor is ArrayView(U& u) instead.
   template <typename U,
             size_t N,
-            typename std::enable_if<
-                Size == static_cast<std::ptrdiff_t>(N)>::type* = nullptr>
+            typename std::enable_if_t<Size == static_cast<std::ptrdiff_t>(N)>>
   ArrayView(std::array<U, N>& u)  // NOLINT
       : ArrayView(u.data(), u.size()) {}
 
@@ -194,8 +193,7 @@ class ArrayView final : public array_view_internal::ArrayViewBase<T, Size> {
   // variable size, the used ctor is ArrayView(U& u) instead.
   template <typename U,
             size_t N,
-            typename std::enable_if<
-                Size == static_cast<std::ptrdiff_t>(N)>::type* = nullptr>
+            typename std::enable_if_t<Size == static_cast<std::ptrdiff_t>(N)>>
   ArrayView(const std::array<U, N>& u)  // NOLINT
       : ArrayView(u.data(), u.size()) {}
 
@@ -206,18 +204,18 @@ class ArrayView final : public array_view_internal::ArrayViewBase<T, Size> {
   // N>, but not the other way around. We also don't allow conversion from
   // ArrayView<T> to ArrayView<T, N>, or from ArrayView<T, M> to ArrayView<T,
   // N> when M != N.
-  template <
-      typename U,
-      typename std::enable_if<Size != array_view_internal::kArrayViewVarSize &&
-                              HasDataAndSize<U, T>::value>::type* = nullptr>
+  template <typename U,
+            typename std::enable_if_t<
+                Size != array_view_internal::kArrayViewVarSize &&
+                HasDataAndSize<U, T>::value>>
   ArrayView(U& u)  // NOLINT
       : ArrayView(u.data(), u.size()) {
     static_assert(U::size() == Size, "Sizes must match exactly");
   }
-  template <
-      typename U,
-      typename std::enable_if<Size != array_view_internal::kArrayViewVarSize &&
-                              HasDataAndSize<U, T>::value>::type* = nullptr>
+  template <typename U,
+            typename std::enable_if_t<
+                Size != array_view_internal::kArrayViewVarSize &&
+                HasDataAndSize<U, T>::value>>
   ArrayView(const U& u)  // NOLINT(runtime/explicit)
       : ArrayView(u.data(), u.size()) {
     static_assert(U::size() == Size, "Sizes must match exactly");
@@ -234,16 +232,16 @@ class ArrayView final : public array_view_internal::ArrayViewBase<T, Size> {
   // const std::vector<T> to ArrayView<const T>,
   // ave::Buffer to ArrayView<uint8_t> or ArrayView<const uint8_t>, and
   // const ave::Buffer to ArrayView<const uint8_t>.
-  template <
-      typename U,
-      typename std::enable_if<Size == array_view_internal::kArrayViewVarSize &&
-                              HasDataAndSize<U, T>::value>::type* = nullptr>
+  template <typename U,
+            typename std::enable_if_t<
+                Size == array_view_internal::kArrayViewVarSize &&
+                HasDataAndSize<U, T>::value>>
   ArrayView(U& u)  // NOLINT
       : ArrayView(u.data(), u.size()) {}
-  template <
-      typename U,
-      typename std::enable_if<Size == array_view_internal::kArrayViewVarSize &&
-                              HasDataAndSize<U, T>::value>::type* = nullptr>
+  template <typename U,
+            typename std::enable_if_t<
+                Size == array_view_internal::kArrayViewVarSize &&
+                HasDataAndSize<U, T>::value>>
   ArrayView(const U& u)  // NOLINT(runtime/explicit)
       : ArrayView(u.data(), u.size()) {}
 
@@ -297,9 +295,10 @@ bool operator!=(const ArrayView<T, Size1>& a, const ArrayView<T, Size2>& b) {
 // Variable-size ArrayViews are the size of two pointers; fixed-size ArrayViews
 // are the size of one pointer. (And as a special case, fixed-size ArrayViews
 // of size 0 require no storagelinux/alsasymboltable_linux.cc.)
-static_assert(sizeof(ArrayView<int>) == 2 * sizeof(int*), "");
-static_assert(sizeof(ArrayView<int, 17>) == sizeof(int*), "");
-static_assert(std::is_empty<ArrayView<int, 0>>::value, "");
+static_assert(sizeof(ArrayView<int>) == 2 * sizeof(int*));
+static_assert(sizeof(ArrayView<int, 17>) == sizeof(int*));
+// c++17
+static_assert(std::is_empty_v<ArrayView<int, 0>>);
 
 template <typename T>
 inline ArrayView<T> MakeArrayView(T* data, size_t size) {
@@ -317,7 +316,7 @@ inline ArrayView<U, Size> reinterpret_array_view(ArrayView<T, Size> view) {
                 "ArrayView reinterpret_cast is only supported for casting "
                 "between views that represent the same chunk of memory.");
   static_assert(
-      std::is_fundamental<T>::value && std::is_fundamental<U>::value,
+      std::is_fundamental_v<T> && std::is_fundamental_v<U>,
       "ArrayView reinterpret_cast is only supported for casting between "
       "fundamental types.");
   return ArrayView<U, Size>(reinterpret_cast<U*>(view.data()), view.size());
