@@ -20,6 +20,7 @@ using status_t = enum uint32_t {
 
   UNKNOWN_ERROR = (-2147483647 - 1),  // INT32_MIN value
 
+  E_AGAIN = -EAGAIN,
   NO_MEMORY = -ENOMEM,
   INVALID_OPERATION = -ENOSYS,
   BAD_VALUE = -EINVAL,
