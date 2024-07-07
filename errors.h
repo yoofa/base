@@ -8,16 +8,12 @@
 #ifndef AVE_ERROR_H
 #define AVE_ERROR_H
 
+#include <cerrno>
 #include <string>
-
-#include <errno.h>
-#include <stdint.h>
 
 namespace ave {
 
-typedef int32_t status_t;
-
-enum {
+using status_t = enum uint32_t {
   OK = 0,         // Preferred constant for checking success.
   NO_ERROR = OK,  // Deprecated synonym for `OK`. Prefer `OK` because it doesn't
                   // conflict with Windows.
