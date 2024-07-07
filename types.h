@@ -8,11 +8,10 @@
 #ifndef AVE_TYPES_H
 #define AVE_TYPES_H
 
-#include <stdint.h>
-#include <sys/types.h>
+#include <cstdint>
 
-#include "base/errors.h"
+#include "errors.h"
 
-typedef int64_t nsecs_t;
+using nsecs_t = int64_t;
 
 #endif /* !AVE_TYPES_H */
