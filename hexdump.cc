@@ -7,6 +7,8 @@
 
 #include "hexdump.h"
 
+#include <array>
+
 #include "base/checks.h"
 #include "base/logging.h"
 
@@ -14,27 +16,32 @@ namespace ave {
 namespace base {
 
 static void appendIndent(std::string& s, int32_t indent) {
+  // NOLINTBEGIN(modernize-avoid-c-arrays)
   static const char kWhitespace[] =
       "                                        "
       "                                        ";
+  // NOLINTEND(modernize-avoid-c-arrays)
 
   AVE_CHECK_LT((size_t)indent, sizeof(kWhitespace));
 
   s.append(kWhitespace, indent);
 }
 void hexdump(const void* _data, size_t size, size_t indent) {
-  const uint8_t* data = (const uint8_t*)_data;
+  const auto* data = static_cast<const uint8_t*>(_data);
 
   size_t offset = 0;
   while (offset < size) {
     std::string line;
 
-    appendIndent(line, indent);
+    appendIndent(line, static_cast<int32_t>(indent));
 
-    char tmp[32];
-    snprintf(tmp, sizeof(tmp), "%08lx:  ", (unsigned long)offset);
+    // char tmp[32];
+    std::array<char, 32> tmp{};
 
-    line.append(tmp);
+    snprintf(tmp.data(), sizeof(tmp),
+             "%08lx:  ", static_cast<unsigned long>(offset));
+
+    line.append(tmp.data());
 
     for (size_t i = 0; i < 16; ++i) {
       if (i == 8) {
@@ -43,8 +50,8 @@ void hexdump(const void* _data, size_t size, size_t indent) {
       if (offset + i >= size) {
         line.append("   ");
       } else {
-        snprintf(tmp, sizeof(tmp), "%02x ", data[offset + i]);
-        line.append(tmp);
+        snprintf(tmp.data(), sizeof(tmp), "%02x ", data[offset + i]);
+        line.append(tmp.data());
       }
     }
 

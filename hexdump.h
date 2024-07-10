@@ -8,7 +8,7 @@
 #ifndef HEXDUMP_H
 #define HEXDUMP_H
 
-#include "base/types.h"
+#include <cstddef>
 
 namespace ave {
 namespace base {
