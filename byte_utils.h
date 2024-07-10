@@ -21,12 +21,14 @@ constexpr int FOURCC(unsigned char c1,
   return ((c1) << 24 | (c2) << 16 | (c3) << 8 | (c4));
 }
 
+// NOLINTBEGIN(modernize-avoid-c-arrays)
 template <size_t N>
 constexpr int32_t FOURCC(const char (&s)[N]) {
   static_assert(N == 5, "fourcc: wrong length");
-  return (unsigned char)s[0] << 24 | (unsigned char)s[1] << 16 |
-         (unsigned char)s[2] << 8 | (unsigned char)s[3] << 0;
+  return static_cast<unsigned char>(s[0]) << 24 | static_cast<unsigned char>(s[1]) << 16 |
+         static_cast<unsigned char>(s[2]) << 8 | static_cast<unsigned char>(s[3]) << 0;
 }
+// NOLINTEND(modernize-avoid-c-arrays)
 
 uint16_t U16_AT(const uint8_t* ptr);
 uint32_t U32_AT(const uint8_t* ptr);
@@ -46,7 +48,7 @@ inline uint16_t HostToNetwork16(uint16_t n) {
 }
 
 inline uint32_t HostToNetwork32(uint32_t n) {
-  return htobe32(n);
+  return static_cast<uint32_t>(htobe32(n));
 }
 
 inline uint64_t HostToNetwork64(uint64_t n) {
@@ -58,7 +60,7 @@ inline uint16_t NetworkToHost16(uint16_t n) {
 }
 
 inline uint32_t NetworkToHost32(uint32_t n) {
-  return be32toh(n);
+  return static_cast<uint32_t>(be32toh(n));
 }
 
 inline uint64_t NetworkToHost64(uint64_t n) {
