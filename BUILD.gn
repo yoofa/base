@@ -50,6 +50,7 @@ ave_library("base") {
       ":thread_test",
     ]
   }
+  deps += [ "data_source" ]
 }
 
 ave_library("timeutils") {

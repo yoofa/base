@@ -1,0 +1,22 @@
+import("//base/build/ave.gni")
+
+ave_library("data_source") {
+  deps = [
+    ":data_source_base",
+    ":file_source",
+  ]
+}
+
+ave_library("data_source_base") {
+  sources = [
+    "data_source.h",
+    "data_source_base.h",
+  ]
+}
+
+ave_library("file_source") {
+  sources = [
+    "file_source.cc",
+    "file_source.h",
+  ]
+}
