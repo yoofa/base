@@ -25,8 +25,10 @@ constexpr int FOURCC(unsigned char c1,
 template <size_t N>
 constexpr int32_t FOURCC(const char (&s)[N]) {
   static_assert(N == 5, "fourcc: wrong length");
-  return static_cast<unsigned char>(s[0]) << 24 | static_cast<unsigned char>(s[1]) << 16 |
-         static_cast<unsigned char>(s[2]) << 8 | static_cast<unsigned char>(s[3]) << 0;
+  return static_cast<int32_t>(static_cast<unsigned char>(s[0]) << 24 |
+                              static_cast<unsigned char>(s[1]) << 16 |
+                              static_cast<unsigned char>(s[2]) << 8 |
+                              static_cast<unsigned char>(s[3]) << 0);
 }
 // NOLINTEND(modernize-avoid-c-arrays)
 
