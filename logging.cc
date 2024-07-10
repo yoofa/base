@@ -7,33 +7,35 @@
 
 #include "base/logging.h"
 
+#include <array>
 #include <chrono>
 #include <cstring>
 #include <ctime>
 #include <mutex>
 #include <string>
 #include <thread>
-#include <vector>
+
+#include "base/attributes.h"
 
 namespace ave {
 namespace base {
 
 namespace {
 #if !defined(NDEBUG)
-static LogSeverity g_min_sev = LS_INFO;
-static LogSeverity g_dbg_sev = LS_INFO;
+LogSeverity g_min_sev = LS_INFO;
+LogSeverity g_dbg_sev = LS_INFO;
 #else
-static LogSeverity g_min_sev = LS_NONE;
-static LogSeverity g_dbg_sev = LS_NONE;
+LogSeverity g_min_sev = LS_NONE;
+LogSeverity g_dbg_sev = LS_NONE;
 #endif
 
 const char* FilenameFromPath(const char* file) {
   const char* end1 = ::strrchr(file, '/');
   const char* end2 = ::strrchr(file, '\\');
-  if (!end1 && !end2)
+  if (!end1 && !end2) {
     return file;
-  else
-    return (end1 > end2) ? end1 + 1 : end2 + 1;
+  }
+  return (end1 > end2) ? end1 + 1 : end2 + 1;
 }
 
 std::mutex g_log_mutex_;
@@ -65,19 +67,19 @@ LogMessage::LogMessage(const char* file,
     : severity_(sev) {
   if (timestamp_) {
     uint64_t timestamp = timestampMs();
-    std::time_t time_t = time(0);
+    std::time_t time_t = time(nullptr);
 
-    auto localtime = std::localtime(&time_t);
+    auto* localtime = std::localtime(&time_t);
 
-    char buffer[32];
+    std::array<char, 32> buffer{};
 
-    strftime(buffer, 32, "%Y-%m-%d %T.", localtime);
+    strftime(buffer.data(), 32, "%Y-%m-%d %T.", localtime);
 
-    char microseconds[7];
-    sprintf(microseconds, "%06llu",
+    std::array<char, 7> microseconds{};
+    sprintf(microseconds.data(), "%06llu",
             static_cast<unsigned long long>(timestamp % 1000000));
 
-    print_stream_ << '[' << buffer << microseconds << ']';
+    print_stream_ << '[' << buffer.data() << microseconds.data() << ']';
   }
 
   if (thread_) {
@@ -199,24 +201,27 @@ void LogMessage::UpdateMinLogSeverity() {
   g_min_sev = min_sev;
 }
 
-void LogMessage::OutputToDebug(const std::string& str, LogSeverity severity) {
+void LogMessage::OutputToDebug(const std::string& msg,
+                               LogSeverity severity AVE_MAYBE_UNUSED) {
   bool log_to_stderr = log_to_stderr_;
   if (log_to_stderr) {
-    fprintf(stderr, "%s", str.c_str());
+    fprintf(stderr, "%s", msg.c_str());
     fflush(stderr);
   }
 }
 
 // static
 bool LogMessage::IsNoop(LogSeverity severity) {
-  if (severity >= g_dbg_sev || severity >= g_min_sev)
+  if (severity >= g_dbg_sev || severity >= g_min_sev) {
     return false;
+  }
   return streams_empty_.load(std::memory_order_relaxed);
 }
 
 void LogMessage::FinishPrintStream() {
-  if (!extra_.empty())
+  if (!extra_.empty()) {
     print_stream_ << " : " << extra_;
+  }
   print_stream_ << "\n";
 }
 
@@ -226,7 +231,7 @@ void Log(const LogArgType* fmt, ...) {
   va_list args;
   va_start(args, fmt);
 
-  LogMetadataErr meta;
+  LogMetadataErr meta{};
   switch (*fmt) {
     case LogArgType::kLogMetadata: {
       meta = {va_arg(args, LogMetadata), ERRCTX_NONE, 0};
@@ -292,11 +297,7 @@ void Log(const LogArgType* fmt, ...) {
   va_end(args);
 }
 }  // namespace logging_impl
-}  // namespace base
-}  // namespace ave
 
-namespace ave {
-namespace base {
 void LogSink::OnLogMessage(const std::string& msg,
                            LogSeverity severity,
                            const char* tag) {

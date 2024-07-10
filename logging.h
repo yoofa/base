@@ -29,8 +29,8 @@
 #endif
 
 namespace ave {
-
 namespace base {
+
 enum LogSeverity {
   LS_VERBOSE,
   LS_DEBUG,
@@ -49,19 +49,19 @@ enum LogErrorContext {
 class LogMessage;
 class LogSink {
  public:
-  LogSink() {}
-  virtual ~LogSink() {}
+  LogSink() = default;
+  virtual ~LogSink() = default;
   virtual void OnLogMessage(const std::string& msg,
                             LogSeverity severity,
                             const char* tag);
-  virtual void OnLogMessage(const std::string& message, LogSeverity severity);
-  virtual void OnLogMessage(const std::string& message) = 0;
+  virtual void OnLogMessage(const std::string& msg, LogSeverity severity);
+  virtual void OnLogMessage(const std::string& msg) = 0;
 
  private:
   friend class ::ave::base::LogMessage;
 #if AVE_LOG_ENABLED()
   LogSink* next_ = nullptr;
-  LogSeverity min_severity_;
+  LogSeverity min_severity_ = LS_VERBOSE;
 #endif
 };
 
@@ -72,7 +72,7 @@ class LogMetadata {
   LogMetadata(const char* file, int line, LogSeverity severity)
       : file_(file),
         line_and_sev_(static_cast<uint32_t>(static_cast<uint32_t>(line) << 3 |
-                      static_cast<uint32_t>(severity))) {}
+                                            static_cast<uint32_t>(severity))) {}
   LogMetadata() = default;
 
   const char* File() const { return file_; }
@@ -237,7 +237,9 @@ class LogStreamer<> final {
 
   template <typename... Us>
   inline static void Call(const Us&... args) {
+    // NOLINTBEGIN(modernize-avoid-c-arrays)
     static constexpr LogArgType t[] = {Us::Type()..., LogArgType::kEnd};
+    // NOLINTEND(modernize-avoid-c-arrays)
     Log(t, args.GetVal()...);
   }
 };
