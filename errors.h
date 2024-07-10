@@ -9,11 +9,14 @@
 #define AVE_ERROR_H
 
 #include <cerrno>
+#include <cstdint>
 #include <string>
 
 namespace ave {
 
-using status_t = enum uint32_t {
+using status_t = uint32_t;
+
+enum uint32_t {
   OK = 0,         // Preferred constant for checking success.
   NO_ERROR = OK,  // Deprecated synonym for `OK`. Prefer `OK` because it doesn't
                   // conflict with Windows.
