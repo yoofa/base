@@ -71,12 +71,12 @@ class LogMetadata {
  public:
   LogMetadata(const char* file, int line, LogSeverity severity)
       : file_(file),
-        line_and_sev_(static_cast<uint32_t>(line) << 3 |
-                      static_cast<uint32_t>(severity)) {}
+        line_and_sev_(static_cast<uint32_t>(static_cast<uint32_t>(line) << 3 |
+                      static_cast<uint32_t>(severity))) {}
   LogMetadata() = default;
 
   const char* File() const { return file_; }
-  int Line() const { return line_and_sev_ >> 3; }
+  int Line() const { return static_cast<int>(line_and_sev_ >> 3); }
   LogSeverity Severity() const {
     return static_cast<LogSeverity>(line_and_sev_ & 0x7);
   }
@@ -90,7 +90,7 @@ class LogMetadata {
   // both with a single instruction.)
   uint32_t line_and_sev_;
 };
-static_assert(std::is_trivial_v<LogMetadata>, "");
+static_assert(std::is_trivial_v<LogMetadata>);
 
 struct LogMetadataErr {
   LogMetadata meta;
