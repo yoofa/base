@@ -1,6 +1,6 @@
-import("//opencamera.gni")
+import("//base/build/ave.gni")
 
-oc_library("net") {
+ave_library("net") {
   sources = [
     "ip_address.cc",
     "ip_address.h",
@@ -12,7 +12,14 @@ oc_library("net") {
   ]
 }
 
-source_set("base_net_unittests_source") {
+ave_library("net_utils") {
+  sources = [
+    "utils.cc",
+    "utils.h",
+  ]
+}
+
+ave_source_set("base_net_unittests_source") {
   testonly = true
   sources = [
     "ip_address_unittest.cc",
@@ -24,7 +31,7 @@ source_set("base_net_unittests_source") {
   ]
 }
 
-executable("net_unittests") {
+ave_executable("net_unittests") {
   testonly = true
   deps = [
     ":base_net_unittests_source",
