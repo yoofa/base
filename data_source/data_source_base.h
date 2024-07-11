@@ -35,15 +35,36 @@ class DataSourceBase {
 
   virtual status_t InitCheck() const = 0;
 
-  // read from current offset
-  virtual ssize_t Read(void* data, size_t size) = 0;
+  virtual ssize_t Read(void* /* data */, size_t /* size */) {
+    return INVALID_OPERATION;
+  }
 
   // read from start offset
   virtual ssize_t ReadAt(off64_t offset, void* data, size_t size) = 0;
 
-  virtual status_t GetPosition(off64_t* position) = 0;
+  virtual ssize_t Seek(off64_t /* position */, int /* whence */) {
+    return INVALID_OPERATION;
+  }
+  virtual status_t GetPosition(off64_t* /* position */) {
+    return INVALID_OPERATION;
+  }
 
-  virtual ssize_t Seek(off64_t position, int whence) = 0;
+  virtual status_t GetSize(off64_t* size) {
+    *size = 0;
+    return NO_INIT;
+  }
+
+  virtual bool GetUri(char* /*uriString*/, size_t /*bufferSize*/) {
+    return false;
+  }
+
+  virtual uint64_t Flags() { return kIsDefault; }
+
+  virtual void Close() {}
+
+  virtual status_t GetAvailableSize(off64_t /*offset*/, off64_t* /*size*/) {
+    return NO_INIT;
+  }
 
   // Convenience methods:
   bool GetUInt16(off64_t offset, uint16_t* x) {
@@ -136,23 +157,6 @@ class DataSourceBase {
       }
     }
     return false;
-  }
-
-  virtual status_t GetSize(off64_t* size) {
-    *size = 0;
-    return NO_INIT;
-  }
-
-  virtual bool GetUri(char* /*uriString*/, size_t /*bufferSize*/) {
-    return false;
-  }
-
-  virtual uint64_t Flags() { return kIsDefault; }
-
-  virtual void Close() {}
-
-  virtual status_t GetAvailableSize(off64_t /*offset*/, off64_t* /*size*/) {
-    return NO_INIT;
   }
 };
 

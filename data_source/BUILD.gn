@@ -4,6 +4,7 @@ ave_library("data_source") {
   deps = [
     ":data_source_base",
     ":file_source",
+    ":http_source",
   ]
 }
 
@@ -18,5 +19,19 @@ ave_library("file_source") {
   sources = [
     "file_source.cc",
     "file_source.h",
+  ]
+}
+
+ave_library("http_source") {
+  sources = [
+    "http_base.cc",
+    "http_base.h",
+    "http_source.cc",
+    "http_source.h",
+  ]
+  deps = [
+    "//base:logging",
+    "//base:timeutils",
+    "//base/net:net_utils",
   ]
 }
