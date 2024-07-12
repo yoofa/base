@@ -20,7 +20,7 @@ std::string MakeUserAgent() {
   return ua;
 }
 
-std::string uriDebugString(const std::string& uri, bool incognito) {
+std::string UriDebugString(const std::string& uri, bool incognito) {
   if (incognito) {
     return "<URI suppressed>";
   }
