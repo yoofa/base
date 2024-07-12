@@ -10,7 +10,7 @@
 
 #include <arpa/inet.h>
 
-#include "base/types.h"
+#include "base/errors.h"
 
 namespace ave {
 
