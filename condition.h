@@ -8,11 +8,9 @@
 #ifndef AVE_CONDITION_H
 #define AVE_CONDITION_H
 
-#include <limits.h>
-#include <pthread.h>
-#include <stdint.h>
-#include <sys/types.h>
-#include <time.h>
+#include <climits>
+#include <cstdint>
+#include <ctime>
 
 #include "mutex.h"
 #include "types.h"
@@ -28,7 +26,7 @@ class Condition {
     return -pthread_cond_wait(&cond_, &mutex.mutex_);
   }
   status_t WaitRelative(Mutex& mutex, nsecs_t reltime) {
-    struct timespec ts;
+    struct timespec ts{};
     clock_gettime(CLOCK_MONOTONIC, &ts);
     int64_t reltime_sec = reltime / 1000000000;
 
@@ -55,7 +53,7 @@ class Condition {
   void Broadcast() { pthread_cond_broadcast(&cond_); }
 
  private:
-  pthread_cond_t cond_;
+  pthread_cond_t cond_{};
 };
 
 }  // namespace ave

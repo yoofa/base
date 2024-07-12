@@ -85,7 +85,7 @@ class LogMessage {
 
   ~LogMessage() { std::cerr << "\n"; }
 
-  std::ostream& stream() { return std::cerr; }
+  static std::ostream& stream() { return std::cerr; }
 
  private:
   AVE_DISALLOW_COPY_AND_ASSIGN(LogMessage);
