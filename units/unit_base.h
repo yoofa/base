@@ -8,7 +8,7 @@
 #ifndef UNIT_BASE_H
 #define UNIT_BASE_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <algorithm>
 #include <cmath>
@@ -89,56 +89,51 @@ class UnitBase {
   }
 
  protected:
-  template <
-      typename T,
-      typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+  template <typename T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
   static constexpr Unit_T FromValue(T value) {
-    if (Unit_T::one_sided)
+    if (Unit_T::one_sided) {
       AVE_DCHECK_GE(value, 0);
+    }
     AVE_DCHECK_GT(value, MinusInfinityVal());
     AVE_DCHECK_LT(value, PlusInfinityVal());
     return Unit_T(dchecked_cast<int64_t>(value));
   }
-  template <typename T,
-            typename std::enable_if<std::is_floating_point<T>::value>::type* =
-                nullptr>
+  template <typename T, std::enable_if_t<std::is_floating_point_v<T>, int> = 0>
   static constexpr Unit_T FromValue(T value) {
     if (value == std::numeric_limits<T>::infinity()) {
       return PlusInfinity();
-    } else if (value == -std::numeric_limits<T>::infinity()) {
-      return MinusInfinity();
-    } else {
-      AVE_DCHECK(!std::isnan(value));
-      return FromValue(dchecked_cast<int64_t>(value));
     }
+    if (value == -std::numeric_limits<T>::infinity()) {
+      return MinusInfinity();
+    }
+
+    AVE_DCHECK(!std::isnan(value));
+    return FromValue(dchecked_cast<int64_t>(value));
   }
 
-  template <
-      typename T,
-      typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+  template <typename T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
   static constexpr Unit_T FromFraction(int64_t denominator, T value) {
-    if (Unit_T::one_sided)
+    if constexpr (Unit_T::one_sided) {
       AVE_DCHECK_GE(value, 0);
+    }
     AVE_DCHECK_GT(value, MinusInfinityVal() / denominator);
     AVE_DCHECK_LT(value, PlusInfinityVal() / denominator);
     return Unit_T(dchecked_cast<int64_t>(value * denominator));
   }
-  template <typename T,
-            typename std::enable_if<std::is_floating_point<T>::value>::type* =
-                nullptr>
+  template <typename T, std::enable_if_t<std::is_floating_point_v<T>, int> = 0>
   static constexpr Unit_T FromFraction(int64_t denominator, T value) {
     return FromValue(value * denominator);
   }
 
   template <typename T = int64_t>
-  constexpr typename std::enable_if<std::is_integral<T>::value, T>::type
-  ToValue() const {
+  constexpr typename std::enable_if_t<std::is_integral_v<T>, T> ToValue()
+      const {
     AVE_DCHECK(IsFinite());
     return dchecked_cast<T>(value_);
   }
   template <typename T>
-  constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type
-  ToValue() const {
+  constexpr typename std::enable_if_t<std::is_floating_point_v<T>, T> ToValue()
+      const {
     return IsPlusInfinity()    ? std::numeric_limits<T>::infinity()
            : IsMinusInfinity() ? -std::numeric_limits<T>::infinity()
                                : value_;
@@ -149,13 +144,13 @@ class UnitBase {
   }
 
   template <int64_t Denominator, typename T = int64_t>
-  constexpr typename std::enable_if<std::is_integral<T>::value, T>::type
-  ToFraction() const {
+  constexpr typename std::enable_if_t<std::is_integral_v<T>, T> ToFraction()
+      const {
     AVE_DCHECK(IsFinite());
     return dchecked_cast<T>(DivideRoundToNearest(value_, Denominator));
   }
   template <int64_t Denominator, typename T>
-  constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type
+  constexpr typename std::enable_if_t<std::is_floating_point_v<T>, T>
   ToFraction() const {
     return ToValue<T>() * (1 / static_cast<T>(Denominator));
   }
@@ -167,14 +162,14 @@ class UnitBase {
   }
 
   template <int64_t Factor, typename T = int64_t>
-  constexpr typename std::enable_if<std::is_integral<T>::value, T>::type
-  ToMultiple() const {
+  constexpr typename std::enable_if_t<std::is_integral_v<T>, T> ToMultiple()
+      const {
     AVE_DCHECK_GE(ToValue(), std::numeric_limits<T>::min() / Factor);
     AVE_DCHECK_LE(ToValue(), std::numeric_limits<T>::max() / Factor);
     return dchecked_cast<T>(ToValue() * Factor);
   }
   template <int64_t Factor, typename T>
-  constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type
+  constexpr typename std::enable_if_t<std::is_floating_point_v<T>, T>
   ToMultiple() const {
     return ToValue<T>() * Factor;
   }
@@ -218,7 +213,8 @@ class RelativeUnit : public UnitBase<Unit_T> {
       AVE_DCHECK(!this->IsMinusInfinity());
       AVE_DCHECK(!other.IsMinusInfinity());
       return this->PlusInfinity();
-    } else if (this->IsMinusInfinity() || other.IsMinusInfinity()) {
+    }
+    if (this->IsMinusInfinity() || other.IsMinusInfinity()) {
       AVE_DCHECK(!this->IsPlusInfinity());
       AVE_DCHECK(!other.IsPlusInfinity());
       return this->MinusInfinity();
@@ -230,7 +226,8 @@ class RelativeUnit : public UnitBase<Unit_T> {
       AVE_DCHECK(!this->IsMinusInfinity());
       AVE_DCHECK(!other.IsPlusInfinity());
       return this->PlusInfinity();
-    } else if (this->IsMinusInfinity() || other.IsPlusInfinity()) {
+    }
+    if (this->IsMinusInfinity() || other.IsPlusInfinity()) {
       AVE_DCHECK(!this->IsPlusInfinity());
       AVE_DCHECK(!other.IsMinusInfinity());
       return this->MinusInfinity();
@@ -295,10 +292,13 @@ inline constexpr Unit_T operator*(size_t scalar, RelativeUnit<Unit_T> other) {
 
 template <class Unit_T>
 inline constexpr Unit_T operator-(RelativeUnit<Unit_T> other) {
-  if (other.IsPlusInfinity())
+  if (other.IsPlusInfinity()) {
     return UnitBase<Unit_T>::MinusInfinity();
-  if (other.IsMinusInfinity())
+  }
+
+  if (other.IsMinusInfinity()) {
     return UnitBase<Unit_T>::PlusInfinity();
+  }
   return -1 * other;
 }
 

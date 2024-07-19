@@ -19,22 +19,22 @@ TEST(TimeDeltaTest, ConstExpr) {
   constexpr TimeDelta kTimeDeltaZero = TimeDelta::Zero();
   constexpr TimeDelta kTimeDeltaPlusInf = TimeDelta::PlusInfinity();
   constexpr TimeDelta kTimeDeltaMinusInf = TimeDelta::MinusInfinity();
-  static_assert(kTimeDeltaZero.IsZero(), "");
-  static_assert(kTimeDeltaPlusInf.IsPlusInfinity(), "");
-  static_assert(kTimeDeltaMinusInf.IsMinusInfinity(), "");
-  static_assert(kTimeDeltaPlusInf.ms_or(-1) == -1, "");
+  static_assert(kTimeDeltaZero.IsZero());
+  static_assert(kTimeDeltaPlusInf.IsPlusInfinity());
+  static_assert(kTimeDeltaMinusInf.IsMinusInfinity());
+  static_assert(kTimeDeltaPlusInf.ms_or(-1) == -1);
 
-  static_assert(kTimeDeltaPlusInf > kTimeDeltaZero, "");
+  static_assert(kTimeDeltaPlusInf > kTimeDeltaZero);
 
   constexpr TimeDelta kTimeDeltaMinutes = TimeDelta::Minutes(kValue);
   constexpr TimeDelta kTimeDeltaSeconds = TimeDelta::Seconds(kValue);
   constexpr TimeDelta kTimeDeltaMs = TimeDelta::Millis(kValue);
   constexpr TimeDelta kTimeDeltaUs = TimeDelta::Micros(kValue);
 
-  static_assert(kTimeDeltaMinutes.seconds_or(0) == kValue * 60, "");
-  static_assert(kTimeDeltaSeconds.seconds_or(0) == kValue, "");
-  static_assert(kTimeDeltaMs.ms_or(0) == kValue, "");
-  static_assert(kTimeDeltaUs.us_or(0) == kValue, "");
+  static_assert(kTimeDeltaMinutes.seconds_or(0) == kValue * 60);
+  static_assert(kTimeDeltaSeconds.seconds_or(0) == kValue);
+  static_assert(kTimeDeltaMs.ms_or(0) == kValue);
+  static_assert(kTimeDeltaUs.us_or(0) == kValue);
 }
 
 TEST(TimeDeltaTest, GetBackSameValues) {

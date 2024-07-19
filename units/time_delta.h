@@ -28,22 +28,22 @@ class TimeDelta final : public unit_impl::RelativeUnit<TimeDelta> {
  public:
   template <typename T>
   static constexpr TimeDelta Minutes(T value) {
-    static_assert(std::is_arithmetic<T>::value, "");
+    static_assert(std::is_arithmetic_v<T>);
     return Seconds(value * 60);
   }
   template <typename T>
   static constexpr TimeDelta Seconds(T value) {
-    static_assert(std::is_arithmetic<T>::value, "");
+    static_assert(std::is_arithmetic_v<T>);
     return FromFraction(1'000'000, value);
   }
   template <typename T>
   static constexpr TimeDelta Millis(T value) {
-    static_assert(std::is_arithmetic<T>::value, "");
+    static_assert(std::is_arithmetic_v<T>);
     return FromFraction(1'000, value);
   }
   template <typename T>
   static constexpr TimeDelta Micros(T value) {
-    static_assert(std::is_arithmetic<T>::value, "");
+    static_assert(std::is_arithmetic_v<T>);
     return FromValue(value);
   }
 
