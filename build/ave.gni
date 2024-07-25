@@ -6,6 +6,8 @@ import("//build/config/sysroot.gni")
 import("//build/config/ui.gni")
 import("//build_overrides/build.gni")
 
+ave_include_test = true
+
 ave_root = get_path_info(".", "abspath")
 ave_project_root = get_path_info("../../", "abspath")
 
