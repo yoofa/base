@@ -35,3 +35,13 @@ ave_library("http_source") {
     "//base/net:net_utils",
   ]
 }
+
+ave_library("data_source_tests") {
+  testonly = true
+  sources = [ "test/data_source_base_test.cc" ]
+  deps = [
+    ":data_source",
+    "//base:logging",
+    "//test:test_support",
+  ]
+}

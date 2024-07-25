@@ -18,17 +18,30 @@ source_set("time_delta") {
     "time_delta.h",
   ]
   deps = [
-    ":units",
+    ":units_base",
     "..:checks",
     "..:divide_round",
     "..:safe_conversions",
   ]
 }
 
+source_set("timestamp") {
+  sources = [
+    "timestamp.cc",
+    "timestamp.h",
+  ]
+  deps = [
+    ":time_delta",
+    ":units_base",
+    "..:checks",
+  ]
+}
+
 source_set("units_unittests_source") {
   testonly = true
   sources = [
-    "./time_delta_unittest.cc",
+    "time_delta_unittest.cc",
+    "timestamp_test.cc",
     "unit_base_unittest.cc",
   ]
   deps = [

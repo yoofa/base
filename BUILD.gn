@@ -287,6 +287,8 @@ executable("base_unittests") {
     ":numerics_unittest",
     ":task_runner_unittest",
     ":task_util",
+
+    #"data_source:data_source_tests",
     "units:units_unittests_source",
     "//test:test_main",
     "//test:test_support",
