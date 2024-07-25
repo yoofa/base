@@ -34,9 +34,9 @@ TaskRunnerBase* TaskRunnerBase::Current() {
 }
 
 TaskRunnerBase::CurrentTaskRunnerSetter::CurrentTaskRunnerSetter(
-    TaskRunnerBase* task_queue)
+    TaskRunnerBase* task_runner)
     : previous_(TaskRunnerBase::Current()) {
-  pthread_setspecific(GetQueuePtrTls(), task_queue);
+  pthread_setspecific(GetQueuePtrTls(), task_runner);
 }
 
 TaskRunnerBase::CurrentTaskRunnerSetter::~CurrentTaskRunnerSetter() {

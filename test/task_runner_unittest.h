@@ -7,9 +7,9 @@
 
 #include <functional>
 #include <memory>
+
 #include "base/task_util/task_runner_factory.h"
 #include "gtest/gtest.h"
-#include "test/gtest.h"
 
 #ifndef TASK_RUNNER_UNITTEST_H
 #define TASK_RUNNER_UNITTEST_H

@@ -10,11 +10,9 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
-#include <iterator>
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
 #include "base/task_util/pending_task_flag.h"
 
 namespace ave {
@@ -41,12 +39,12 @@ bool RepeatingTaskBase::Run() {
     return true;
   }
 
-  int64_t delay = RunClosure();
+  uint64_t delay = RunClosure();
 
-  int64_t lost_time = GetNowUs() - next_run_time_;
+  uint64_t lost_time = GetNowUs() - next_run_time_;
   next_run_time_ += delay;
   delay -= lost_time;
-  delay = std::max<int64_t>(delay, 0LL);
+  delay = std::max<uint64_t>(delay, 0LL);
 
   if (!alive_flag_->Alive()) {
     return true;

@@ -8,6 +8,8 @@
 #ifndef TASK_RUNNER_FOR_TEST_H
 #define TASK_RUNNER_FOR_TEST_H
 
+#include <string>
+
 #include "base/task_util/task_runner.h"
 #include "base/task_util/task_runner_factory.h"
 
@@ -20,8 +22,6 @@ class TaskRunnerForTest : public TaskRunner {
   TaskRunnerForTest(std::string name = "TestRunner",
                     TaskRunnerFactory::Priority priority =
                         TaskRunnerFactory::Priority::NORMAL);
-
- public:
   ~TaskRunnerForTest() = default;
 
  private:

@@ -32,7 +32,7 @@ TEST(RepeatingTaskTest, Example) {
     if (i++ == 100) {
       cv.notify_one();
     }
-    return (uint64_t)10 * 1000;
+    return static_cast<uint64_t>(10) * 1000;
   });
   cv.wait(l);
   EXPECT_TRUE(i == 101);

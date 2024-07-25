@@ -4,13 +4,10 @@
  *
  * Distributed under terms of the GPLv2 license.
  */
-#include <chrono>
 #include <condition_variable>
 #include <memory>
 #include <mutex>
 
-#include "base/count_down_latch.h"
-#include "base/logging.h"
 #include "base/task_util/default_task_runner_factory.h"
 #include "base/task_util/task.h"
 #include "base/task_util/task_runner.h"
@@ -19,8 +16,6 @@
 #include "base/test/task_runner_unittest.h"
 #include "gtest/gtest-param-test.h"
 #include "gtest/gtest.h"
-#include "gtest/internal/gtest-param-util.h"
-#include "test/gtest.h"
 
 using namespace std::chrono_literals;
 

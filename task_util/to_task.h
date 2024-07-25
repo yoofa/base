@@ -28,18 +28,18 @@ class ClosureTask : public Task {
     closure_();
     return true;
   }
-  typename std::decay<Closure>::type closure_;
+  std::decay_t<Closure> closure_;
 };
 
 template <typename Closure, typename Cleanup>
 class ClosureTaskWithCleanup : public ClosureTask<Closure> {
  public:
-  ClosureTaskWithCleanup(Closure&& closure, Cleanup&& cleanup)
+  ClosureTaskWithCleanup(Closure&&, Cleanup&& cleanup)
       : cleanup_(std::forward<Cleanup>(cleanup)) {}
   ~ClosureTaskWithCleanup() override { cleanup_(); }
 
  private:
-  typename std::decay<Cleanup>::type cleanup_;
+  std::decay_t<Cleanup> cleanup_;
 };
 
 }  // namespace base_closure_impl

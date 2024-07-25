@@ -48,17 +48,14 @@ class RepeatingTaskImpl final : public RepeatingTaskBase {
       : RepeatingTaskBase(task_runner, first_delay, std::move(alive_flag)),
         closure_(std::forward<Closure>(closure)) {
     static_assert(
-        std::is_same<uint64_t,
-                     typename std::invoke_result<decltype(&Closure::operator()),
-                                                 Closure>::type>::value,
-        "");
+        std::is_same_v<uint64_t, std::invoke_result_t<
+                                     decltype(&Closure::operator()), Closure>>);
   }
 
  private:
   uint64_t RunClosure() override { return closure_(); }
 
-  typename std::remove_const<
-      typename std::remove_reference<Closure>::type>::type closure_;
+  std::remove_const_t<std::remove_reference_t<Closure>> closure_;
 };
 
 }  // namespace repeating_task_impl

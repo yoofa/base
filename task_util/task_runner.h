@@ -35,17 +35,17 @@ class CAPABILITY("TaskRunner") TaskRunner {
   TaskRunnerBase* Get() { return impl_; }
 
   template <class Closure,
-            typename std::enable_if<!std::is_convertible<
-                Closure,
-                std::unique_ptr<base::Task>>::value>::type* = nullptr>
+            std::enable_if_t<
+                !std::is_convertible_v<Closure, std::unique_ptr<base::Task>>>* =
+                nullptr>
   void PostTask(Closure&& closure) {
     return PostTask(base::toTask(std::forward<Closure>(closure)));
   }
 
   template <class Closure,
-            typename std::enable_if<!std::is_convertible<
-                Closure,
-                std::unique_ptr<base::Task>>::value>::type* = nullptr>
+            std::enable_if_t<
+                !std::is_convertible_v<Closure, std::unique_ptr<base::Task>>>* =
+                nullptr>
   void PostDelayedTask(Closure&& closure, uint64_t timeUs) {
     return PostDelayedTask(base::toTask(std::forward<Closure>(closure)),
                            timeUs);

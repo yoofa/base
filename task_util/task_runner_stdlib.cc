@@ -13,9 +13,7 @@
 #include <mutex>
 #include <queue>
 #include <string>
-#include <thread>
 
-#include "base/logging.h"
 #include "base/task_util/task_runner_factory.h"
 #include "base/thread.h"
 #include "base/thread_defs.h"
@@ -24,7 +22,7 @@ namespace ave {
 namespace base {
 namespace {
 
-static uint64_t GetNowUs() {
+uint64_t GetNowUs() {
   auto systemClock = std::chrono::system_clock::now();
   return std::chrono::duration_cast<std::chrono::microseconds>(
              systemClock.time_since_epoch())
@@ -50,16 +48,16 @@ int TaskRunnerPriorityToStdlibPriority(TaskRunnerFactory::Priority priority) {
 class TaskRunnerStdlib final : public TaskRunnerBase {
  public:
   TaskRunnerStdlib(const char* name, int priority);
-  virtual ~TaskRunnerStdlib() override = default;
+  ~TaskRunnerStdlib() override = default;
 
   void Destruct() override;
   void PostTask(std::unique_ptr<Task> task) override;
-  void PostDelayedTask(std::unique_ptr<Task> task, uint64_t time_us) override;
+  void PostDelayedTask(std::unique_ptr<Task> task, uint64_t delay_us) override;
 
  private:
   using OrderId = uint64_t;
   struct TaskEntry {
-    uint64_t when_us_;
+    uint64_t when_us_{};
     OrderId order_{};
     std::unique_ptr<Task> task_;
   };
@@ -127,7 +125,7 @@ void TaskRunnerStdlib::PostDelayedTask(std::unique_ptr<Task> task,
   if (need_quit_) {
     return;
   }
-  uint64_t when_us;
+  uint64_t when_us = 0;
   if (delay_us > 0) {
     uint64_t now_us = GetNowUs();
     when_us = (delay_us > (std::numeric_limits<uint64_t>::max() - now_us)
@@ -155,12 +153,12 @@ void TaskRunnerStdlib::ProcessTask() {
     std::unique_ptr<Task> task;
     {
       std::unique_lock<std::mutex> l(mutex_);
-      if (task_queue_.size() == 0) {
+      if (task_queue_.empty()) {
         task_condition_.wait(l);
         continue;
       }
 
-      auto& entry = task_queue_.top();
+      const auto& entry = task_queue_.top();
       uint64_t now_ms = GetNowUs();
       if (entry->when_us_ > now_ms) {
         uint64_t delay_us = entry->when_us_ - now_ms;
@@ -178,7 +176,6 @@ void TaskRunnerStdlib::ProcessTask() {
     if (release_ptr->Run()) {
       delete release_ptr;
     }
-    continue;
   }
 }
 

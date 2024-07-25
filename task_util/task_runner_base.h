@@ -8,7 +8,7 @@
 #ifndef TASK_RUNNER_BASE_H
 #define TASK_RUNNER_BASE_H
 
-#include <functional>
+#include <memory>
 
 #include "task.h"
 

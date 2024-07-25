@@ -9,7 +9,6 @@
 #define TASK_RUNNER_FACTORY_H
 
 #include <memory>
-#include <string>
 
 #include "base/task_util/task_runner_base.h"
 
