@@ -26,7 +26,7 @@ class Condition {
     return -pthread_cond_wait(&cond_, &mutex.mutex_);
   }
   status_t WaitRelative(Mutex& mutex, nsecs_t reltime) {
-    struct timespec ts{};
+    struct timespec ts {};
     clock_gettime(CLOCK_MONOTONIC, &ts);
     int64_t reltime_sec = reltime / 1000000000;
 

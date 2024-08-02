@@ -65,7 +65,9 @@ class BufferT {
   using const_iterator = const T*;
 
   // An empty BufferT.
-  BufferT() : size_(0), capacity_(0), data_(nullptr) { AVE_DCHECK(IsConsistent()); }
+  BufferT() : size_(0), capacity_(0), data_(nullptr) {
+    AVE_DCHECK(IsConsistent());
+  }
 
   // Disable copy construction and copy assignment, since copying a buffer is
   // expensive enough that we want to force the user to be explicit about it.

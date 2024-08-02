@@ -54,7 +54,7 @@ int64_t SystemTimeNanos() {
   };
   ticks = mul(mach_absolute_time(), timebase.numer) / timebase.denom;
 #elif defined(AVE_POSIX)
-  struct timespec ts{};
+  struct timespec ts {};
   // TODO(deadbeef): Do we need to handle the case when CLOCK_MONOTONIC is not
   // supported?
   clock_gettime(CLOCK_MONOTONIC, &ts);

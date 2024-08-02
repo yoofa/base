@@ -134,9 +134,10 @@ class UnitBase {
   template <typename T>
   constexpr typename std::enable_if_t<std::is_floating_point_v<T>, T> ToValue()
       const {
-    return IsPlusInfinity()    ? std::numeric_limits<T>::infinity()
-           : IsMinusInfinity() ? -std::numeric_limits<T>::infinity()
-                               : value_;
+    return IsPlusInfinity()
+               ? std::numeric_limits<T>::infinity()
+               : IsMinusInfinity() ? -std::numeric_limits<T>::infinity()
+                                   : value_;
   }
   template <typename T>
   constexpr T ToValueOr(T fallback_value) const {
