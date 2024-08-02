@@ -8,6 +8,7 @@ on:
   schedule:
     - cron: '0 0 * * 1'  # 每周一运行
   workflow_dispatch:
+    # run it manual
 
 jobs:
   format-lint:
@@ -23,7 +24,7 @@ jobs:
     
     - name: Run clang-format
       run: |
-        find . -name '*.cpp' -or -name '*.h' | xargs clang-format -i --style=file
+        find . -name '*.cpp' -or -name '*.h' -or -name '*.cc' | xargs clang-format -i --style=file
         git diff --exit-code
     
     - name: Run clang-tidy
