@@ -312,7 +312,9 @@ class _opaque_connection {
     pemit = caster2.to;
   }
 
-  has_slots_interface* getdest() const { return pdest; }
+  has_slots_interface* getdest() const {
+    return pdest;
+  }
 
   _opaque_connection duplicate(has_slots_interface* newtarget) const {
     _opaque_connection res = *this;
