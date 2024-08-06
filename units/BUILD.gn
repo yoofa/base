@@ -1,6 +1,11 @@
 import("../build/ave.gni")
 
 ave_library("units") {
+  deps = [
+    ":time_delta",
+    ":timestamp",
+    ":units_base",
+  ]
 }
 
 source_set("units_base") {
@@ -46,6 +51,7 @@ source_set("units_unittests_source") {
   ]
   deps = [
     ":time_delta",
+    ":timestamp",
     ":units_base",
     "//test:test_support",
   ]
