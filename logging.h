@@ -189,10 +189,9 @@ inline decltype(MakeVal(std::declval<std::underlying_type_t<T>>())) MakeVal(
 template <typename T, class = std::void_t<>>
 struct has_to_log_string : std::false_type {};
 template <typename T>
-struct has_to_log_string<
-    T,
-    std::void_t<decltype(ToStringValue(std::declval<T>()))>> : std::true_type {
-};
+struct has_to_log_string<T,
+                         std::void_t<decltype(ToLogString(std::declval<T>()))>>
+    : std::true_type {};
 
 template <
     typename T,
@@ -346,33 +345,19 @@ class LogMessage {
   ~LogMessage() = default;
 
   inline void AddTag(const char* tag) {}
-  inline std::stringstream& stream() {
-    return print_stream_;
-  }
-  inline static int64_t LogStartTime() {
-    return 0;
-  }
-  inline static uint32_t WallClockStartTime() {
-    return 0;
-  }
+  inline std::stringstream& stream() { return print_stream_; }
+  inline static int64_t LogStartTime() { return 0; }
+  inline static uint32_t WallClockStartTime() { return 0; }
   inline static void LogThreads(bool on = true) {}
   inline static void LogTimestamps(bool on = true) {}
   inline static void LogToDebug(LogSeverity min_sev) {}
-  inline static LogSeverity GetLogToDebug() {
-    return LS_INFO;
-  }
+  inline static LogSeverity GetLogToDebug() { return LS_INFO; }
   inline static void SetLogToStderr(bool log_to_stderr) {}
   inline static void AddLogToStream(LogSink* stream, LogSeverity min_sev) {}
   inline static void RemoveLogToStream(LogSink* stream) {}
-  inline static int GetLogToStream(LogSink* stream = nullptr) {
-    return 0;
-  }
-  inline static int GetMinLogSeverity() {
-    return 0;
-  }
-  static constexpr bool IsNoop(LogSeverity severity) {
-    return true;
-  }
+  inline static int GetLogToStream(LogSink* stream = nullptr) { return 0; }
+  inline static int GetMinLogSeverity() { return 0; }
+  static constexpr bool IsNoop(LogSeverity severity) { return true; }
   template <LogSeverity S>
   static constexpr bool IsNoop() {
     return IsNoop(S);
