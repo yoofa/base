@@ -12,6 +12,7 @@ ave_root = get_path_info(".", "abspath")
 ave_project_root = get_path_info("../../", "abspath")
 
 ave_common_configs = []
+ave_common_configs += [ "//base/build:thread_safety_annotations" ]
 
 # Global public configuration that should be applied to all WebRTC targets. You
 # normally shouldn't need to include this in your target as it's automatically

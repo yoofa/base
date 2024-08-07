@@ -65,3 +65,18 @@ config("oc_prod_config") {
     ]
   }
 }
+
+config("thread_safety_annotations") {
+  if (is_clang) {
+    cflags = [
+      "-Wthread-safety",
+
+      # TODO(https://fxbug.dev/42085252): Clang is catching instances of these in the kernel and drivers.
+      # Temporarily disable them for now to facilitate the roll then come back and
+      # fix them.
+      "-Wno-unknown-warning-option",
+      "-Wno-thread-safety-reference-return",
+    ]
+    defines = [ "_LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS=1" ]
+  }
+}
