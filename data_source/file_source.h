@@ -11,6 +11,7 @@
 #include <mutex>
 #include <string>
 
+#include "base/thread_annotation.h"
 #include "data_source.h"
 
 namespace ave {
@@ -38,15 +39,15 @@ class FileSource : public DataSource {
   virtual std::string toString() { return name_; }
 
  protected:
-  ssize_t read_l(void* data, size_t size);
-  ssize_t seek_l(off64_t position, int whence);
-  ssize_t readAt_l(off64_t offset, void* data, size_t size);
+  ssize_t read_l(void* data, size_t size) REQUIRES(lock_);
+  ssize_t seek_l(off64_t position, int whence) REQUIRES(lock_);
+  ssize_t readAt_l(off64_t offset, void* data, size_t size) REQUIRES(lock_);
 
+  mutable std::mutex lock_;
   int fd_;
   int64_t start_offset_;
   int64_t length_;
-  int64_t offset_;
-  std::mutex lock_;
+  int64_t offset_ GUARDED_BY(lock_);
 
  private:
   std::string name_;
