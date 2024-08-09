@@ -24,5 +24,7 @@ jobs:
     
     - name: Run clang-format
       run: |
+        # print current clang-format version
+        clang-format --version
         find . -name '*.cpp' -or -name '*.h' -or -name '*.cc' | xargs clang-format -i --style=file
         git diff --exit-code
