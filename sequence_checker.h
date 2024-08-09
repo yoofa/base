@@ -44,15 +44,11 @@ class CAPABILITY("SequenceChecker") SequenceChecker
 #endif
  public:
   // Returns true if sequence checker is attached to the current sequence.
-  bool IsCurrent() const {
-    return Impl::IsCurrent();
-  }
+  bool IsCurrent() const { return Impl::IsCurrent(); }
   // Detaches checker from sequence to which it is attached. Next attempt
   // to do a check with this checker will result in attaching this checker
   // to the sequence on which check was performed.
-  void Detach() {
-    Impl::Detach();
-  }
+  void Detach() { Impl::Detach(); }
 };
 
 }  // namespace base
