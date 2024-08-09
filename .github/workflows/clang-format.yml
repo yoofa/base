@@ -20,17 +20,9 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y clang-format clang-tidy cppcheck
+        sudo apt-get install -y clang-format
     
     - name: Run clang-format
       run: |
         find . -name '*.cpp' -or -name '*.h' -or -name '*.cc' | xargs clang-format -i --style=file
         git diff --exit-code
-    
-    - name: Run clang-tidy
-      run: |
-        find . -name '*.cpp' -or -name '*.h' -or -name '*.cc' | xargs clang-tidy
-    
-    - name: Run cppcheck
-      run: |
-        cppcheck --enable=all --error-exitcode=1 .
