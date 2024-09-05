@@ -9,21 +9,20 @@
 #define AVE_CHECKS_H
 
 #include <cstdlib>
-#include <iostream>  // NOLINT
+#include <iostream>
 
 #include "base/constructor_magic.h"
+#include "base/logging.h"
 #include "base/numerics/safe_compare.h"
 
-// TODO(youfa) use logging instead
-#define AVE_CHECK(x)                           \
-  if (!(x))                                    \
-  LogMessageFatal(__FILE__, __LINE__).stream() \
-      << "Check failed: " #x << __FILE__ << ":" << __LINE__
+#define AVE_CHECK(x) \
+  if (!(x))          \
+  LogMessageFatal().stream() << "Check failed: " #x
 
-// TODO(youfa) use logging instead
-#define AVE_CHECK_OP(name, op, val1, val2)                       \
-  ::ave::base::Safe##name((val1), (val2)) ? static_cast<void>(0) \
-                                          : static_cast<void>(0)
+#define AVE_CHECK_OP(name, op, val1, val2)                               \
+  if (!::ave::base::Safe##name((val1), (val2)))                          \
+  LogMessageFatal().stream() << "Check failed: " #val1 " " #op " " #val2 \
+                             << " (" << (val1) << " vs " << (val2) << ") "
 
 #define AVE_CHECK_EQ(val1, val2) AVE_CHECK_OP(Eq, ==, val1, val2)
 #define AVE_CHECK_NE(val1, val2) AVE_CHECK_OP(Ne, !=, val1, val2)
@@ -79,30 +78,20 @@
 #define AVE_UNREACHABLE_CODE_HIT false
 #define AVE_NOTREACHED() AVE_DCHECK(AVE_UNREACHABLE_CODE_HIT)
 
-class LogMessage {
+class LogMessageFatal {
  public:
-  LogMessage(const char* file, int line) {}
-
-  ~LogMessage() { std::cerr << "\n"; }
-
-  static std::ostream& stream() { return std::cerr; }
-
- private:
-  AVE_DISALLOW_COPY_AND_ASSIGN(LogMessage);
-};
-
-class LogMessageFatal : public LogMessage {
- public:
-  LogMessageFatal(const char* file, int line)
-
-      : LogMessage(file, line) {}
+  LogMessageFatal() : log_message_(__FILE__, __LINE__, ::ave::base::LS_ERROR) {}
 
   ~LogMessageFatal() {
-    std::cerr << "\n";
+    // abort leter, no double free
+    log_message_.~LogMessage();
     std::abort();
   }
 
+  std::ostream& stream() { return log_message_.stream(); }
+
  private:
+  ::ave::base::LogMessage log_message_;
   AVE_DISALLOW_COPY_AND_ASSIGN(LogMessageFatal);
 };
 
