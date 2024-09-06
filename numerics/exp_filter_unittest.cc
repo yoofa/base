@@ -5,6 +5,8 @@
  * Distributed under terms of the GPLv2 license.
  */
 
+#include <cmath>
+
 #include "base/numerics/exp_filter.h"
 
 #include "test/gtest.h"
@@ -13,18 +15,18 @@ namespace ave {
 namespace base {
 TEST(ExpFilterTest, FirstTimeOutputEqualInput) {
   // No max value defined.
-  ExpFilter filter = ExpFilter(0.9f);
+  auto filter = ExpFilter(0.9f);
   filter.Apply(100.0f, 10.0f);
 
   // First time, first argument no effect.
-  double value = 10.0f;
+  auto value = 10.0f;
   EXPECT_FLOAT_EQ(value, filter.filtered());
 }
 
 TEST(ExpFilterTest, SecondTime) {
-  float value;
+  float value = NAN;
 
-  ExpFilter filter = ExpFilter(0.9f);
+  auto filter = ExpFilter(0.9f);
   filter.Apply(100.0f, 10.0f);
 
   // First time, first argument no effect.
@@ -37,7 +39,7 @@ TEST(ExpFilterTest, SecondTime) {
 }
 
 TEST(ExpFilterTest, Reset) {
-  ExpFilter filter = ExpFilter(0.9f);
+  auto filter = ExpFilter(0.9f);
   filter.Apply(100.0f, 10.0f);
 
   filter.Reset(0.8f);
@@ -49,7 +51,7 @@ TEST(ExpFilterTest, Reset) {
 }
 
 TEST(ExpfilterTest, OutputLimitedByMax) {
-  double value;
+  double value = NAN;
 
   // Max value defined.
   ExpFilter filter = ExpFilter(0.9f, 1.0f);

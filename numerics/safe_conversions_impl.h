@@ -8,7 +8,7 @@
 #ifndef SAFE_CONVERSIONS_IMPL_H
 #define SAFE_CONVERSIONS_IMPL_H
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <limits>
 
@@ -36,8 +36,8 @@ struct StaticRangeCheck {};
 
 template <typename Dst, typename Src>
 struct StaticRangeCheck<Dst, Src, DST_SIGNED, SRC_SIGNED> {
-  typedef std::numeric_limits<Dst> DstLimits;
-  typedef std::numeric_limits<Src> SrcLimits;
+  using DstLimits = std::numeric_limits<Dst>;
+  using SrcLimits = std::numeric_limits<Src>;
   // Compare based on max_exponent, which we must compute for integrals.
   static const size_t kDstMaxExponent =
       DstLimits::is_iec559 ? DstLimits::max_exponent : (sizeof(Dst) * 8 - 1);
@@ -55,8 +55,8 @@ struct StaticRangeCheck<Dst, Src, DST_UNSIGNED, SRC_UNSIGNED> {
 
 template <typename Dst, typename Src>
 struct StaticRangeCheck<Dst, Src, DST_SIGNED, SRC_UNSIGNED> {
-  typedef std::numeric_limits<Dst> DstLimits;
-  typedef std::numeric_limits<Src> SrcLimits;
+  using DstLimits = std::numeric_limits<Dst>;
+  using SrcLimits = std::numeric_limits<Src>;
   // Compare based on max_exponent, which we must compute for integrals.
   static const size_t kDstMaxExponent =
       DstLimits::is_iec559 ? DstLimits::max_exponent : (sizeof(Dst) * 8 - 1);
@@ -143,8 +143,8 @@ struct RangeCheckImpl<Dst, Src, DST_SIGNED, SRC_UNSIGNED, OVERLAPS_RANGE> {
 // Signed to unsigned.
 template <typename Dst, typename Src>
 struct RangeCheckImpl<Dst, Src, DST_UNSIGNED, SRC_SIGNED, OVERLAPS_RANGE> {
-  typedef std::numeric_limits<Dst> DstLimits;
-  typedef std::numeric_limits<Src> SrcLimits;
+  using DstLimits = std::numeric_limits<Dst>;
+  using SrcLimits = std::numeric_limits<Src>;
   // Compare based on max_exponent, which we must compute for integrals.
   static constexpr size_t DstMaxExponent() { return sizeof(Dst) * 8; }
   static constexpr size_t SrcMaxExponent() {

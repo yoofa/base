@@ -42,8 +42,9 @@ inline constexpr Dst dchecked_cast(Src value) {
 template <typename Dst, typename Src>
 inline constexpr Dst saturated_cast(Src value) {
   // Optimization for floating point values, which already saturate.
-  if (std::numeric_limits<Dst>::is_iec559)
+  if (std::numeric_limits<Dst>::is_iec559) {
     return static_cast<Dst>(value);
+  }
 
   switch (internal::RangeCheck<Dst>(value)) {
     case internal::TYPE_VALID:

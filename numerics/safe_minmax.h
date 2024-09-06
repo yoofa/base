@@ -28,7 +28,7 @@ struct Limits {
   static constexpr T max = std::numeric_limits<T>::max();
 };
 
-template <typename T, bool is_enum = std::is_enum<T>::value>
+template <typename T, bool is_enum = std::is_enum_v<T>>
 struct UnderlyingType;
 
 template <typename T>
@@ -38,7 +38,7 @@ struct UnderlyingType<T, false> {
 
 template <typename T>
 struct UnderlyingType<T, true> {
-  using type = typename std::underlying_type<T>::type;
+  using type = std::underlying_type_t<T>;
 };
 
 // Given two types T1 and T2, find types that can hold the smallest (in
@@ -56,15 +56,11 @@ struct MType {
 // floating-point).
 template <typename T1, typename T2>
 struct MType<T1, T2, false, false> {
-  using min_t = typename std::common_type<T1, T2>::type;
-  static_assert(std::is_same<min_t, T1>::value ||
-                    std::is_same<min_t, T2>::value,
-                "");
+  using min_t = std::common_type_t<T1, T2>;
+  static_assert(std::is_same_v<min_t, T1> || std::is_same_v<min_t, T2>);
 
-  using max_t = typename std::common_type<T1, T2>::type;
-  static_assert(std::is_same<max_t, T1>::value ||
-                    std::is_same<max_t, T2>::value,
-                "");
+  using max_t = std::common_type_t<T1, T2>;
+  static_assert(std::is_same_v<max_t, T1> || std::is_same_v<max_t, T2>);
 };
 
 // Specialization for when both types are integral.
@@ -73,18 +69,15 @@ struct MType<T1, T2, true, true> {
   // The type with the lowest minimum value. In case of a tie, the type with
   // the lowest maximum value. In case that too is a tie, the types have the
   // same range, and we arbitrarily pick T1.
-  using min_t = typename std::conditional<
+  using min_t = std::conditional_t<
       SafeLt(Limits<T1>::lowest, Limits<T2>::lowest),
       T1,
-      typename std::conditional<
+      std::conditional_t<
           SafeGt(Limits<T1>::lowest, Limits<T2>::lowest),
           T2,
-          typename std::conditional<SafeLe(Limits<T1>::max, Limits<T2>::max),
-                                    T1,
-                                    T2>::type>::type>::type;
-  static_assert(std::is_same<min_t, T1>::value ||
-                    std::is_same<min_t, T2>::value,
-                "");
+          std::
+              conditional_t<SafeLe(Limits<T1>::max, Limits<T2>::max), T1, T2>>>;
+  static_assert(std::is_same_v<min_t, T1> || std::is_same_v<min_t, T2>);
 
   // The type with the highest maximum value. In case of a tie, the types have
   // the same range (because in C++, integer types with the same maximum also
@@ -92,11 +85,9 @@ struct MType<T1, T2, true, true> {
   static_assert(SafeNe(Limits<T1>::max, Limits<T2>::max) ||
                     SafeEq(Limits<T1>::lowest, Limits<T2>::lowest),
                 "integer types with the same max should have the same min");
-  using max_t = typename std::
-      conditional<SafeGe(Limits<T1>::max, Limits<T2>::max), T1, T2>::type;
-  static_assert(std::is_same<max_t, T1>::value ||
-                    std::is_same<max_t, T2>::value,
-                "");
+  using max_t =
+      std::conditional_t<SafeGe(Limits<T1>::max, Limits<T2>::max), T1, T2>;
+  static_assert(std::is_same_v<max_t, T1> || std::is_same_v<max_t, T2>);
 };
 
 // A dummy type that we pass around at compile time but never actually use.
@@ -107,14 +98,13 @@ struct DefaultType;
 // that the chosen type can hold all values that B can hold.
 template <typename A, typename B>
 struct TypeOr {
-  using type = typename std::
-      conditional<std::is_same<A, DefaultType>::value, B, A>::type;
+  using type = std::conditional_t<std::is_same_v<A, DefaultType>, B, A>;
   static_assert(SafeLe(Limits<type>::lowest, Limits<B>::lowest) &&
                     SafeGe(Limits<type>::max, Limits<B>::max),
                 "The specified type isn't large enough");
   static_assert(IsIntlike<type>::value == IsIntlike<B>::value &&
-                    std::is_floating_point<type>::value ==
-                        std::is_floating_point<type>::value,
+                    std::is_floating_point_v<type> ==
+                        std::is_floating_point_v<type>,
                 "float<->int conversions not allowed");
 };
 }  // namespace safe_minmax_impl
@@ -129,9 +119,9 @@ template <
             typename safe_minmax_impl::UnderlyingType<T1>::type,
             typename safe_minmax_impl::UnderlyingType<T2>::type>::min_t>::type>
 constexpr R2 SafeMin(T1 a, T2 b) {
-  static_assert(IsIntlike<T1>::value || std::is_floating_point<T1>::value,
+  static_assert(IsIntlike<T1>::value || std::is_floating_point_v<T1>,
                 "The first argument must be integral or floating-point");
-  static_assert(IsIntlike<T2>::value || std::is_floating_point<T2>::value,
+  static_assert(IsIntlike<T2>::value || std::is_floating_point_v<T2>,
                 "The second argument must be integral or floating-point");
   return SafeLt(a, b) ? static_cast<R2>(a) : static_cast<R2>(b);
 }
@@ -146,9 +136,9 @@ template <
             typename safe_minmax_impl::UnderlyingType<T1>::type,
             typename safe_minmax_impl::UnderlyingType<T2>::type>::max_t>::type>
 constexpr R2 SafeMax(T1 a, T2 b) {
-  static_assert(IsIntlike<T1>::value || std::is_floating_point<T1>::value,
+  static_assert(IsIntlike<T1>::value || std::is_floating_point_v<T1>,
                 "The first argument must be integral or floating-point");
-  static_assert(IsIntlike<T2>::value || std::is_floating_point<T2>::value,
+  static_assert(IsIntlike<T2>::value || std::is_floating_point_v<T2>,
                 "The second argument must be integral or floating-point");
   return SafeGt(a, b) ? static_cast<R2>(a) : static_cast<R2>(b);
 }
@@ -171,7 +161,7 @@ struct ClampType {
 // Specialization for when all three types are floating-point.
 template <typename T, typename L, typename H>
 struct ClampType<T, L, H, false, false, false> {
-  using type = typename std::common_type<T, L, H>::type;
+  using type = std::common_type_t<T, L, H>;
 };
 
 // Specialization for when all three types are integral.
@@ -201,38 +191,36 @@ struct ClampType<T, L, H, true, true, true> {
     static constexpr bool value = not_too_large && range_contained;
   };
 
-  using best_signed_type = typename std::conditional<
+  using best_signed_type = std::conditional_t<
       AcceptableType<int8_t>::value,
       int8_t,
-      typename std::conditional<
-          AcceptableType<int16_t>::value,
-          int16_t,
-          typename std::conditional<AcceptableType<int32_t>::value,
-                                    int32_t,
-                                    int64_t>::type>::type>::type;
+      std::conditional_t<AcceptableType<int16_t>::value,
+                         int16_t,
+                         std::conditional_t<AcceptableType<int32_t>::value,
+                                            int32_t,
+                                            int64_t>>>;
 
-  using best_unsigned_type = typename std::conditional<
+  using best_unsigned_type = std::conditional_t<
       AcceptableType<uint8_t>::value,
       uint8_t,
-      typename std::conditional<
-          AcceptableType<uint16_t>::value,
-          uint16_t,
-          typename std::conditional<AcceptableType<uint32_t>::value,
-                                    uint32_t,
-                                    uint64_t>::type>::type>::type;
+      std::conditional_t<AcceptableType<uint16_t>::value,
+                         uint16_t,
+                         std::conditional_t<AcceptableType<uint32_t>::value,
+                                            uint32_t,
+                                            uint64_t>>>;
 
  public:
   // Pick the best type, preferring the same signedness as T but falling back
   // to the other one if necessary.
-  using type = typename std::conditional<
-      std::is_signed<T>::value,
-      typename std::conditional<AcceptableType<best_signed_type>::value,
-                                best_signed_type,
-                                best_unsigned_type>::type,
-      typename std::conditional<AcceptableType<best_unsigned_type>::value,
-                                best_unsigned_type,
-                                best_signed_type>::type>::type;
-  static_assert(AcceptableType<type>::value, "");
+  using type = std::conditional_t<
+      std::is_signed_v<T>,
+      std::conditional_t<AcceptableType<best_signed_type>::value,
+                         best_signed_type,
+                         best_unsigned_type>,
+      std::conditional_t<AcceptableType<best_unsigned_type>::value,
+                         best_unsigned_type,
+                         best_signed_type>>;
+  static_assert(AcceptableType<type>::value);
 };
 
 }  // namespace safe_minmax_impl
@@ -249,11 +237,11 @@ template <
             typename safe_minmax_impl::UnderlyingType<L>::type,
             typename safe_minmax_impl::UnderlyingType<H>::type>::type>::type>
 R2 SafeClamp(T x, L min, H max) {
-  static_assert(IsIntlike<H>::value || std::is_floating_point<H>::value,
+  static_assert(IsIntlike<H>::value || std::is_floating_point_v<H>,
                 "The first argument must be integral or floating-point");
-  static_assert(IsIntlike<T>::value || std::is_floating_point<T>::value,
+  static_assert(IsIntlike<T>::value || std::is_floating_point_v<T>,
                 "The second argument must be integral or floating-point");
-  static_assert(IsIntlike<L>::value || std::is_floating_point<L>::value,
+  static_assert(IsIntlike<L>::value || std::is_floating_point_v<L>,
                 "The third argument must be integral or floating-point");
   AVE_DCHECK_LE(min, max);
   return SafeLe(x, min)   ? static_cast<R2>(min)

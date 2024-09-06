@@ -8,8 +8,8 @@
 #ifndef SAFE_COMPARE_H
 #define SAFE_COMPARE_H
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 #include <type_traits>
 
@@ -45,64 +45,64 @@ struct LargerInt
                         : 0> {};
 
 template <typename T>
-constexpr typename std::make_unsigned<T>::type MakeUnsigned(T a) {
-  return static_cast<typename std::make_unsigned<T>::type>(a);
+constexpr auto MakeUnsigned(T a) {
+  return static_cast<std::make_unsigned_t<T>>(a);
 }
 
 // Overload for when both T1 and T2 have the same signedness.
 template <typename Op,
           typename T1,
           typename T2,
-          typename std::enable_if<std::is_signed<T1>::value ==
-                                  std::is_signed<T2>::value>::type* = nullptr>
+          typename std::enable_if_t<std::is_signed_v<T1> ==
+                                    std::is_signed_v<T2>>* = nullptr>
 constexpr bool Cmp(T1 a, T2 b) {
   return Op::Op(a, b);
 }
 
 // Overload for signed - unsigned comparison that can be promoted to a bigger
 // signed type.
-template <typename Op,
-          typename T1,
-          typename T2,
-          typename std::enable_if<std::is_signed<T1>::value &&
-                                  std::is_unsigned<T2>::value &&
-                                  LargerInt<T2, T1>::value>::type* = nullptr>
+template <
+    typename Op,
+    typename T1,
+    typename T2,
+    typename std::enable_if_t<std::is_signed_v<T1> && std::is_unsigned_v<T2> &&
+                              LargerInt<T2, T1>::value>* = nullptr>
 constexpr bool Cmp(T1 a, T2 b) {
   return Op::Op(a, static_cast<typename LargerInt<T2, T1>::type>(b));
 }
 
 // Overload for unsigned - signed comparison that can be promoted to a bigger
 // signed type.
-template <typename Op,
-          typename T1,
-          typename T2,
-          typename std::enable_if<std::is_unsigned<T1>::value &&
-                                  std::is_signed<T2>::value &&
-                                  LargerInt<T1, T2>::value>::type* = nullptr>
+template <
+    typename Op,
+    typename T1,
+    typename T2,
+    typename std::enable_if_t<std::is_unsigned_v<T1> && std::is_signed_v<T2> &&
+                              LargerInt<T1, T2>::value>* = nullptr>
 constexpr bool Cmp(T1 a, T2 b) {
   return Op::Op(static_cast<typename LargerInt<T1, T2>::type>(a), b);
 }
 
 // Overload for signed - unsigned comparison that can't be promoted to a bigger
 // signed type.
-template <typename Op,
-          typename T1,
-          typename T2,
-          typename std::enable_if<std::is_signed<T1>::value &&
-                                  std::is_unsigned<T2>::value &&
-                                  !LargerInt<T2, T1>::value>::type* = nullptr>
+template <
+    typename Op,
+    typename T1,
+    typename T2,
+    typename std::enable_if_t<std::is_signed_v<T1> && std::is_unsigned_v<T2> &&
+                              !LargerInt<T2, T1>::value>* = nullptr>
 constexpr bool Cmp(T1 a, T2 b) {
   return a < 0 ? Op::Op(-1, 0) : Op::Op(safe_cmp_impl::MakeUnsigned(a), b);
 }
 
 // Overload for unsigned - signed comparison that can't be promoted to a bigger
 // signed type.
-template <typename Op,
-          typename T1,
-          typename T2,
-          typename std::enable_if<std::is_unsigned<T1>::value &&
-                                  std::is_signed<T2>::value &&
-                                  !LargerInt<T1, T2>::value>::type* = nullptr>
+template <
+    typename Op,
+    typename T1,
+    typename T2,
+    typename std::enable_if_t<std::is_unsigned_v<T1> && std::is_signed_v<T2> &&
+                              !LargerInt<T1, T2>::value>* = nullptr>
 constexpr bool Cmp(T1 a, T2 b) {
   return b < 0 ? Op::Op(0, -1) : Op::Op(a, safe_cmp_impl::MakeUnsigned(b));
 }
@@ -124,20 +124,19 @@ AVE_SAFECMP_MAKE_OP(GeOp, >=)
 
 }  // namespace safe_cmp_impl
 
-#define AVE_SAFECMP_MAKE_FUN(name)                                            \
-  template <typename T1, typename T2>                                         \
-  constexpr                                                                   \
-      typename std::enable_if<IsIntlike<T1>::value && IsIntlike<T2>::value,   \
-                              bool>::type Safe##name(T1 a, T2 b) {            \
-    /* Unary plus here turns enums into real integral types. */               \
-    return safe_cmp_impl::Cmp<safe_cmp_impl::name##Op>(+a, +b);               \
-  }                                                                           \
-  template <typename T1, typename T2>                                         \
-  constexpr                                                                   \
-      typename std::enable_if<!IsIntlike<T1>::value || !IsIntlike<T2>::value, \
-                              bool>::type Safe##name(const T1& a,             \
-                                                     const T2& b) {           \
-    return safe_cmp_impl::name##Op::Op(a, b);                                 \
+#define AVE_SAFECMP_MAKE_FUN(name)                                           \
+  template <typename T1, typename T2>                                        \
+  constexpr std::enable_if_t<IsIntlike<T1>::value && IsIntlike<T2>::value,   \
+                             bool>                                           \
+      Safe##name(T1 a, T2 b) {                                               \
+    /* Unary plus here turns enums into real integral types. */              \
+    return safe_cmp_impl::Cmp<safe_cmp_impl::name##Op>(+a, +b);              \
+  }                                                                          \
+  template <typename T1, typename T2>                                        \
+  constexpr std::enable_if_t<!IsIntlike<T1>::value || !IsIntlike<T2>::value, \
+                             bool>                                           \
+      Safe##name(const T1& a, const T2& b) {                                 \
+    return safe_cmp_impl::name##Op::Op(a, b);                                \
   }
 
 AVE_SAFECMP_MAKE_FUN(Eq)
