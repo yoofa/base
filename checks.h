@@ -17,12 +17,13 @@
 
 #define AVE_CHECK(x) \
   if (!(x))          \
-  LogMessageFatal().stream() << "Check failed: " #x
+  LogMessageFatal(__FILE__, __LINE__).stream() << "Check failed: " #x
 
-#define AVE_CHECK_OP(name, op, val1, val2)                               \
-  if (!::ave::base::Safe##name((val1), (val2)))                          \
-  LogMessageFatal().stream() << "Check failed: " #val1 " " #op " " #val2 \
-                             << " (" << (val1) << " vs " << (val2) << ") "
+#define AVE_CHECK_OP(name, op, val1, val2)                                    \
+  if (!::ave::base::Safe##name((val1), (val2)))                               \
+  LogMessageFatal(__FILE__, __LINE__).stream()                                \
+      << "Check failed: " #val1 " " #op " " #val2 << " (" << (val1) << " vs " \
+      << (val2) << ") "
 
 #define AVE_CHECK_EQ(val1, val2) AVE_CHECK_OP(Eq, ==, val1, val2)
 #define AVE_CHECK_NE(val1, val2) AVE_CHECK_OP(Ne, !=, val1, val2)
@@ -80,7 +81,8 @@
 
 class LogMessageFatal {
  public:
-  LogMessageFatal() : log_message_(__FILE__, __LINE__, ::ave::base::LS_ERROR) {}
+  LogMessageFatal(const char* file, int line)
+      : log_message_(file, line, ::ave::base::LS_ERROR) {}
 
   ~LogMessageFatal() {
     // abort leter, no double free

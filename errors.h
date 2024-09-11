@@ -16,7 +16,7 @@ namespace ave {
 
 using status_t = int32_t;
 
-enum int32_t {
+enum {
   OK = 0,         // Preferred constant for checking success.
   NO_ERROR = OK,  // Deprecated synonym for `OK`. Prefer `OK` because it doesn't
                   // conflict with Windows.

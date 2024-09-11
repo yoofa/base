@@ -432,5 +432,10 @@ using base::LS_VERBOSE;
 using base::LS_WARNING;
 
 }  // namespace ave
+using ave::base::LS_DEBUG;
+using ave::base::LS_ERROR;
+using ave::base::LS_INFO;
+using ave::base::LS_VERBOSE;
+using ave::base::LS_WARNING;
 
 #endif /* !LOGGING_H */
