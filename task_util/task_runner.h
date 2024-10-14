@@ -30,7 +30,12 @@ class CAPABILITY("TaskRunner") TaskRunner {
   // post a task to be run
   void PostTask(std::unique_ptr<base::Task> task);
 
+  void PostTaskAndWait(std::unique_ptr<base::Task> task);
+
   void PostDelayedTask(std::unique_ptr<base::Task> task, uint64_t time_us);
+
+  void PostDelayedTaskAndWait(std::unique_ptr<base::Task> task,
+                              uint64_t time_us);
 
   TaskRunnerBase* Get() { return impl_; }
 
@@ -46,9 +51,26 @@ class CAPABILITY("TaskRunner") TaskRunner {
             std::enable_if_t<
                 !std::is_convertible_v<Closure, std::unique_ptr<base::Task>>>* =
                 nullptr>
+  void PostTaskAndWait(Closure&& closure) {
+    return PostTaskAndWait(base::toTask(std::forward<Closure>(closure)));
+  }
+
+  template <class Closure,
+            std::enable_if_t<
+                !std::is_convertible_v<Closure, std::unique_ptr<base::Task>>>* =
+                nullptr>
   void PostDelayedTask(Closure&& closure, uint64_t timeUs) {
     return PostDelayedTask(base::toTask(std::forward<Closure>(closure)),
                            timeUs);
+  }
+
+  template <class Closure,
+            std::enable_if_t<
+                !std::is_convertible_v<Closure, std::unique_ptr<base::Task>>>* =
+                nullptr>
+  void PostDelayedTaskAndWait(Closure&& closure, uint64_t timeUs) {
+    return PostDelayedTaskAndWait(base::toTask(std::forward<Closure>(closure)),
+                                  timeUs);
   }
 
  protected:

@@ -23,5 +23,9 @@ int main() {
   runner->PostTask([]() { AVE_LOG(ave::LS_INFO) << "test post task"; });
   runner->PostDelayedTask(
       []() { AVE_LOG(ave::LS_INFO) << "test post delayed task"; }, 100 * 1000);
+  AVE_LOG(ave::LS_INFO) << "before sync run";
+  runner->PostTaskAndWait(
+      []() { AVE_LOG(ave::LS_INFO) << "test post task and wait"; });
+  AVE_LOG(ave::LS_INFO) << "after sync run";
   sleep(2);
 }

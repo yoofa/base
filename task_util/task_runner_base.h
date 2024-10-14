@@ -25,6 +25,10 @@ class TaskRunnerBase {
   virtual void PostDelayedTask(std::unique_ptr<Task> task,
                                uint64_t time_us) = 0;
 
+  virtual void PostDelayedTaskAndWait(std::unique_ptr<Task> task,
+                                      uint64_t time_us,
+                                      bool wait) = 0;
+
   // virtual bool postTaskAndReplay(const Task& task, const Task& reply);
 
   static TaskRunnerBase* Current();

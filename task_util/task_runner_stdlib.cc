@@ -9,11 +9,13 @@
 
 #include <chrono>
 #include <condition_variable>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <queue>
 #include <string>
 
+#include "base/logging.h"
 #include "base/task_util/task_runner_factory.h"
 #include "base/thread.h"
 #include "base/thread_defs.h"
@@ -53,13 +55,18 @@ class TaskRunnerStdlib final : public TaskRunnerBase {
   void Destruct() override;
   void PostTask(std::unique_ptr<Task> task) override;
   void PostDelayedTask(std::unique_ptr<Task> task, uint64_t delay_us) override;
+  void PostDelayedTaskAndWait(std::unique_ptr<Task> task,
+                              uint64_t delay_us,
+                              bool wait) override;
 
  private:
   using OrderId = uint64_t;
   struct TaskEntry {
+    bool wait_{false};
     uint64_t when_us_{};
     OrderId order_{};
     std::unique_ptr<Task> task_;
+    std::shared_ptr<std::promise<void>> promise_;
   };
 
   struct TaskOrder {
@@ -118,29 +125,51 @@ void TaskRunnerStdlib::Destruct() {
 void TaskRunnerStdlib::PostTask(std::unique_ptr<Task> task) {
   return PostDelayedTask(std::move(task), 0LL);
 }
-
 void TaskRunnerStdlib::PostDelayedTask(std::unique_ptr<Task> task,
                                        uint64_t delay_us) {
-  std::lock_guard<std::mutex> guard(mutex_);
-  if (need_quit_) {
-    return;
-  }
-  uint64_t when_us = 0;
-  if (delay_us > 0) {
-    uint64_t now_us = GetNowUs();
-    when_us = (delay_us > (std::numeric_limits<uint64_t>::max() - now_us)
-                   ? std::numeric_limits<uint64_t>::max()
-                   : (now_us + delay_us));
-  } else {
-    when_us = GetNowUs();
-  }
-  std::unique_ptr<TaskEntry> entry = std::make_unique<TaskEntry>();
-  entry->when_us_ = when_us;
-  entry->order_ = task_order_id_++;
-  entry->task_ = std::move(task);
-  task_queue_.push(std::move(entry));
+  PostDelayedTaskAndWait(std::move(task), delay_us, false);
+}
 
-  task_condition_.notify_one();
+void TaskRunnerStdlib::PostDelayedTaskAndWait(std::unique_ptr<Task> task,
+                                              uint64_t delay_us,
+                                              bool wait) {
+  std::shared_ptr<std::promise<void>> promise;
+  std::future<void> future;
+  {
+    std::lock_guard<std::mutex> guard(mutex_);
+    if (need_quit_) {
+      return;
+    }
+
+    if (wait) {
+      promise = std::make_shared<std::promise<void>>();
+      future = promise->get_future();
+    }
+
+    uint64_t when_us = 0;
+    if (delay_us > 0) {
+      uint64_t now_us = GetNowUs();
+      when_us = (delay_us > (std::numeric_limits<uint64_t>::max() - now_us)
+                     ? std::numeric_limits<uint64_t>::max()
+                     : (now_us + delay_us));
+    } else {
+      when_us = GetNowUs();
+    }
+    std::unique_ptr<TaskEntry> entry = std::make_unique<TaskEntry>();
+    entry->when_us_ = when_us;
+    entry->order_ = task_order_id_++;
+    entry->task_ = std::move(task);
+    if (wait) {
+      entry->promise_ = promise;
+    }
+    task_queue_.push(std::move(entry));
+
+    task_condition_.notify_one();
+  }
+
+  if (wait) {
+    future.wait();
+  }
 }
 
 bool TaskRunnerStdlib::Looping() {
@@ -151,6 +180,7 @@ bool TaskRunnerStdlib::Looping() {
 void TaskRunnerStdlib::ProcessTask() {
   while (Looping()) {
     std::unique_ptr<Task> task;
+    std::shared_ptr<std::promise<void>> promise;
     {
       std::unique_lock<std::mutex> l(mutex_);
       if (task_queue_.empty()) {
@@ -168,13 +198,19 @@ void TaskRunnerStdlib::ProcessTask() {
         task_condition_.wait_for(l, std::chrono::microseconds(delay_us));
         continue;
       }
+
       task = std::move(entry->task_);
+      promise = std::move(entry->promise_);
       task_queue_.pop();
     }
     Task* release_ptr = task.release();
     // if return true , task runner take the ownership
     if (release_ptr->Run()) {
       delete release_ptr;
+    }
+
+    if (promise) {
+      promise->set_value();
     }
   }
 }

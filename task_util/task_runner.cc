@@ -26,9 +26,18 @@ void TaskRunner::PostTask(std::unique_ptr<base::Task> task) {
   return impl_->PostTask(std::move(task));
 }
 
+void TaskRunner::PostTaskAndWait(std::unique_ptr<base::Task> task) {
+  return impl_->PostDelayedTaskAndWait(std::move(task), 0LL, true);
+}
+
 void TaskRunner::PostDelayedTask(std::unique_ptr<base::Task> task,
                                  uint64_t time_us) {
   return impl_->PostDelayedTask(std::move(task), time_us);
+}
+
+void TaskRunner::PostDelayedTaskAndWait(std::unique_ptr<base::Task> task,
+                                        uint64_t time_us) {
+  return impl_->PostDelayedTaskAndWait(std::move(task), time_us, true);
 }
 
 }  // namespace base
