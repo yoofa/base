@@ -424,7 +424,7 @@ class BufferT {
 };
 
 // By far the most common sort of buffer.
-using Buffer8 = BufferT<uint8_t>;
+using Buffer = BufferT<uint8_t>;
 
 // A buffer that zeros memory before releasing it.
 template <typename T>

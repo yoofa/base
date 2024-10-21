@@ -53,6 +53,10 @@ ave_library("base") {
   deps += [ "data_source" ]
 }
 
+ave_library("buffer") {
+  sources = [ "buffer.h" ]
+}
+
 ave_library("timeutils") {
   visibility = [ "*" ]
   sources = [
