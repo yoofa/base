@@ -19,6 +19,13 @@ ave_library("net_utils") {
   ]
 }
 
+ave_library("http_api") {
+  sources = [
+    "http/http_connection.h",
+    "http/http_provider.h",
+  ]
+}
+
 ave_source_set("base_net_unittests_source") {
   testonly = true
   sources = [
