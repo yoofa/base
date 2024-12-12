@@ -26,6 +26,16 @@ ave_library("http_api") {
   ]
 }
 
+ave_library("curl_http") {
+  sources = [
+    "http/curl_http_connection.cc",
+    "http/curl_http_connection.h",
+    "http/curl_http_provider.cc",
+    "http/curl_http_provider.h",
+  ]
+  deps = [ ":http_api" ]
+}
+
 ave_source_set("base_net_unittests_source") {
   testonly = true
   sources = [
