@@ -19,6 +19,7 @@ import("base.gni")
 import("build/ave.gni")
 
 ave_library("base") {
+  testonly = true
   visibility = [ "*" ]
 
   sources = [
@@ -45,6 +46,7 @@ ave_library("base") {
 
   if (ave_base_include_test) {
     deps += [
+      ":logging_benchmark",
       ":logging_test",
       ":task_test",
       ":thread_test",
@@ -237,6 +239,14 @@ ave_source_set("divide_round") {
 
 #--------------------
 
+ave_executable("logging_benchmark") {
+  testonly = true
+  sources = [ "logging_benchmark.cc" ]
+  deps = [
+    ":logging",
+    "//third_party/google_benchmark",
+  ]
+}
 executable("logging_test") {
   visibility = [ "*" ]
   sources = [ "logging_test.cc" ]
