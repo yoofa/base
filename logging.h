@@ -178,9 +178,9 @@ inline Val<LogArgType::kLogMetadataErr, LogMetadataErr> MakeVal(
 }
 
 // The enum class types are not implicitly convertible to arithmetic types.
-template <typename T,
-          std::enable_if_t<std::is_enum<T>::value &&
-                           !std::is_arithmetic<T>::value>* = nullptr>
+template <
+    typename T,
+    std::enable_if_t<std::is_enum_v<T> && !std::is_arithmetic_v<T>>* = nullptr>
 inline decltype(MakeVal(std::declval<std::underlying_type_t<T>>())) MakeVal(
     T x) {
   return {static_cast<std::underlying_type_t<T>>(x)};
@@ -197,8 +197,8 @@ template <
     typename T,
     typename T1 = std::decay_t<T>,
     typename = std::enable_if_t<
-        std::is_class<T1>::value && !std::is_same<T1, std::string>::value &&
-        !std::is_same<T1, LogMetadata>::value && !has_to_log_string<T1>::value>>
+        std::is_class_v<T1> && !std::is_same_v<T1, std::string> &&
+        !std::is_same_v<T1, LogMetadata> && !has_to_log_string<T1>::value>>
 ToStringVal MakeVal(const T& x) {
   std::ostringstream os;
   os << x;
@@ -218,18 +218,18 @@ class LogStreamer;
 template <>
 class LogStreamer<> final {
  public:
-  template <typename U,
-            typename V = decltype(MakeVal(std::declval<U>())),
-            std::enable_if_t<std::is_arithmetic<U>::value ||
-                             std::is_enum<U>::value>* = nullptr>
+  template <
+      typename U,
+      typename V = decltype(MakeVal(std::declval<U>())),
+      std::enable_if_t<std::is_arithmetic_v<U> || std::is_enum_v<U>>* = nullptr>
   inline LogStreamer<V> operator<<(U arg) const {
     return LogStreamer<V>(MakeVal(arg), this);
   }
 
   template <typename U,
             typename V = decltype(MakeVal(std::declval<U>())),
-            std::enable_if_t<!std::is_arithmetic<U>::value &&
-                             !std::is_enum<U>::value>* = nullptr>
+            std::enable_if_t<!std::is_arithmetic_v<U> && !std::is_enum_v<U>>* =
+                nullptr>
   inline LogStreamer<V> operator<<(const U& arg) const {
     return LogStreamer<V>(MakeVal(arg), this);
   }
@@ -249,18 +249,18 @@ class LogStreamer<T, Ts...> final {
   inline LogStreamer(T arg, const LogStreamer<Ts...>* prior)
       : arg_(arg), prior_(prior) {}
 
-  template <typename U,
-            typename V = decltype(MakeVal(std::declval<U>())),
-            std::enable_if_t<std::is_arithmetic<U>::value ||
-                             std::is_enum<U>::value>* = nullptr>
+  template <
+      typename U,
+      typename V = decltype(MakeVal(std::declval<U>())),
+      std::enable_if_t<std::is_arithmetic_v<U> || std::is_enum_v<U>>* = nullptr>
   inline LogStreamer<V, T, Ts...> operator<<(U arg) const {
     return LogStreamer<V, T, Ts...>(MakeVal(arg), this);
   }
 
   template <typename U,
             typename V = decltype(MakeVal(std::declval<U>())),
-            std::enable_if_t<!std::is_arithmetic<U>::value &&
-                             !std::is_enum<U>::value>* = nullptr>
+            std::enable_if_t<!std::is_arithmetic_v<U> && !std::is_enum_v<U>>* =
+                nullptr>
   inline LogStreamer<V, T, Ts...> operator<<(const U& arg) const {
     return LogStreamer<V, T, Ts...>(MakeVal(arg), this);
   }
