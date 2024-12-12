@@ -36,6 +36,11 @@ ave_library("curl_http") {
   deps = [ ":http_api" ]
 }
 
+ave_executable("ave_curl") {
+  sources = [ "http/curl_demo.cc" ]
+  deps = [ ":curl_http" ]
+}
+
 ave_source_set("base_net_unittests_source") {
   testonly = true
   sources = [
