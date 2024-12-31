@@ -74,7 +74,7 @@ ave_source_set("type_traits") {
   sources = [ "type_traits.h" ]
 }
 
-source_set("macromagic") {
+ave_source_set("macromagic") {
   visibility = [ "*" ]
   sources = [
     "constructor_magic.h",
@@ -82,19 +82,21 @@ source_set("macromagic") {
   ]
 }
 
-source_set("byte_utils") {
+ave_source_set("byte_utils") {
   sources = [
     "byte_utils.cc",
     "byte_utils.h",
   ]
 }
 
-source_set("checks") {
-  sources = [ "checks.h" ]
-  deps = [ ":logging" ]
+ave_source_set("checks") {
+  sources = [
+    "checks.cc",
+    "checks.h",
+  ]
 }
 
-static_library("utils") {
+ave_library("utils") {
   sources = [
     "errors.cc",
     "errors.h",
@@ -108,7 +110,7 @@ static_library("utils") {
   deps = [ ":checks" ]
 }
 
-static_library("count_down_latch") {
+ave_library("count_down_latch") {
   visibility = [ "*" ]
   sources = [
     "count_down_latch.cc",
@@ -116,22 +118,26 @@ static_library("count_down_latch") {
   ]
 }
 
-source_set("ignore_wundef") {
+ave_source_set("ignore_wundef") {
   sources = [ "ignore_wundef.h" ]
 }
 
-source_set("attributes") {
+ave_source_set("attributes") {
   sources = [ "attributes.h" ]
 }
 
-static_library("logging") {
+ave_library("logging") {
+  libs = []
   sources = [
     "logging.cc",
     "logging.h",
   ]
+  if (is_android) {
+    libs += [ "log" ]
+  }
 }
 
-source_set("thread") {
+ave_source_set("thread") {
   sources = [
     "thread.cc",
     "thread.h",
@@ -144,7 +150,7 @@ source_set("thread") {
   ]
 }
 
-static_library("task_util") {
+ave_library("task_util") {
   sources = [
     "task_util/default_task_runner_factory.h",
     "task_util/pending_task_flag.cc",
@@ -169,12 +175,13 @@ static_library("task_util") {
   configs += [ "//build/config/compiler:rtti" ]
 
   deps = [
+    ":checks",
     ":logging",
     ":thread",
   ]
 }
 
-static_library("sequence_checker") {
+ave_library("sequence_checker") {
   sources = [
     "sequence_checker.h",
     "sequence_checker_internal.cc",
@@ -186,7 +193,7 @@ static_library("sequence_checker") {
   ]
 }
 
-static_library("numerics") {
+ave_library("numerics") {
   sources = [
     "numerics/exp_filter.cc",
     "numerics/exp_filter.h",
@@ -262,7 +269,7 @@ executable("thread_test") {
   ]
 }
 
-source_set("task_runner_unittest") {
+ave_source_set("task_runner_unittest") {
   testonly = true
   sources = [
     "test/repeating_task_unittest.cc",
@@ -286,7 +293,7 @@ executable("task_test") {
   ]
 }
 
-source_set("numerics_unittest") {
+ave_source_set("numerics_unittest") {
   testonly = true
   sources = [ "numerics/exp_filter_unittest.cc" ]
   deps = [
@@ -296,9 +303,19 @@ source_set("numerics_unittest") {
   ]
 }
 
+ave_source_set("checks_unittest") {
+  testonly = true
+  sources = [ "test/checks_unittest.cc" ]
+  deps = [
+    ":checks",
+    "//test:test_support",
+  ]
+}
+
 executable("base_unittests") {
   testonly = true
   deps = [
+    ":checks_unittest",
     ":numerics_unittest",
     ":task_runner_unittest",
     ":task_util",
