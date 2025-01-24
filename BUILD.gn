@@ -47,6 +47,9 @@ ave_library("base") {
   if (ave_base_include_test) {
     deps += [
       ":logging_benchmark",
+      #":statistics_benchmark",
+    ]
+    deps += [
       ":logging_test",
       ":task_test",
       ":thread_test",
@@ -233,6 +236,13 @@ ave_source_set("divide_round") {
   ]
 }
 
+ave_source_set("statistics") {
+  sources = [
+    "numerics/kahan_sum.h",
+    "numerics/statistics.h",
+  ]
+}
+
 #--------------------
 
 #ave_source_set("unit_base") {
@@ -254,6 +264,16 @@ ave_executable("logging_benchmark") {
     "//third_party/google_benchmark",
   ]
 }
+
+ave_executable("statistics_benchmark") {
+  testonly = true
+  sources = [ "numerics/statistics_benchmark.cc" ]
+  deps = [
+    ":statistics",
+    "//third_party/google_benchmark",
+  ]
+}
+
 executable("logging_test") {
   visibility = [ "*" ]
   sources = [ "logging_test.cc" ]
@@ -295,10 +315,15 @@ executable("task_test") {
 
 ave_source_set("numerics_unittest") {
   testonly = true
-  sources = [ "numerics/exp_filter_unittest.cc" ]
+  sources = [
+    "numerics/exp_filter_unittest.cc",
+    #"numerics/statistics_unittest.cc",
+  ]
   deps = [
     ":logging",
     ":numerics",
+
+    #":statistics",
     "//test:test_support",
   ]
 }
