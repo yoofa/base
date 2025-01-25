@@ -10,11 +10,14 @@
 
 #include <atomic>
 #include <cstdint>
+#include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/constructor_magic.h"
+#include "base/units/timestamp.h"
 
 #if !defined(NDEBUG) || defined(DLOG_ALWAYS_ON)
 #define AVE_DLOG_IS_ON 1
@@ -47,6 +50,50 @@ enum LogErrorContext {
 };
 
 class LogMessage;
+
+// LogLineRef encapsulates all the information required to generate a log line.
+// It is used both internally to LogMessage but also as a parameter to
+// LogSink::OnLogMessage, allowing custom LogSinks to format the log in
+// the most flexible way.
+class LogLineRef {
+ public:
+  std::string_view message() const { return message_; }
+  std::string_view filename() const { return filename_; }
+  int line() const { return line_; }
+  std::optional<int32_t> thread_id() const { return thread_id_; }
+  Timestamp timestamp() const { return timestamp_; }
+  std::string_view tag() const { return tag_; }
+  LogSeverity severity() const { return severity_; }
+
+#if AVE_LOG_ENABLED()
+  std::string DefaultLogLine() const;
+#else
+  std::string DefaultLogLine() const { return ""; }
+#endif
+
+ private:
+  friend class LogMessage;
+  void set_message(std::string message) { message_ = std::move(message); }
+  void set_filename(std::string_view filename) { filename_ = filename; }
+  void set_line(int line) { line_ = line; }
+  void set_thread_id(std::optional<int32_t> thread_id) {
+    thread_id_ = thread_id;
+  }
+  void set_timestamp(Timestamp timestamp) { timestamp_ = timestamp; }
+  void set_tag(std::string_view tag) { tag_ = tag; }
+  void set_severity(LogSeverity severity) { severity_ = severity; }
+
+  std::string message_;
+  std::string_view filename_;
+  int line_ = 0;
+  std::optional<int32_t> thread_id_;
+  Timestamp timestamp_ = Timestamp::MinusInfinity();
+  // The default Android debug output tag.
+  std::string_view tag_ = "avengine";
+  // The severity level of this message
+  LogSeverity severity_;
+};
+
 class LogSink {
  public:
   LogSink() = default;
@@ -56,6 +103,8 @@ class LogSink {
                             const char* tag);
   virtual void OnLogMessage(const std::string& msg, LogSeverity severity);
   virtual void OnLogMessage(const std::string& msg) = 0;
+
+  virtual void OnLogMessage(const LogLineRef& line);
 
  private:
   friend class ::ave::base::LogMessage;
@@ -98,6 +147,13 @@ struct LogMetadataErr {
   int err;
 };
 
+#ifdef AVE_ANDROID
+struct LogMetadataTag {
+  LogSeverity severity;
+  const char* tag;
+};
+#endif
+
 enum class LogArgType : uint8_t {
   kEnd = 0,
   kInt,
@@ -110,9 +166,13 @@ enum class LogArgType : uint8_t {
   kLongDouble,
   kCharP,
   kStdString,
+  kStringView,
   kVoidP,
   kLogMetadata,
   kLogMetadataErr,
+#ifdef AVE_ANDROID
+  kLogMetadataTag,
+#endif
 };
 
 template <LogArgType N, typename T>
@@ -131,18 +191,23 @@ struct ToStringVal {
 inline Val<LogArgType::kInt, int> MakeVal(int x) {
   return {x};
 }
+
 inline Val<LogArgType::kLong, long> MakeVal(long x) {
   return {x};
 }
+
 inline Val<LogArgType::kLongLong, long long> MakeVal(long long x) {
   return {x};
 }
+
 inline Val<LogArgType::kUInt, unsigned int> MakeVal(unsigned int x) {
   return {x};
 }
+
 inline Val<LogArgType::kULong, unsigned long> MakeVal(unsigned long x) {
   return {x};
 }
+
 inline Val<LogArgType::kULongLong, unsigned long long> MakeVal(
     unsigned long long x) {
   return {x};
@@ -151,6 +216,7 @@ inline Val<LogArgType::kULongLong, unsigned long long> MakeVal(
 inline Val<LogArgType::kDouble, double> MakeVal(double x) {
   return {x};
 }
+
 inline Val<LogArgType::kLongDouble, long double> MakeVal(long double x) {
   return {x};
 }
@@ -158,8 +224,14 @@ inline Val<LogArgType::kLongDouble, long double> MakeVal(long double x) {
 inline Val<LogArgType::kCharP, const char*> MakeVal(const char* x) {
   return {x};
 }
+
 inline Val<LogArgType::kStdString, const std::string*> MakeVal(
     const std::string& x) {
+  return {&x};
+}
+
+inline Val<LogArgType::kStringView, const std::string_view*> MakeVal(
+    const std::string_view& x) {
   return {&x};
 }
 
@@ -186,6 +258,13 @@ inline decltype(MakeVal(std::declval<std::underlying_type_t<T>>())) MakeVal(
   return {static_cast<std::underlying_type_t<T>>(x)};
 }
 
+#ifdef AVE_ANDROID
+inline Val<LogArgType::kLogMetadataTag, LogMetadataTag> MakeVal(
+    const LogMetadataTag& x) {
+  return {x};
+}
+#endif
+
 template <typename T, class = std::void_t<>>
 struct has_to_log_string : std::false_type {};
 template <typename T>
@@ -198,6 +277,9 @@ template <
     typename T1 = std::decay_t<T>,
     typename = std::enable_if_t<
         std::is_class_v<T1> && !std::is_same_v<T1, std::string> &&
+#ifdef AVE_ANDROID
+        !std::is_same_v<T1, LogMetadataTag> &&
+#endif
         !std::is_same_v<T1, LogMetadata> && !has_to_log_string<T1>::value>>
 ToStringVal MakeVal(const T& x) {
   std::ostringstream os;
@@ -210,7 +292,13 @@ ToStringVal MakeVal(const T& x) {
   return {ToLogString(x)};
 }
 
+#if AVE_LOG_ENABLED()
 void Log(const LogArgType* fmt, ...);
+#else
+inline void Log(const LogArgType* fmt, ...) {
+  // Do nothing, shouldn't be invoked
+}
+#endif
 
 template <typename... Ts>
 class LogStreamer;
@@ -314,6 +402,9 @@ class LogMessage {
              LogSeverity sev,
              LogErrorContext err_ctx,
              int err);
+#if defined(AVE_ANDROID)
+  LogMessage(const char* file, int line, LogSeverity sev, const char* tag);
+#endif
 
   ~LogMessage();
 
@@ -342,6 +433,9 @@ class LogMessage {
              LogSeverity sev,
              LogErrorContext err_ctx,
              int err) {}
+#if defined(AVE_ANDROID)
+  LogMessage(const char* file, int line, LogSeverity sev, const char* tag) {}
+#endif
   ~LogMessage() = default;
 
   inline void AddTag(const char* tag) {}
@@ -368,11 +462,12 @@ class LogMessage {
 #if AVE_LOG_ENABLED()
   static void UpdateMinLogSeverity();
 
-  static void OutputToDebug(const std::string& msg, LogSeverity severity);
+  // static void OutputToDebug(const std::string& msg, LogSeverity severity);
+  static void OutputToDebug(const LogLineRef& log_line_ref);
 
   void FinishPrintStream();
 
-  LogSeverity severity_;
+  LogLineRef log_line_;
 
   std::string extra_;
 
@@ -385,8 +480,13 @@ class LogMessage {
   static bool log_to_stderr_;
 #else
   inline static void UpdateMinLogSeverity() {}
+#ifdef AVE_ANDROID
   inline static void OutputToDebug(const std::string& msg,
                                    LogSeverity severity) {}
+#else
+  inline static void OutputToDebug(const std::string& msg,
+                                   LogSeverity severity) {}
+#endif
   inline void FinishPrintStream() {}
 #endif
 

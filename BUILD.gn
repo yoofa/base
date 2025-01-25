@@ -135,6 +135,8 @@ ave_library("logging") {
     "logging.cc",
     "logging.h",
   ]
+  deps = [ ":timeutils" ]
+
   if (is_android) {
     libs += [ "log" ]
   }

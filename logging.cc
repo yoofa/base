@@ -9,11 +9,22 @@
 
 #include <array>
 #include <chrono>
+#include <cinttypes>
 #include <cstring>
 #include <ctime>
 #include <mutex>
 #include <string>
 #include <thread>
+
+#include "base/time_utils.h"
+
+#if defined(AVE_ANDROID)
+#include <android/log.h>
+// Android has a 1024 limit on log inputs. We use 60 chars as an
+// approx for the header/tag portion.
+// See android/system/core/liblog/logd_write.c
+static const int kMaxLogLineSize = 1024 - 60;
+#endif
 
 #include "base/attributes.h"
 
@@ -42,6 +53,30 @@ std::mutex g_log_mutex_;
 
 }  // namespace
 
+std::string LogLineRef::DefaultLogLine() const {
+  std::stringstream log_output;
+  if (timestamp_ != Timestamp::MinusInfinity()) {
+    std::array<char, 50> timestamp{};
+    auto len = snprintf(timestamp.data(), timestamp.size(),
+                        "[%03" PRId64 ":%03" PRId64 "]", timestamp_.ms() / 1000,
+                        timestamp_.ms() % 1000);
+    AVE_DCHECK_LT(len, sizeof(timestamp));
+    log_output << timestamp.data();
+  }
+  if (thread_id_.has_value()) {
+    log_output << "[" << *thread_id_ << "] ";
+  }
+  if (!filename_.empty()) {
+#if defined(AVE_ANDROID)
+    log_output << "(line " << line_ << "): ";
+#else
+    log_output << "(" << filename_ << ":" << line_ << "): ";
+#endif
+  }
+  log_output << message_;
+  return log_output.str();
+}
+
 // static member
 bool LogMessage::log_to_stderr_ = true;
 
@@ -63,31 +98,30 @@ LogMessage::LogMessage(const char* file,
                        int line,
                        LogSeverity sev,
                        LogErrorContext err_ctx,
-                       int err)
-    : severity_(sev) {
+                       int err) {
+  log_line_.set_severity(sev);
   if (timestamp_) {
-    uint64_t timestamp = timestampMs();
-    std::time_t time_t = time(nullptr);
-
-    auto* localtime = std::localtime(&time_t);
-
-    std::array<char, 32> buffer{};
-
-    strftime(buffer.data(), 32, "%Y-%m-%d %T.", localtime);
-
-    std::array<char, 7> microseconds{};
-    sprintf(microseconds.data(), "%06llu",
-            static_cast<unsigned long long>(timestamp % 1000000));
-
-    print_stream_ << '[' << buffer.data() << microseconds.data() << ']';
+    auto log_start_time = LogStartTime();
+    // Use SystemTimeMillis so that even if tests use fake clocks, the timestamp
+    // in log messages represents the real system time.
+    auto time = TimeDiff(SystemTimeMillis(), log_start_time);
+    // Also ensure WallClockStartTime is initialized, so that it matches
+    // LogStartTime.
+    WallClockStartTime();
+    log_line_.set_timestamp(Timestamp::Millis(time));
   }
 
   if (thread_) {
-    print_stream_ << "[" << std::this_thread::get_id() << "] ";
+    log_line_.set_thread_id(
+        std::hash<std::thread::id>{}(std::this_thread::get_id()));
   }
 
   if (file != nullptr) {
-    print_stream_ << "(" << FilenameFromPath(file) << ":" << line << "): ";
+    log_line_.set_filename(FilenameFromPath(file));
+    log_line_.set_line(line);
+#ifdef AVE_ANDROID
+    log_line_.set_tag(log_line_.filename());
+#endif
   }
 
   if (err_ctx != ERRCTX_NONE) {
@@ -103,17 +137,28 @@ LogMessage::LogMessage(const char* file,
   }
 }
 
+#if defined(AVE_ANDROID)
+LogMessage::LogMessage(const char* file,
+                       int line,
+                       LogSeverity sev,
+                       const char* tag)
+    : LogMessage(file, line, sev, ERRCTX_NONE, /*err=*/0) {
+  log_line_.set_tag(tag);
+  print_stream_ << tag << ": ";
+}
+#endif
+
 LogMessage::~LogMessage() {
   FinishPrintStream();
-  const std::string str = print_stream_.str();
-  if (severity_ >= g_dbg_sev) {
-    OutputToDebug(str, severity_);
+  log_line_.set_message(print_stream_.str());
+  if (log_line_.severity() >= g_dbg_sev) {
+    OutputToDebug(log_line_);
   }
 
   std::lock_guard<std::mutex> guard(g_log_mutex_);
   for (LogSink* entry = streams_; entry != nullptr; entry = entry->next_) {
-    if (severity_ >= entry->min_severity_) {
-      entry->OnLogMessage(str, severity_);
+    if (log_line_.severity() >= entry->min_severity_) {
+      entry->OnLogMessage(log_line_);
     }
   }
 }
@@ -131,10 +176,10 @@ int LogMessage::GetMinLogSeverity() {
 LogSeverity LogMessage::GetLogToDebug() {
   return g_dbg_sev;
 }
+
 int64_t LogMessage::LogStartTime() {
-  //  static const int64_t g_start = SystemTimeMillis();
-  //  return g_start;
-  return 0;
+  static const int64_t g_start = SystemTimeMillis();
+  return g_start;
 }
 
 uint32_t LogMessage::WallClockStartTime() {
@@ -201,11 +246,82 @@ void LogMessage::UpdateMinLogSeverity() {
   g_min_sev = min_sev;
 }
 
-void LogMessage::OutputToDebug(const std::string& msg,
-                               LogSeverity severity AVE_MAYBE_UNUSED) {
+void LogMessage::OutputToDebug(const LogLineRef& log_line) {
+  std::string msg_str = log_line.DefaultLogLine();
   bool log_to_stderr = log_to_stderr_;
+#if defined(AVE_MAC) && !defined(AVE_IOS) && defined(NDEBUG)
+  // On the Mac, all stderr output goes to the Console log and causes clutter.
+  // So in opt builds, don't log to stderr unless the user specifically sets
+  // a preference to do so.
+  CFStringRef domain = CFBundleGetIdentifier(CFBundleGetMainBundle());
+  if (domain != nullptr) {
+    Boolean exists_and_is_valid;
+    Boolean should_log = CFPreferencesGetAppBooleanValue(
+        CFSTR("logToStdErr"), domain, &exists_and_is_valid);
+    // If the key doesn't exist or is invalid or is false, we will not log to
+    // stderr.
+    log_to_stderr = exists_and_is_valid && should_log;
+  }
+#endif  // defined(AVE_MAC) && !defined(AVE_IOS) && defined(NDEBUG)
+#if defined(AVE_WIN)
+  // Always log to the debugger.
+  // Perhaps stderr should be controlled by a preference, as on Mac?
+  OutputDebugStringA(msg_str.c_str());
   if (log_to_stderr) {
-    fprintf(stderr, "%s", msg.c_str());
+    // This handles dynamically allocated consoles, too.
+    if (HANDLE error_handle = ::GetStdHandle(STD_ERROR_HANDLE)) {
+      log_to_stderr = false;
+      DWORD written = 0;
+      ::WriteFile(error_handle, msg_str.c_str(),
+                  static_cast<DWORD>(msg_str.size()), &written, 0);
+    }
+  }
+#endif  // AVE_WIN
+#if defined(AVE_ANDROID)
+  // Android's logging facility uses severity to log messages but we
+  // need to map libjingle's severity levels to Android ones first.
+  // Also write to stderr which maybe available to executable started
+  // from the shell.
+  int prio = 0;
+  switch (log_line.severity()) {
+    case LS_VERBOSE:
+      prio = ANDROID_LOG_VERBOSE;
+      break;
+    case LS_INFO:
+      prio = ANDROID_LOG_INFO;
+      break;
+    case LS_WARNING:
+      prio = ANDROID_LOG_WARN;
+      break;
+    case LS_ERROR:
+      prio = ANDROID_LOG_ERROR;
+      break;
+    default:
+      prio = ANDROID_LOG_UNKNOWN;
+  }
+  int size = static_cast<int>(msg_str.size());
+  int current_line = 0;
+  int idx = 0;
+  const int max_lines = size / kMaxLogLineSize + 1;
+  if (max_lines == 1) {
+    __android_log_print(prio, log_line.tag().data(), "%.*s", size,
+                        msg_str.c_str());
+  } else {
+    while (size > 0) {
+      const int len = std::min(size, kMaxLogLineSize);
+      // Use the size of the string in the format (msg may have \0 in the
+      // middle).
+      __android_log_print(prio, log_line.tag().data(), "[%d/%d] %.*s",
+                          current_line + 1, max_lines, len,
+                          msg_str.c_str() + idx);
+      idx += len;
+      size -= len;
+      ++current_line;
+    }
+  }
+#endif  // AVE_ANDROID
+  if (log_to_stderr) {
+    fprintf(stderr, "%s", msg_str.c_str());
     fflush(stderr);
   }
 }
@@ -297,6 +413,16 @@ void Log(const LogArgType* fmt, ...) {
   va_end(args);
 }
 }  // namespace logging_impl
+
+// Default implementation, override is recomended.
+void LogSink::OnLogMessage(const LogLineRef& log_line) {
+#if defined(AVE_ANDROID)
+  OnLogMessage(log_line.DefaultLogLine(), log_line.severity(),
+               log_line.tag().data());
+#else
+  OnLogMessage(log_line.DefaultLogLine(), log_line.severity());
+#endif
+}
 
 void LogSink::OnLogMessage(const std::string& msg,
                            LogSeverity severity,
