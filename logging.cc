@@ -7,11 +7,9 @@
 
 #include "base/logging.h"
 
-#include <array>
-#include <chrono>
-#include <cinttypes>
 #include <cstring>
 #include <ctime>
+#include <iomanip>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -53,26 +51,34 @@ std::mutex g_log_mutex_;
 
 }  // namespace
 
+std::string formatTimeMillis(Timestamp timestamp) {
+  time_t seconds = timestamp.ms_or(0) / 1000;
+  auto milliseconds = timestamp.ms_or(0) % 1000;
+
+  std::tm tmStruct{};
+  localtime_r(&seconds, &tmStruct);
+
+  std::ostringstream oss;
+  oss << std::put_time(&tmStruct, "%m-%d %H:%M:%S") << '.' << std::setfill('0')
+      << std::setw(3) << milliseconds;
+
+  return oss.str();
+}
+
 std::string LogLineRef::DefaultLogLine() const {
   std::stringstream log_output;
   if (timestamp_ != Timestamp::MinusInfinity()) {
-    std::array<char, 50> timestamp{};
-    auto len = snprintf(timestamp.data(), timestamp.size(),
-                        "[%03" PRId64 ":%03" PRId64 "]", timestamp_.ms() / 1000,
-                        timestamp_.ms() % 1000);
-    AVE_DCHECK_LT(len, sizeof(timestamp));
-    log_output << timestamp.data();
+    log_output << formatTimeMillis(timestamp_) << " ";
   }
+
   if (thread_id_.has_value()) {
     log_output << "[" << *thread_id_ << "] ";
   }
+
   if (!filename_.empty()) {
-#if defined(AVE_ANDROID)
-    log_output << "(line " << line_ << "): ";
-#else
     log_output << "(" << filename_ << ":" << line_ << "): ";
-#endif
   }
+
   log_output << message_;
   return log_output.str();
 }
@@ -83,13 +89,8 @@ bool LogMessage::log_to_stderr_ = true;
 LogSink* LogMessage::streams_ = nullptr;
 std::atomic<bool> LogMessage::streams_empty_ = {true};
 
-bool LogMessage::thread_ = true, LogMessage::timestamp_ = true;
-
-uint64_t timestampMs() {
-  return std::chrono::duration_cast<std::chrono::microseconds>(
-             std::chrono::high_resolution_clock::now().time_since_epoch())
-      .count();
-}
+bool LogMessage::thread_ = false;
+bool LogMessage::timestamp_ = false;
 
 LogMessage::LogMessage(const char* file, int line, LogSeverity sev)
     : LogMessage(file, line, sev, ERRCTX_NONE, 0) {}
@@ -119,9 +120,6 @@ LogMessage::LogMessage(const char* file,
   if (file != nullptr) {
     log_line_.set_filename(FilenameFromPath(file));
     log_line_.set_line(line);
-#ifdef AVE_ANDROID
-    log_line_.set_tag(log_line_.filename());
-#endif
   }
 
   if (err_ctx != ERRCTX_NONE) {
@@ -144,6 +142,8 @@ LogMessage::LogMessage(const char* file,
                        const char* tag)
     : LogMessage(file, line, sev, ERRCTX_NONE, /*err=*/0) {
   log_line_.set_tag(tag);
+  LogThreads(false);
+  LogTimestamps(false);
   print_stream_ << tag << ": ";
 }
 #endif
@@ -163,7 +163,11 @@ LogMessage::~LogMessage() {
   }
 }
 
-void LogMessage::AddTag(const char* tag) {}
+void LogMessage::AddTag(const char* tag) {
+#ifdef AVE_ANDROID
+  log_line_.set_tag(tag);
+#endif
+}
 
 std::stringstream& LogMessage::stream() {
   return print_stream_;
@@ -287,6 +291,9 @@ void LogMessage::OutputToDebug(const LogLineRef& log_line) {
     case LS_VERBOSE:
       prio = ANDROID_LOG_VERBOSE;
       break;
+    case LS_DEBUG:
+      prio = ANDROID_LOG_DEBUG;
+      break;
     case LS_INFO:
       prio = ANDROID_LOG_INFO;
       break;
@@ -348,6 +355,7 @@ void Log(const LogArgType* fmt, ...) {
   va_start(args, fmt);
 
   LogMetadataErr meta{};
+  const char* tag = nullptr;
   switch (*fmt) {
     case LogArgType::kLogMetadata: {
       meta = {va_arg(args, LogMetadata), ERRCTX_NONE, 0};
@@ -357,6 +365,14 @@ void Log(const LogArgType* fmt, ...) {
       meta = va_arg(args, LogMetadataErr);
       break;
     }
+#ifdef AVE_ANDROID
+    case LogArgType::kLogMetadataTag: {
+      const LogMetadataTag tag_meta = va_arg(args, LogMetadataTag);
+      meta = {{nullptr, 0, tag_meta.severity}, ERRCTX_NONE, 0};
+      tag = tag_meta.tag;
+      break;
+    }
+#endif
     default: {
       va_end(args);
       return;
@@ -365,6 +381,9 @@ void Log(const LogArgType* fmt, ...) {
 
   LogMessage log_message(meta.meta.File(), meta.meta.Line(),
                          meta.meta.Severity(), meta.err_ctx, meta.err);
+  if (tag) {
+    log_message.AddTag(tag);
+  }
 
   for (++fmt; *fmt != LogArgType::kEnd; ++fmt) {
     switch (*fmt) {

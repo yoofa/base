@@ -89,7 +89,7 @@ class LogLineRef {
   std::optional<int32_t> thread_id_;
   Timestamp timestamp_ = Timestamp::MinusInfinity();
   // The default Android debug output tag.
-  std::string_view tag_ = "avengine";
+  std::string_view tag_ = "av_engine";
   // The severity level of this message
   LogSeverity severity_;
 };
