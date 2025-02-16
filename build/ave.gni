@@ -1,3 +1,4 @@
+import("//base/build/ave_args.gni")
 import("//build/config/arm.gni")
 import("//build/config/features.gni")
 import("//build/config/mips.gni")
@@ -7,8 +8,9 @@ import("//build/config/ui.gni")
 import("//build_overrides/build.gni")
 
 ave_include_test = true
+ave_use_ffmpeg_demuxer = enable_ffmpeg_demuxer
 
-ave_root = get_path_info(".", "abspath")
+ave_base_build_root = get_path_info(".", "abspath")
 ave_project_root = get_path_info("../../", "abspath")
 
 ave_common_configs = []
@@ -19,7 +21,8 @@ ave_common_configs += [ "//base/build:thread_safety_annotations" ]
 # included when using the ave_* templates. It set the defines, include paths and
 # compilation warnings that should be propagated to dependents of the targets
 # depending on the target having this config.
-ave_common_inherited_config = [ ave_root + ":common_inherited_config" ]
+ave_common_inherited_config =
+    [ ave_base_build_root + ":common_inherited_config" ]
 
 # Common configs to remove or add in all avp targets.
 ave_remove_configs = []

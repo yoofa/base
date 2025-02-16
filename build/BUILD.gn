@@ -1,3 +1,5 @@
+import("//base/build/ave_args.gni")
+
 config("library_impl_config") {
   defines = [ "AVE_LIBRARY_IMPL" ]
 }
@@ -42,6 +44,30 @@ config("common_inherited_config") {
 
   if (is_chromeos) {
     defines += [ "CHROMEOS" ]
+  }
+
+  if (enable_ffmpeg_demuxer) {
+    defines += [ "AVE_FFMPEG_DEMUXER" ]
+  }
+
+  if (enable_ffmpeg_codec) {
+    defines += [ "AVE_FFMPEG_CODEC" ]
+  }
+
+  if (enable_android_media_codec) {
+    defines += [ "AVE_ANDROID_MEDIA_CODEC" ]
+  }
+
+  if (enable_linux_pulse_audio) {
+    defines += [ "AVE_LINUX_PULSE_AUDIO" ]
+  }
+
+  if (enable_android_opensles) {
+    defines += [ "AVE_ANDROID_OPENSLES" ]
+  }
+
+  if (enable_android_aaudio) {
+    defines += [ "AVE_ANDROID_AAUDIO" ]
   }
 }
 

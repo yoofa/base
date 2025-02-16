@@ -1,0 +1,9 @@
+declare_args() {
+  enable_ffmpeg_demuxer = true
+  enable_ffmpeg_codec = true
+  enable_android_media_codec = true
+
+  enable_linux_pulse_audio = true
+  enable_android_opensles = true
+  enable_android_aaudio = true
+}
