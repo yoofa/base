@@ -89,8 +89,14 @@ bool LogMessage::log_to_stderr_ = true;
 LogSink* LogMessage::streams_ = nullptr;
 std::atomic<bool> LogMessage::streams_empty_ = {true};
 
+#if defined(AVE_ANDROID)
 bool LogMessage::thread_ = false;
 bool LogMessage::timestamp_ = false;
+#else
+bool LogMessage::thread_ = true;
+bool LogMessage::timestamp_ = true;
+
+#endif
 
 LogMessage::LogMessage(const char* file, int line, LogSeverity sev)
     : LogMessage(file, line, sev, ERRCTX_NONE, 0) {}
