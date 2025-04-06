@@ -1,0 +1,46 @@
+import("../build/ave.gni")
+
+group("tracing") {
+  deps = [ ":ave_trace" ]
+  deps += [ ":test_trace" ]
+}
+
+ave_library("ave_trace_common") {
+  sources = [ "trace.h" ]
+}
+
+ave_library("ave_tracer_file") {
+  sources = [
+    "file_tracer.cc",
+    "file_tracer.h",
+  ]
+  deps = [ ":ave_trace_common" ]
+}
+
+ave_library("ave_trace_perfetto") {
+  deps = [ ":ave_trace_common" ]
+}
+
+ave_library("ave_trace_impl") {
+  sources = [
+    "trace.cc",
+    "trace_factory.cc",
+    "trace_factory.h",
+  ]
+  deps = [
+    ":ave_trace_common",
+    ":ave_tracer_file",
+  ]
+}
+
+ave_library("ave_trace") {
+  deps = [
+    ":ave_trace_common",
+    ":ave_trace_impl",
+  ]
+}
+
+ave_executable("test_trace") {
+  sources = [ "test/test_trace.cc" ]
+  deps = [ ":ave_trace" ]
+}

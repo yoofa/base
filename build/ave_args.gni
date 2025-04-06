@@ -1,4 +1,6 @@
 declare_args() {
+  enable_ave_tracing = false
+
   enable_ffmpeg_demuxer = true
   enable_ffmpeg_codec = true
   enable_android_media_codec = true
