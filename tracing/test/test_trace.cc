@@ -10,6 +10,7 @@
 #include <string>
 #include <thread>
 
+#include "../../attributes.h"
 #include "../file_tracer.h"
 #include "../trace.h"
 #include "../trace_factory.h"
@@ -50,7 +51,8 @@ void performTask(const std::string& task_name, int iterations) {
 // Example of using async events
 void performAsyncOperation() {
   // Generate a unique ID for this async operation
-  uint64_t async_id = std::hash<std::thread::id>{}(std::this_thread::get_id());
+  auto async_id AVE_MAYBE_UNUSED =
+      std::hash<std::thread::id>{}(std::this_thread::get_id());
 
   // Start the async operation
   TRACE_ASYNC_BEGIN_CATEGORY("async", "long_operation", async_id);
@@ -124,11 +126,7 @@ int main(int argc, char* argv[]) {
   config.type = TraceBackendType::TRACE_TYPE_JSON_FILE;
   config.json_output_path = "trace_output.log";
 
-  if (!TRACE_INITIALIZE(config)) {
-    std::cerr << "Failed to initialize tracing!" << std::endl;
-    return 1;
-  }
-
+  TRACE_INITIALIZE(config);
   std::cout << "Tracing initialized. Output file: " << config.json_output_path
             << std::endl;
 
