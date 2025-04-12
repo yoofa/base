@@ -211,92 +211,93 @@ class ScopedTrace {
 // --- Convenience Macros ---
 
 // Default category, can be defined globally or passed at compile time
-#ifndef TRACE_DEFAULT_CATEGORY
-#define TRACE_DEFAULT_CATEGORY "default"
+#ifndef AVE_TRACE_DEFAULT_CATEGORY
+#define AVE_TRACE_DEFAULT_CATEGORY "default"
 #endif
 
 // Compile-time disable macros: If AVE_ENABLE_TRACING is not defined, all trace
 // macros become no-ops
 #ifndef AVE_ENABLE_TRACING
 
-#define TRACE_INITIALIZE(config) ((void)0)
-#define TRACE_SHUTDOWN() ((void)0)
-#define TRACE_ENABLED() (false)
-#define TRACE_CATEGORY_ENABLED(category) (false)
-#define TRACE_SCOPE(name) ((void)0)
-#define TRACE_SCOPE_CATEGORY(category, name) ((void)0)
-#define TRACE_EVENT(name) ((void)0)
-#define TRACE_EVENT_CATEGORY(category, name) ((void)0)
-#define TRACE_COUNTER(name, value) ((void)0)
-#define TRACE_COUNTER_CATEGORY(category, name, value) ((void)0)
-#define TRACE_ASYNC_BEGIN(name, cookie) ((void)0)
-#define TRACE_ASYNC_BEGIN_CATEGORY(category, name, cookie) ((void)0)
-#define TRACE_ASYNC_END(name, cookie) ((void)0)
-#define TRACE_ASYNC_END_CATEGORY(category, name, cookie) ((void)0)
-#define TRACE_ASYNC_STEP(name, cookie, step) ((void)0)
-#define TRACE_ASYNC_STEP_CATEGORY(category, name, cookie, step) ((void)0)
+#define AVE_TRACE_INITIALIZE(config) ((void)0)
+#define AVE_TRACE_SHUTDOWN() ((void)0)
+#define AVE_TRACE_ENABLED() (false)
+#define AVE_TRACE_CATEGORY_ENABLED(category) (false)
+#define AVE_TRACE_SCOPE(name) ((void)0)
+#define AVE_TRACE_SCOPE_CATEGORY(category, name) ((void)0)
+#define AVE_TRACE_EVENT(name) ((void)0)
+#define AVE_TRACE_EVENT_CATEGORY(category, name) ((void)0)
+#define AVE_TRACE_COUNTER(name, value) ((void)0)
+#define AVE_TRACE_COUNTER_CATEGORY(category, name, value) ((void)0)
+#define AVE_TRACE_ASYNC_BEGIN(name, cookie) ((void)0)
+#define AVE_TRACE_ASYNC_BEGIN_CATEGORY(category, name, cookie) ((void)0)
+#define AVE_TRACE_ASYNC_END(name, cookie) ((void)0)
+#define AVE_TRACE_ASYNC_END_CATEGORY(category, name, cookie) ((void)0)
+#define AVE_TRACE_ASYNC_STEP(name, cookie, step) ((void)0)
+#define AVE_TRACE_ASYNC_STEP_CATEGORY(category, name, cookie, step) ((void)0)
 
 #else  // AVE_ENABLE_TRACING is defined
 
-#define TRACE_INITIALIZE(config) ::ave::tracing::Trace::initialize(config)
-#define TRACE_SHUTDOWN() ::ave::tracing::Trace::shutdown()
-#define TRACE_ENABLED() ::ave::tracing::Trace::isEnabled()
-#define TRACE_CATEGORY_ENABLED(category) \
+#define AVE_TRACE_INITIALIZE(config) ::ave::tracing::Trace::initialize(config)
+#define AVE_TRACE_SHUTDOWN() ::ave::tracing::Trace::shutdown()
+#define AVE_TRACE_ENABLED() ::ave::tracing::Trace::isEnabled()
+#define AVE_TRACE_CATEGORY_ENABLED(category) \
   ::ave::tracing::Trace::isCategoryEnabled(category)
 
 // Use macros to create ScopedTrace objects, leveraging C++ RAII to
 // automatically end sections
-#define TRACE_SCOPE(name)                                  \
+#define AVE_TRACE_SCOPE(name)                              \
   ::ave::tracing::ScopedTrace AVE_TRACE_UID(trace_scope_)( \
-      TRACE_DEFAULT_CATEGORY, name)
+      AVE_TRACE_DEFAULT_CATEGORY, name)
 
-#define TRACE_SCOPE_CATEGORY(category, name) \
+#define AVE_TRACE_SCOPE_CATEGORY(category, name) \
   ::ave::tracing::ScopedTrace AVE_TRACE_UID(trace_scope_)(category, name)
 
-#define TRACE_EVENT(name)                                                 \
-  if (::ave::tracing::Trace::isCategoryEnabled(TRACE_DEFAULT_CATEGORY)) { \
-    ::ave::tracing::Trace::instantEvent(TRACE_DEFAULT_CATEGORY, name);    \
+#define AVE_TRACE_EVENT(name)                                                 \
+  if (::ave::tracing::Trace::isCategoryEnabled(AVE_TRACE_DEFAULT_CATEGORY)) { \
+    ::ave::tracing::Trace::instantEvent(AVE_TRACE_DEFAULT_CATEGORY, name);    \
   }
-#define TRACE_EVENT_CATEGORY(category, name)                \
+#define AVE_TRACE_EVENT_CATEGORY(category, name)            \
   if (::ave::tracing::Trace::isCategoryEnabled(category)) { \
     ::ave::tracing::Trace::instantEvent(category, name);    \
   }
 
-#define TRACE_COUNTER(name, value)                                          \
-  if (::ave::tracing::Trace::isCategoryEnabled(TRACE_DEFAULT_CATEGORY)) {   \
-    ::ave::tracing::Trace::setCounter(TRACE_DEFAULT_CATEGORY, name, value); \
+#define AVE_TRACE_COUNTER(name, value)                                        \
+  if (::ave::tracing::Trace::isCategoryEnabled(AVE_TRACE_DEFAULT_CATEGORY)) { \
+    ::ave::tracing::Trace::setCounter(AVE_TRACE_DEFAULT_CATEGORY, name,       \
+                                      value);                                 \
   }
-#define TRACE_COUNTER_CATEGORY(category, name, value)         \
+#define AVE_TRACE_COUNTER_CATEGORY(category, name, value)     \
   if (::ave::tracing::Trace::isCategoryEnabled(category)) {   \
     ::ave::tracing::Trace::setCounter(category, name, value); \
   }
 
-#define TRACE_ASYNC_BEGIN(name, cookie)                                   \
-  if (::ave::tracing::Trace::isCategoryEnabled(TRACE_DEFAULT_CATEGORY)) { \
-    ::ave::tracing::Trace::beginAsyncEvent(TRACE_DEFAULT_CATEGORY, name,  \
-                                           cookie);                       \
+#define AVE_TRACE_ASYNC_BEGIN(name, cookie)                                   \
+  if (::ave::tracing::Trace::isCategoryEnabled(AVE_TRACE_DEFAULT_CATEGORY)) { \
+    ::ave::tracing::Trace::beginAsyncEvent(AVE_TRACE_DEFAULT_CATEGORY, name,  \
+                                           cookie);                           \
   }
-#define TRACE_ASYNC_BEGIN_CATEGORY(category, name, cookie)          \
+#define AVE_TRACE_ASYNC_BEGIN_CATEGORY(category, name, cookie)      \
   if (::ave::tracing::Trace::isCategoryEnabled(category)) {         \
     ::ave::tracing::Trace::beginAsyncEvent(category, name, cookie); \
   }
 
-#define TRACE_ASYNC_END(name, cookie)                                     \
-  if (::ave::tracing::Trace::isCategoryEnabled(TRACE_DEFAULT_CATEGORY)) { \
-    ::ave::tracing::Trace::endAsyncEvent(TRACE_DEFAULT_CATEGORY, name,    \
-                                         cookie);                         \
+#define AVE_TRACE_ASYNC_END(name, cookie)                                     \
+  if (::ave::tracing::Trace::isCategoryEnabled(AVE_TRACE_DEFAULT_CATEGORY)) { \
+    ::ave::tracing::Trace::endAsyncEvent(AVE_TRACE_DEFAULT_CATEGORY, name,    \
+                                         cookie);                             \
   }
-#define TRACE_ASYNC_END_CATEGORY(category, name, cookie)          \
+#define AVE_TRACE_ASYNC_END_CATEGORY(category, name, cookie)      \
   if (::ave::tracing::Trace::isCategoryEnabled(category)) {       \
     ::ave::tracing::Trace::endAsyncEvent(category, name, cookie); \
   }
 
-#define TRACE_ASYNC_STEP(name, cookie, step)                              \
-  if (::ave::tracing::Trace::isCategoryEnabled(TRACE_DEFAULT_CATEGORY)) { \
-    ::ave::tracing::Trace::asyncStepEvent(TRACE_DEFAULT_CATEGORY, name,   \
-                                          cookie, step);                  \
+#define AVE_TRACE_ASYNC_STEP(name, cookie, step)                              \
+  if (::ave::tracing::Trace::isCategoryEnabled(AVE_TRACE_DEFAULT_CATEGORY)) { \
+    ::ave::tracing::Trace::asyncStepEvent(AVE_TRACE_DEFAULT_CATEGORY, name,   \
+                                          cookie, step);                      \
   }
-#define TRACE_ASYNC_STEP_CATEGORY(category, name, cookie, step)          \
+#define AVE_TRACE_ASYNC_STEP_CATEGORY(category, name, cookie, step)      \
   if (::ave::tracing::Trace::isCategoryEnabled(category)) {              \
     ::ave::tracing::Trace::asyncStepEvent(category, name, cookie, step); \
   }

@@ -41,6 +41,26 @@ class TraceFactory {
       const std::string& filename,
       const std::unordered_set<std::string>& enabledCategories = {});
 
+  /**
+   * @brief Create a Perfetto in-process tracer.
+   * @param output_path Path where the trace file will be written
+   * @param buffer_size_kb Size of the trace buffer in KB
+   * @param enabledCategories Optional set of categories to enable
+   * @return A shared pointer to the created Perfetto tracer
+   */
+  static std::shared_ptr<AbstractTracer> CreatePerfettoInProcessTracer(
+      const std::string& output_path,
+      size_t buffer_size_kb = 1024,
+      const std::unordered_set<std::string>& enabledCategories = {});
+
+  /**
+   * @brief Create a Perfetto system tracer.
+   * @param enabledCategories Optional set of categories to enable
+   * @return A shared pointer to the created Perfetto tracer
+   */
+  static std::shared_ptr<AbstractTracer> CreatePerfettoSystemTracer(
+      const std::unordered_set<std::string>& enabledCategories = {});
+
   // Add more factory methods for other tracer types as needed
 };
 

@@ -73,6 +73,10 @@ config("common_inherited_config") {
   if (enable_ave_tracing) {
     defines += [ "AVE_ENABLE_TRACING" ]
   }
+
+  if (ave_use_perfetto) {
+    defines += [ "AVE_USE_PERFETTO" ]
+  }
 }
 
 config("no_exit_time_destructors") {

@@ -3,6 +3,21 @@ import("../build/ave.gni")
 group("tracing") {
   deps = [ ":ave_trace" ]
   deps += [ ":test_trace" ]
+  if (ave_use_perfetto) {
+    deps += [ ":test_perfetto_trace" ]
+  }
+}
+
+if (ave_use_perfetto) {
+  ave_library("ave_libperfetto") {
+    public_configs = [ "//third_party/perfetto/gn:public_config" ]
+    deps = [
+      #"//third_party/perfetto/src/tracing:client_api_without_backends",
+      "//third_party/perfetto/src/tracing:client_api",
+      "//third_party/perfetto/src/tracing:platform_impl",
+    ]
+    public_deps = [ "//third_party/perfetto/include/perfetto/tracing" ]
+  }
 }
 
 ave_library("ave_trace_common") {
@@ -18,7 +33,16 @@ ave_library("ave_tracer_file") {
 }
 
 ave_library("ave_trace_perfetto") {
-  deps = [ ":ave_trace_common" ]
+  sources = [
+    "perfetto_tracer.cc",
+    "perfetto_tracer.h",
+    "trace_categories.cc",
+    "trace_categories.h",
+  ]
+  deps = [
+    ":ave_libperfetto",
+    ":ave_trace_common",
+  ]
 }
 
 ave_library("ave_trace_impl") {
@@ -31,6 +55,9 @@ ave_library("ave_trace_impl") {
     ":ave_trace_common",
     ":ave_tracer_file",
   ]
+  if (ave_use_perfetto) {
+    deps += [ ":ave_trace_perfetto" ]
+  }
 }
 
 ave_library("ave_trace") {
@@ -43,4 +70,11 @@ ave_library("ave_trace") {
 ave_executable("test_trace") {
   sources = [ "test/test_trace.cc" ]
   deps = [ ":ave_trace" ]
+}
+
+if (ave_use_perfetto) {
+  ave_executable("test_perfetto_trace") {
+    sources = [ "test/test_perfetto_trace.cc" ]
+    deps = [ ":ave_trace" ]
+  }
 }
