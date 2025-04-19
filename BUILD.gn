@@ -43,6 +43,9 @@ ave_library("base") {
   ]
 
   deps += [ "third_party/sigslot" ]
+  if (is_android) {
+    deps += [ "android" ]
+  }
 
   if (ave_base_include_test) {
     deps += [

@@ -1,0 +1,27 @@
+import("//base/build/ave.gni")
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+group("android") {
+  deps = [ ":ave_base_java" ]
+}
+
+if (is_android) {
+  ave_android_library("ave_base_java") {
+    visibility = [ "*" ]
+    sources = [
+      "java/io/github/yoofa/ContextUtils.java",
+      "java/io/github/yoofa/Loggable.java",
+      "java/io/github/yoofa/Logging.java",
+      "java/io/github/yoofa/Size.java",
+      "java/io/github/yoofa/ThreadUtils.java",
+    ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
+  generate_jni("generated_base_jni") {
+    sources = [ "java/io/github/yoofa/Logging.java" ]
+    namespace = "ave::jni"
+    jni_generator_include = "//base/android/jni/jni_generator_helper.h"
+  }
+}
