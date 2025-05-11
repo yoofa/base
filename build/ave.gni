@@ -16,6 +16,10 @@ ave_project_root = get_path_info("../../", "abspath")
 ave_common_configs = []
 ave_common_configs += [ "//base/build:thread_safety_annotations" ]
 
+if (ave_use_perfetto) {
+  ave_common_configs += [ "//third_party/perfetto/gn:public_config" ]
+}
+
 # Global public configuration that should be applied to all WebRTC targets. You
 # normally shouldn't need to include this in your target as it's automatically
 # included when using the ave_* templates. It set the defines, include paths and
