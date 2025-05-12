@@ -7,6 +7,12 @@ import("//build/config/sysroot.gni")
 import("//build/config/ui.gni")
 import("//build_overrides/build.gni")
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
 ave_include_test = true
 ave_use_ffmpeg_demuxer = enable_ffmpeg_demuxer
 
@@ -266,6 +272,84 @@ template("ave_shared_library") {
     public_configs += ave_common_inherited_config
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
+    }
+  }
+}
+
+if (is_android) {
+  template("ave_android_library") {
+    android_library(target_name) {
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "configs",
+                               "public_configs",
+                               "suppressed_configs",
+                               "visibility",
+                             ])
+
+      errorprone_args = []
+
+      # Treat warnings as errors.
+      errorprone_args += [ "-Werror" ]
+
+      # Add any arguments defined by the invoker.
+      if (defined(invoker.errorprone_args)) {
+        errorprone_args += invoker.errorprone_args
+      }
+
+      if (!defined(deps)) {
+        deps = []
+      }
+
+      no_build_hooks = true
+      not_needed([ "android_manifest" ])
+    }
+  }
+
+  template("ave_android_apk") {
+    android_apk(target_name) {
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "configs",
+                               "public_configs",
+                               "suppressed_configs",
+                               "visibility",
+                             ])
+
+      # Treat warnings as errors.
+      errorprone_args = []
+      errorprone_args += [ "-Werror" ]
+
+      if (!defined(deps)) {
+        deps = []
+      }
+
+      no_build_hooks = true
+    }
+  }
+
+  template("ave_instrumentation_test_apk") {
+    instrumentation_test_apk(target_name) {
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "configs",
+                               "public_configs",
+                               "suppressed_configs",
+                               "visibility",
+                             ])
+
+      # Treat warnings as errors.
+      errorprone_args = []
+      errorprone_args += [ "-Werror" ]
+
+      if (!defined(deps)) {
+        deps = []
+      }
+
+      no_build_hooks = true
     }
   }
 }
