@@ -39,10 +39,10 @@ ave_library("ave_trace_perfetto") {
     "trace_categories.cc",
     "trace_categories.h",
   ]
-  deps = [
-    ":ave_libperfetto",
-    ":ave_trace_common",
-  ]
+  deps = [ ":ave_trace_common" ]
+  if (ave_use_perfetto) {
+    deps += [ ":ave_libperfetto" ]
+  }
 }
 
 ave_library("ave_trace_impl") {

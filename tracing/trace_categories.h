@@ -8,7 +8,10 @@
 #ifndef AVE_BASE_TRACING_TRACE_CATEGORIES_H_
 #define AVE_BASE_TRACING_TRACE_CATEGORIES_H_
 
+#ifdef PERFETTO_ENABLE_LEGACY_TRACE_EVENTS
+#undef PERFETTO_ENABLE_LEGACY_TRACE_EVENTS
 #define PERFETTO_ENABLE_LEGACY_TRACE_EVENTS 1
+#endif
 
 #include "third_party/perfetto/include/perfetto/tracing/track_event.h"  // IWYU pragma: export
 #include "third_party/perfetto/include/perfetto/tracing/track_event_category_registry.h"
