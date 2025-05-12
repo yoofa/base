@@ -18,5 +18,12 @@ import io.github.yoofa.Logging.Severity;
  * <p>When injected, the Loggable will receive logging from both Java and native.
  */
 public interface Loggable {
-    public void onLogMessage(String message, Severity severity, String tag);
+    /****
+ * Receives a log message with its severity level and associated tag.
+ *
+ * @param message  the log message content
+ * @param severity the severity level of the log message
+ * @param tag      a tag identifying the source or category of the log message
+ */
+public void onLogMessage(String message, Severity severity, String tag);
 }
