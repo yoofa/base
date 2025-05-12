@@ -21,9 +21,13 @@ public class ContextUtils {
     private static Context applicationContext;
 
     /**
-     * Stores the application context that will be returned by getApplicationContext. This is called
-     * by PeerConnectionFactory.initialize. The application context must be set before creating a
-     * PeerConnectionFactory and must not be modified while it is alive.
+     * Sets the static application context for later retrieval.
+     *
+     * <p>This method must be called with a non-null application context before creating a
+     * PeerConnectionFactory. The stored context should not be changed after initialization.
+     *
+     * @param applicationContext the non-null Android application context to store
+     * @throws IllegalArgumentException if {@code applicationContext} is null
      */
     public static void initialize(Context applicationContext) {
         if (applicationContext == null) {
@@ -34,9 +38,10 @@ public class ContextUtils {
     }
 
     /**
-     * Returns the stored application context.
+     * Retrieves the stored application context.
      *
-     * @deprecated crbug.com/webrtc/8937
+     * @return the application context previously set via {@link #initialize(Context)}
+     * @deprecated Use alternative context management as referenced in crbug.com/webrtc/8937.
      */
     @Deprecated
     public static Context getApplicationContext() {

@@ -34,12 +34,29 @@
 
 // Re-export helpers in the old jni_generator namespace.
 // TODO(b/319078685): Remove once all uses of the jni_generator has been
-// updated.
+/**
+ * @brief Captures context information for a JNI call without exception checking.
+ *
+ * Stores stack and program counter markers, JNI environment, and lazily resolves the JNI method ID for use by generated JNI bindings. On ARM architectures, captures the current stack pointer for stack scanning purposes. The context is initialized via the Init method and the marker is cleared on destruction to avoid false positives in stack analysis.
+ *
+ * @tparam type The JNI method type used for method ID resolution.
+ */
 namespace jni_generator {
 using jni_zero::internal::kJniStackMarkerValue;
 
 // TODO(b/319078685): Remove JniJavaCallContextUnchecked once all uses of the
-// jni_generator has been updated.
+/**
+   * @brief Initializes the JNI call context without exception checking.
+   *
+   * Captures the current stack pointer (on ARM architectures), sets a stack marker, records the program counter of the caller, and lazily obtains the JNI method ID for the specified method type.
+   *
+   * @tparam type The JNI method type (static or instance).
+   * @param env JNI environment pointer.
+   * @param clazz Java class reference.
+   * @param method_name Name of the Java method.
+   * @param jni_signature JNI method signature.
+   * @param atomic_method_id Pointer to an atomic cache for the JNI method ID.
+   */
 struct JniJavaCallContextUnchecked {
   inline JniJavaCallContextUnchecked() {
 // TODO(ssid): Implement for other architectures.
@@ -84,7 +101,11 @@ struct JniJavaCallContextUnchecked {
 
 // TODO(b/319078685): Remove JniJavaCallContextChecked once all uses of the
 // jni_generator has been updated.
-// Context about the JNI call with exception unchecked to be stored in stack.
+/**
+   * @brief Captures JNI call context and checks for exceptions upon destruction.
+   *
+   * Initializes context information for a JNI call, including stack and method details, and automatically checks for JNI exceptions when the object goes out of scope.
+   */
 struct JniJavaCallContextChecked {
   // Force no inline to reduce code size.
   template <jni_zero::MethodID::Type type>

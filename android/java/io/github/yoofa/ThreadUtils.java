@@ -25,6 +25,13 @@ public class ThreadUtils {
     public static class ThreadChecker {
         @Nullable private Thread thread = Thread.currentThread();
 
+        /**
+         * Ensures that the current thread matches the stored thread reference.
+         *
+         * <p>If the stored thread reference is null, it is set to the current thread. If called from a different thread than the stored one, throws an {@code IllegalStateException}.</p>
+         *
+         * @throws IllegalStateException if called from a thread different than the stored thread
+         */
         public void checkIsOnValidThread() {
             if (thread == null) {
                 thread = Thread.currentThread();
@@ -34,12 +41,19 @@ public class ThreadUtils {
             }
         }
 
+        /**
+         * Clears the stored thread reference, allowing future checks to bind to a new thread.
+         */
         public void detachThread() {
             thread = null;
         }
     }
 
-    /** Throws exception if called from other than main thread. */
+    /**
+     * Ensures the current method is called on the Android main (UI) thread.
+     *
+     * @throws IllegalStateException if invoked from a thread other than the main thread
+     */
     public static void checkIsOnMainThread() {
         if (Thread.currentThread() != Looper.getMainLooper().getThread()) {
             throw new IllegalStateException("Not on main thread!");
@@ -51,15 +65,23 @@ public class ThreadUtils {
      * complete without getting interrupted..
      */
     public interface BlockingOperation {
-        void run() throws InterruptedException;
+        /**
+ * Performs a blocking operation that may throw an InterruptedException.
+ *
+ * Implement this method to define an operation that can be executed uninterruptibly by utility methods.
+ *
+ * @throws InterruptedException if the operation is interrupted
+ */
+void run() throws InterruptedException;
     }
 
-    /**
-     * Utility method to make sure a blocking operation is executed to completion without getting
-     * interrupted. This should be used in cases where the operation is waiting for some critical
-     * work, e.g. cleanup, that must complete before returning. If the thread is interrupted during
-     * the blocking operation, this function will re-run the operation until completion, and only
-     * then re-interrupt the thread.
+    /****
+     * Executes a blocking operation to completion, ignoring interruptions until the operation finishes.
+     *
+     * <p>If the operation is interrupted, it is retried until it completes successfully. After completion,
+     * the thread's interrupted status is restored if any interruptions occurred during execution.
+     *
+     * @param operation the blocking operation to execute uninterruptibly
      */
     public static void executeUninterruptibly(BlockingOperation operation) {
         boolean wasInterrupted = false;
@@ -80,6 +102,15 @@ public class ThreadUtils {
         }
     }
 
+    /**
+     * Attempts to join the specified thread within the given timeout, ignoring interruptions.
+     *
+     * If interrupted while waiting, the method recalculates the remaining time and retries until the thread terminates or the timeout expires. The current thread's interruption status is restored if any interruptions occur during the join attempts.
+     *
+     * @param thread the thread to join
+     * @param timeoutMs the maximum time to wait in milliseconds
+     * @return {@code true} if the thread is no longer alive after the join attempt; {@code false} otherwise
+     */
     public static boolean joinUninterruptibly(final Thread thread, long timeoutMs) {
         final long startTimeMs = SystemClock.elapsedRealtime();
         long timeRemainingMs = timeoutMs;
@@ -104,6 +135,15 @@ public class ThreadUtils {
         return !thread.isAlive();
     }
 
+    /**
+     * Waits for the specified thread to terminate, ignoring interruptions until completion.
+     *
+     * This method ensures that the calling thread waits uninterruptibly for the given thread to finish execution.
+     * If interrupted during the wait, the interruption is suppressed and the wait continues until the thread terminates.
+     * The calling thread's interruption status is restored after the join completes.
+     *
+     * @param thread the thread to join
+     */
     public static void joinUninterruptibly(final Thread thread) {
         executeUninterruptibly(
                 new BlockingOperation() {
@@ -114,6 +154,13 @@ public class ThreadUtils {
                 });
     }
 
+    /**
+     * Waits for the given {@link CountDownLatch} to reach zero, ignoring interruptions until completion.
+     *
+     * The thread's interrupted status is restored after the wait if it was interrupted during the operation.
+     *
+     * @param latch the {@code CountDownLatch} to wait on
+     */
     public static void awaitUninterruptibly(final CountDownLatch latch) {
         executeUninterruptibly(
                 new BlockingOperation() {
@@ -124,6 +171,15 @@ public class ThreadUtils {
                 });
     }
 
+    /**
+     * Waits for the given {@link CountDownLatch} to reach zero within the specified timeout, ignoring interruptions.
+     *
+     * <p>If interrupted while waiting, the method recalculates the remaining time and continues waiting until the latch is released or the timeout expires. If interrupted at any point, the thread's interrupted status is restored before returning.
+     *
+     * @param barrier the {@link CountDownLatch} to wait on
+     * @param timeoutMs the maximum time to wait in milliseconds
+     * @return {@code true} if the latch reached zero before the timeout, {@code false} otherwise
+     */
     public static boolean awaitUninterruptibly(CountDownLatch barrier, long timeoutMs) {
         final long startTimeMs = SystemClock.elapsedRealtime();
         long timeRemainingMs = timeoutMs;
@@ -149,7 +205,16 @@ public class ThreadUtils {
         return result;
     }
 
-    /** Post `callable` to `handler` and wait for the result. */
+    /**
+     * Executes the given {@code callable} on the specified handler's thread and waits uninterruptibly for its result.
+     *
+     * <p>If called from the handler's thread, the callable is executed directly. Otherwise, the callable is posted to the handler's message queue, and this method blocks until execution completes. Any exception thrown by the callable is rethrown as a {@code RuntimeException} with a combined stack trace from both threads.
+     *
+     * @param handler the handler whose thread will execute the callable
+     * @param callable the operation to execute
+     * @return the result returned by the callable
+     * @throws RuntimeException if the callable throws an exception
+     */
     public static <V> V invokeAtFrontUninterruptibly(
             final Handler handler, final Callable<V> callable) {
         if (handler.getLooper().getThread() == Thread.currentThread()) {
@@ -171,6 +236,9 @@ public class ThreadUtils {
         final CountDownLatch barrier = new CountDownLatch(1);
         handler.post(
                 new Runnable() {
+                    /**
+                     * Executes the provided callable, storing its result or any thrown exception, and signals completion via the latch.
+                     */
                     @Override
                     public void run() {
                         try {
@@ -195,11 +263,25 @@ public class ThreadUtils {
         return result.value;
     }
 
-    /** Post `runner` to `handler`, at the front, and wait for completion. */
+    /**
+     * Executes the given {@code Runnable} on the specified {@code Handler}'s thread, posting it at the front of the message queue and waiting uninterruptibly for its completion.
+     *
+     * <p>If called from the handler's thread, the runnable is executed immediately. Otherwise, the runnable is posted and this method blocks until it finishes, ignoring interruptions.
+     *
+     * @param handler the handler whose thread will execute the runnable
+     * @param runner the runnable to execute
+     */
     public static void invokeAtFrontUninterruptibly(final Handler handler, final Runnable runner) {
         invokeAtFrontUninterruptibly(
                 handler,
                 new Callable<Void>() {
+                    /****
+                     * Executes the provided {@code Runnable} and returns {@code null}.
+                     *
+                     * Used to adapt a {@code Runnable} to a {@code Callable<Void>} interface.
+                     *
+                     * @return always {@code null}
+                     */
                     @Override
                     public Void call() {
                         runner.run();
@@ -208,6 +290,13 @@ public class ThreadUtils {
                 });
     }
 
+    /**
+     * Combines two arrays of stack trace elements into a single array.
+     *
+     * @param inner the first stack trace array to include
+     * @param outer the second stack trace array to append after the first
+     * @return a new array containing all elements from {@code inner} followed by all elements from {@code outer}
+     */
     static StackTraceElement[] concatStackTraces(
             StackTraceElement[] inner, StackTraceElement[] outer) {
         final StackTraceElement[] combined = new StackTraceElement[inner.length + outer.length];
