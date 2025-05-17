@@ -13,6 +13,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/task_util/pending_task_flag.h"
 
 namespace ave {
@@ -39,12 +40,12 @@ bool RepeatingTaskBase::Run() {
     return true;
   }
 
+  // TODO(youfa): use time utils to avoid overflow.
   uint64_t delay = RunClosure();
 
   uint64_t lost_time = GetNowUs() - next_run_time_;
   next_run_time_ += delay;
-  delay -= lost_time;
-  delay = std::max<uint64_t>(delay, 0LL);
+  delay = (lost_time > delay) ? 0 : delay;
 
   if (!alive_flag_->Alive()) {
     return true;
