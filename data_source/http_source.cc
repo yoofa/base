@@ -114,7 +114,7 @@ status_t HTTPSource::GetSize(off64_t* size) {
   return *size < 0 ? UNKNOWN_ERROR : OK;
 }
 
-uint64_t HTTPSource::Flags() {
+int32_t HTTPSource::Flags() {
   return kWantsPrefetching | kIsHTTPBasedSource;
 }
 

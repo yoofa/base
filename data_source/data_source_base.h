@@ -19,7 +19,7 @@ namespace ave {
 
 class DataSourceBase {
  public:
-  enum Flags : uint64_t {
+  enum {
     kIsDefault = 0,
     kWantsPrefetching = 1,
     kStreamedFromLocalHost = 2,
@@ -58,7 +58,7 @@ class DataSourceBase {
     return false;
   }
 
-  virtual uint64_t Flags() { return kIsDefault; }
+  virtual int32_t Flags() { return kIsDefault; }
 
   virtual void Close() {}
 

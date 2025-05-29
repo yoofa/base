@@ -34,7 +34,7 @@ class FileSource : public DataSource {
 
   status_t GetSize(off64_t* size) override;
 
-  uint64_t Flags() override { return kIsLocalFileSource | kSeekable; }
+  int32_t Flags() override { return kIsLocalFileSource | kSeekable; }
 
   virtual std::string toString() { return name_; }
 

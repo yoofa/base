@@ -37,7 +37,7 @@ class HTTPSource : public DataSource, public HTTPBase {
   status_t InitCheck() const override;
   ssize_t ReadAt(off64_t offset, void* data, size_t size) override;
   status_t GetSize(off64_t* size) override;
-  uint64_t Flags() override;
+  int32_t Flags() override;
   void Close() override;
 
  protected:
