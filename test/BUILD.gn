@@ -1,0 +1,7 @@
+import("//base/build/ave.gni")
+
+ave_library("mock_task_runner_factory") {
+  testonly = true
+  sources = [ "mock_task_runner_factory.h" ]
+  deps = [ "//base:task_util" ]
+}
