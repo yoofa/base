@@ -180,6 +180,7 @@ ave_library("task_util") {
     "task_util/task_runner_stdlib.h",
   ]
 
+  configs -= [ "//build/config/compiler:rtti" ]
   configs += [ "//build/config/compiler:rtti" ]
 
   deps = [
