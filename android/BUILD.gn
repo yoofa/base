@@ -16,12 +16,140 @@ if (is_android) {
       "java/io/github/yoofa/Size.java",
       "java/io/github/yoofa/ThreadUtils.java",
     ]
+
     deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+
+    deps += [ ":generated_base_jni_java" ]
+    deps += [ "//third_party/jni_zero:jni_zero_java" ]
+  }
+
+  #ave_android_library("ave_hello_world_java") {
+  #  visibility = [ "*" ]
+  #  sources = [ "java/io/github/yoofa/HelloWorld.java" ]
+  #  deps = [ ":ave_base_java" ]
+  #}
+
+  #dist_jar("libhelloworld") {
+  #  _target_dir_name = get_label_info(":$target_name", "dir")
+  #  output = "${root_out_dir}/lib.java${_target_dir_name}/${target_name}.jar"
+  #  direct_deps_only = true
+  #  use_unprocessed_jars = true
+  #  requires_android = true
+
+  #  deps = [
+  #    ":ave_base_java",
+  #    ":ave_hello_world_java",
+  #  ]
+  #}
+
+  ave_library("ave_jni") {
+    sources = [
+      "jni/jni_string.cc",
+      "jni/jni_string.h",
+    ]
+  }
+
+  ave_library("base_jni") {
+    visibility = [ "*" ]
+    sources = [ "jni/logging_jni.cc" ]
+    deps = [
+      ":generated_base_jni",
+      "//base:logging",
+    ]
   }
 
   generate_jni("generated_base_jni") {
     sources = [ "java/io/github/yoofa/Logging.java" ]
-    namespace = "ave::jni"
+    namespace = "ave::base::jni"
     jni_generator_include = "//base/android/jni/jni_generator_helper.h"
+
+    #deps = [ "//third_party/jni_zero:jni_zero_java" ]
+  }
+
+  ave_shared_library("ave_base_so") {
+    suppressed_configs += [ "//build/config/android:hide_all_but_jni_onload" ]
+    configs += [ "//build/config/android:hide_all_but_jni" ]
+
+    deps = [
+      ":base_jni",
+      ":generated_base_jni",
+      "//base:logging",
+      "//third_party/jni_zero",
+    ]
+    output_extension = "so"
+  }
+
+  # Android Apk
+  ave_android_apk("AVEHelloWorld_apk") {
+    testonly = true
+
+    apk_name = "AVEHelloWorld"
+
+    android_manifest = "androidapp/AndroidManifest.xml"
+    min_sdk_version = 30
+    target_sdk_version = 34
+
+    deps = [
+      ":AVEHelloWorld_java",
+      ":AVEHelloWorld_resources",
+    ]
+    shared_libraries = [ ":ave_base_so" ]
+  }
+
+  ave_android_library("AVEHelloWorld_java") {
+    #testonly = true
+    visibility = [ "*" ]
+    android_manifest = "androidapp/AndroidManifest.xml"
+    sources = [ "androidapp/src/io/github/yoofa/MainActivity.java" ]
+    resources_package = "io.github.yoofa"
+    deps = [
+      ":AVEHelloWorld_resources",
+      ":ave_base_java",
+
+      #"//third_party/android_deps:com_google_android_material_material_java",
+      "//third_party/android_deps:material_design_java",
+      "//third_party/androidx:androidx_activity_activity_java",
+      "//third_party/androidx:androidx_appcompat_appcompat_java",
+      "//third_party/androidx:androidx_compose_material3_material3_java",
+      "//third_party/androidx:androidx_core_core_java",
+    ]
+  }
+
+  android_resources("AVEHelloWorld_resources") {
+    #testonly = true
+
+    sources = [
+      "androidapp/res/drawable/ic_launcher_background.xml",
+      "androidapp/res/drawable/ic_launcher_foreground.xml",
+      "androidapp/res/layout/activity_main.xml",
+      "androidapp/res/mipmap-anydpi/ic_launcher.xml",
+      "androidapp/res/mipmap-anydpi/ic_launcher_round.xml",
+      "androidapp/res/mipmap-hdpi/ic_launcher.webp",
+      "androidapp/res/mipmap-hdpi/ic_launcher_round.webp",
+      "androidapp/res/mipmap-mdpi/ic_launcher.webp",
+      "androidapp/res/mipmap-mdpi/ic_launcher_round.webp",
+      "androidapp/res/mipmap-xhdpi/ic_launcher.webp",
+      "androidapp/res/mipmap-xhdpi/ic_launcher_round.webp",
+      "androidapp/res/mipmap-xxhdpi/ic_launcher.webp",
+      "androidapp/res/mipmap-xxhdpi/ic_launcher_round.webp",
+      "androidapp/res/mipmap-xxxhdpi/ic_launcher.webp",
+      "androidapp/res/mipmap-xxxhdpi/ic_launcher_round.webp",
+      "androidapp/res/values-night/themes.xml",
+      "androidapp/res/values/colors.xml",
+      "androidapp/res/values/strings.xml",
+      "androidapp/res/values/themes.xml",
+      "androidapp/res/xml/backup_rules.xml",
+      "androidapp/res/xml/data_extraction_rules.xml",
+    ]
+
+    #deps = [
+    #  "//third_party/android_deps:material_design_java",
+    #  "//third_party/androidx:androidx_compose_material3_material3_java",
+    #  "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
+    #]
+
+    custom_package = "io.github.yoofa"
+    resource_dirs = [ "androidapp/res" ]
+    assert(resource_dirs != [])  # Mark as used.
   }
 }

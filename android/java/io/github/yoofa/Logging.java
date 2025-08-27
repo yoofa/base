@@ -12,6 +12,8 @@ package io.github.yoofa;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.JniType;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.EnumSet;
@@ -197,11 +199,14 @@ public class Logging {
         return sw.toString();
     }
 
-    private static native void nativeEnableLogToDebugOutput(int nativeSeverity);
+    private static native void nativeEnableLogToDebugOutput(@JniType("int32_t") int nativeSeverity);
 
     private static native void nativeEnableLogThreads();
 
     private static native void nativeEnableLogTimeStamps();
 
-    private static native void nativeLog(int severity, String tag, String message);
+    private static native void nativeLog(
+            @JniType("int32_t") int severity,
+            @JniType("std::string") String tag,
+            @JniType("std::string") String message);
 }
