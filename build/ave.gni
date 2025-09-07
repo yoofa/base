@@ -44,7 +44,6 @@ if (is_clang) {
 
 ave_add_configs = ave_common_configs
 
-#ave_add_configs += [ "//build/config/compiler:rtti" ]
 ave_add_configs += [ "//build/config/compiler:exceptions" ]
 
 ave_prod_configs = []
