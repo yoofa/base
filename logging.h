@@ -60,7 +60,7 @@ class LogLineRef {
   std::string_view message() const { return message_; }
   std::string_view filename() const { return filename_; }
   int line() const { return line_; }
-  std::optional<int32_t> thread_id() const { return thread_id_; }
+  std::optional<uint32_t> thread_id() const { return thread_id_; }
   Timestamp timestamp() const { return timestamp_; }
   std::string_view tag() const { return tag_; }
   LogSeverity severity() const { return severity_; }
@@ -76,7 +76,7 @@ class LogLineRef {
   void set_message(std::string message) { message_ = std::move(message); }
   void set_filename(std::string_view filename) { filename_ = filename; }
   void set_line(int line) { line_ = line; }
-  void set_thread_id(std::optional<int32_t> thread_id) {
+  void set_thread_id(std::optional<uint32_t> thread_id) {
     thread_id_ = thread_id;
   }
   void set_timestamp(Timestamp timestamp) { timestamp_ = timestamp; }
@@ -86,7 +86,7 @@ class LogLineRef {
   std::string message_;
   std::string_view filename_;
   int line_ = 0;
-  std::optional<int32_t> thread_id_;
+  std::optional<uint32_t> thread_id_;
   Timestamp timestamp_ = Timestamp::MinusInfinity();
   // The default Android debug output tag.
   std::string_view tag_ = "av_engine";
@@ -413,6 +413,7 @@ class LogMessage {
   static int64_t LogStartTime();
   static uint32_t WallClockStartTime();
   static void LogThreads(bool on = true);
+  static void LogPrintSeverity(bool on = true);
   static void LogTimestamps(bool on = true);
   static void LogToDebug(LogSeverity min_sev);
   static LogSeverity GetLogToDebug();
@@ -443,6 +444,7 @@ class LogMessage {
   inline static int64_t LogStartTime() { return 0; }
   inline static uint32_t WallClockStartTime() { return 0; }
   inline static void LogThreads(bool on = true) {}
+  inline static void LogPrintSeverity(bool on = true) {}
   inline static void LogTimestamps(bool on = true) {}
   inline static void LogToDebug(LogSeverity min_sev) {}
   inline static LogSeverity GetLogToDebug() { return LS_INFO; }
@@ -475,7 +477,7 @@ class LogMessage {
 
   static std::atomic<bool> streams_empty_;
 
-  static bool thread_, timestamp_;
+  static bool thread_, timestamp_, print_severity_;
 
   static bool log_to_stderr_;
 #else

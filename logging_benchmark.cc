@@ -24,6 +24,7 @@ static void BM_DisabledLogging(benchmark::State& state) {
   for (auto _ : state) {
     AVE_LOG(LS_VERBOSE) << "This should be filtered out";
   }
+  ave::base::LogMessage::LogToDebug(ave::base::LogSeverity::LS_VERBOSE);
 }
 BENCHMARK(BM_DisabledLogging);
 

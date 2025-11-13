@@ -7,12 +7,15 @@
 
 #include "base/logging.h"
 
+#include <array>
 #include <cstring>
 #include <ctime>
 #include <iomanip>
 #include <mutex>
 #include <string>
-#include <thread>
+
+#include <sys/syscall.h>
+#include <unistd.h>
 
 #include "base/time_utils.h"
 
@@ -49,6 +52,14 @@ const char* FilenameFromPath(const char* file) {
 
 std::mutex g_log_mutex_;
 
+pid_t get_cached_tid() {
+  thread_local static auto cached_tid =
+      static_cast<pid_t>(::syscall(SYS_gettid));
+  return cached_tid;
+}
+
+std::array<char, 6> SeverityChar{'V', 'D', 'I', 'W', 'E', 'N'};
+
 }  // namespace
 
 std::string formatTimeMillis(Timestamp timestamp) {
@@ -73,6 +84,7 @@ std::string LogLineRef::DefaultLogLine() const {
 
   if (thread_id_.has_value()) {
     log_output << "[" << *thread_id_ << "] ";
+    log_output << "[" << SeverityChar[static_cast<int32_t>(severity())] << "] ";
   }
 
   if (!filename_.empty()) {
@@ -92,10 +104,11 @@ std::atomic<bool> LogMessage::streams_empty_ = {true};
 #if defined(AVE_ANDROID)
 bool LogMessage::thread_ = false;
 bool LogMessage::timestamp_ = false;
+bool LogMessage::print_severity_ = false;
 #else
 bool LogMessage::thread_ = true;
 bool LogMessage::timestamp_ = true;
-
+bool LogMessage::print_severity_ = true;
 #endif
 
 LogMessage::LogMessage(const char* file, int line, LogSeverity sev)
@@ -108,19 +121,12 @@ LogMessage::LogMessage(const char* file,
                        int err) {
   log_line_.set_severity(sev);
   if (timestamp_) {
-    auto log_start_time = LogStartTime();
-    // Use SystemTimeMillis so that even if tests use fake clocks, the timestamp
-    // in log messages represents the real system time.
-    auto time = TimeDiff(SystemTimeMillis(), log_start_time);
-    // Also ensure WallClockStartTime is initialized, so that it matches
-    // LogStartTime.
-    WallClockStartTime();
-    log_line_.set_timestamp(Timestamp::Millis(time));
+    // Use TimeUTCMillis to get the actual wall-clock time for logging.
+    log_line_.set_timestamp(Timestamp::Millis(TimeUTCMillis()));
   }
 
   if (thread_) {
-    log_line_.set_thread_id(
-        std::hash<std::thread::id>{}(std::this_thread::get_id()));
+    log_line_.set_thread_id(static_cast<uint32_t>(get_cached_tid()));
   }
 
   if (file != nullptr) {
@@ -199,6 +205,10 @@ uint32_t LogMessage::WallClockStartTime() {
 
 void LogMessage::LogThreads(bool on) {
   thread_ = on;
+}
+
+void LogMessage::LogPrintSeverity(bool on) {
+  print_severity_ = on;
 }
 
 void LogMessage::LogTimestamps(bool on) {
