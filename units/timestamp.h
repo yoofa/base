@@ -118,7 +118,7 @@ class Timestamp : public unit_impl::UnitBase<Timestamp> {
  private:
   friend class unit_impl::UnitBase<Timestamp>;
   using UnitBase::UnitBase;
-  static constexpr bool one_sided = true;
+  static constexpr bool one_sided = false;
 };
 
 std::string ToString(Timestamp value);
