@@ -8,6 +8,7 @@
 #include "thread.h"
 
 #include <sys/prctl.h>
+#include <sys/resource.h>
 #include <sys/syscall.h>
 #include <unistd.h>
 
@@ -28,15 +29,18 @@ struct ThreadData {
   std::string name_;
   pid_t* tid_;
   CountDownLatch* latch_;
+  int priority_;
 
   ThreadData(ThreadFunc func,
              std::string name,
              pid_t* tid,
-             CountDownLatch* latch)
+             CountDownLatch* latch,
+             int priority)
       : func_(std::move(func)),
         name_(std::move(name)),
         tid_(tid),
-        latch_(latch) {}
+        latch_(latch),
+        priority_(priority) {}
 
   void runInThread() {
     *tid_ = gettid();
@@ -46,7 +50,11 @@ struct ThreadData {
 
     ::prctl(PR_SET_NAME, name_.empty() ? "thread" : name_.c_str());
 
-    // exception ?
+    // Apply thread nice priority (lower value = higher priority)
+    if (priority_ != 0) {
+      setpriority(PRIO_PROCESS, 0, priority_);
+    }
+
     func_();
   }
 };
@@ -81,28 +89,26 @@ void Thread::start(bool async) {
   assert(!started_);
   started_ = true;
 
-  auto* data = new ThreadData(func_, name_, &tid_, &latch_);
+  auto* data = new ThreadData(func_, name_, &tid_, &latch_, priority_);
 
   pthread_attr_t attr;
   pthread_attr_init(&attr);
-  // Set the stack stack size to 1M.
+  // Set the stack size to 1M.
   pthread_attr_setstacksize(&attr, 1024 * 1024);
   pthread_attr_setdetachstate(
       &attr, joinable_ ? PTHREAD_CREATE_JOINABLE : PTHREAD_CREATE_DETACHED);
-  struct sched_param sch_params {};
-  pthread_attr_getschedparam(&attr, &sch_params);
-  sch_params.sched_priority = priority_;
-  pthread_attr_setschedpolicy(&attr, SCHED_RR);
-  pthread_attr_setschedparam(&attr, &sch_params);
 
-  if (pthread_create(&pthreadId_, &attr, &startThread, data)) {
+  int err = pthread_create(&pthreadId_, &attr, &startThread, data);
+  pthread_attr_destroy(&attr);
+
+  if (err != 0) {
     started_ = false;
     delete data;
-  } else {
-    if (!async) {
-      latch_.Wait();
-      assert(tid_ > 0);
-    }
+  }
+
+  if (started_ && !async) {
+    latch_.Wait();
+    assert(tid_ > 0);
   }
 }
 
