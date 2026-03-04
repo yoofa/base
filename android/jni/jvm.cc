@@ -49,8 +49,7 @@ static void ThreadDestructor(void* prev_jni_ptr) {
     return;
   }
   AVE_DCHECK(GetEnv() == prev_jni_ptr)
-      << "Detaching from another thread: " << prev_jni_ptr << ":"
-      << GetEnv();
+      << "Detaching from another thread: " << prev_jni_ptr << ":" << GetEnv();
   jint status = g_jvm->DetachCurrentThread();
   AVE_DCHECK(status == JNI_OK) << "Failed to detach thread: " << status;
 }
@@ -74,8 +73,7 @@ jint InitGlobalJniVariables(JavaVM* jvm) {
   jni_zero::SetExceptionHandler(&HandleException);
   jni_zero::InitVM(jvm);
 
-  AVE_CHECK(!pthread_once(&g_jni_ptr_once, &CreateJNIPtrKey))
-      << "pthread_once";
+  AVE_CHECK(!pthread_once(&g_jni_ptr_once, &CreateJNIPtrKey)) << "pthread_once";
 
   JNIEnv* jni = nullptr;
   if (jvm->GetEnv(reinterpret_cast<void**>(&jni), JNI_VERSION_1_6) != JNI_OK) {

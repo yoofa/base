@@ -36,7 +36,7 @@ class ClassLoader {
   }
 
   jni_zero::ScopedJavaLocalRef<jclass> FindClass(JNIEnv* env,
-                                                  const char* c_name) {
+                                                 const char* c_name) {
     // ClassLoader.loadClass expects dots instead of slashes.
     std::string name(c_name);
     std::replace(name.begin(), name.end(), '/', '.');
@@ -44,8 +44,7 @@ class ClassLoader {
     const jclass clazz = static_cast<jclass>(
         env->CallObjectMethod(class_loader_.obj(), load_class_method_, j_name));
     env->DeleteLocalRef(j_name);
-    AVE_CHECK(!env->ExceptionCheck())
-        << "Failed to find class: " << c_name;
+    AVE_CHECK(!env->ExceptionCheck()) << "Failed to find class: " << c_name;
     return jni_zero::ScopedJavaLocalRef<jclass>::Adopt(env, clazz);
   }
 
@@ -73,8 +72,7 @@ void InitClassLoader(JNIEnv* env) {
   jni_zero::SetClassResolver(&ResolveClass);
 }
 
-jni_zero::ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
-                                               const char* c_name) {
+jni_zero::ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env, const char* c_name) {
   if (g_class_loader != nullptr) {
     return g_class_loader->FindClass(env, c_name);
   }
