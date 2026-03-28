@@ -12,6 +12,9 @@ package io.github.yoofa;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.EnumSet;
@@ -93,11 +96,11 @@ public class Logging {
     }
 
     public static void enableLogThreads() {
-        nativeEnableLogThreads();
+        LoggingJni.get().enableLogThreads();
     }
 
     public static void enableLogTimeStamps() {
-        nativeEnableLogTimeStamps();
+        LoggingJni.get().enableLogTimeStamps();
     }
 
     // TODO(solenberg): Remove once dependent projects updated.
@@ -115,7 +118,7 @@ public class Logging {
                     "Logging to native debug output not supported while Loggable is injected. "
                             + "Delete the Loggable before calling this method.");
         }
-        nativeEnableLogToDebugOutput(severity.ordinal());
+        LoggingJni.get().enableLogToDebugOutput(severity.ordinal());
         loggingEnabled = true;
     }
 
@@ -135,7 +138,7 @@ public class Logging {
 
         // Try native logging if no loggable is injected.
         if (loggingEnabled) {
-            nativeLog(severity.ordinal(), tag, message);
+            LoggingJni.get().log(severity.ordinal(), tag, message);
             return;
         }
 
@@ -197,11 +200,11 @@ public class Logging {
         return sw.toString();
     }
 
-    private static native void nativeEnableLogToDebugOutput(int nativeSeverity);
-
-    private static native void nativeEnableLogThreads();
-
-    private static native void nativeEnableLogTimeStamps();
-
-    private static native void nativeLog(int severity, String tag, String message);
+    @NativeMethods
+    interface Natives {
+        void enableLogToDebugOutput(int nativeSeverity);
+        void enableLogThreads();
+        void enableLogTimeStamps();
+        void log(int severity, @JniType("std::string") String tag, @JniType("std::string") String message);
+    }
 }

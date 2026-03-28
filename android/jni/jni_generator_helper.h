@@ -18,6 +18,7 @@
 
 #include <atomic>
 
+#include "base/android/jni/jni_string.h"
 #include "third_party/jni_zero/jni_zero_internal.h"
 
 #define JNI_REGISTRATION_EXPORT __attribute__((visibility("default")))

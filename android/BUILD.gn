@@ -21,6 +21,7 @@ if (is_android) {
       "java/io/github/yoofa/ThreadUtils.java",
     ]
     deps = [
+      ":generated_base_jni_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
@@ -42,6 +43,7 @@ if (is_android) {
       "jni/class_loader.h",
       "jni/jvm.cc",
       "jni/jvm.h",
+      "jni/logging_jni.cc",
     ]
     deps = [
       ":generated_base_jni",
