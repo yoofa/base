@@ -128,14 +128,14 @@ AVE_SAFECMP_MAKE_OP(GeOp, >=)
   template <typename T1, typename T2>                                        \
   constexpr std::enable_if_t<IsIntlike<T1>::value && IsIntlike<T2>::value,   \
                              bool>                                           \
-      Safe##name(T1 a, T2 b) {                                               \
+  Safe##name(T1 a, T2 b) {                                                   \
     /* Unary plus here turns enums into real integral types. */              \
     return safe_cmp_impl::Cmp<safe_cmp_impl::name##Op>(+a, +b);              \
   }                                                                          \
   template <typename T1, typename T2>                                        \
   constexpr std::enable_if_t<!IsIntlike<T1>::value || !IsIntlike<T2>::value, \
                              bool>                                           \
-      Safe##name(const T1& a, const T2& b) {                                 \
+  Safe##name(const T1& a, const T2& b) {                                     \
     return safe_cmp_impl::name##Op::Op(a, b);                                \
   }
 

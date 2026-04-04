@@ -23,9 +23,8 @@ namespace jni_zero {
 
 /// Converts a Java String (boxed as jobject) to a UTF-8 std::string.
 template <>
-inline std::string FromJniType<std::string>(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_object) {
+inline std::string FromJniType<std::string>(JNIEnv* env,
+                                            const JavaRef<jobject>& j_object) {
   if (!j_object) {
     return std::string();
   }
@@ -39,14 +38,14 @@ inline std::string FromJniType<std::string>(
   return result;
 }
 
-/// Converts a UTF-8 std::string to a Java String (returned as ScopedJavaLocalRef<jobject>).
+/// Converts a UTF-8 std::string to a Java String (returned as
+/// ScopedJavaLocalRef<jobject>).
 template <>
 inline ScopedJavaLocalRef<jobject> ToJniType<std::string>(
     JNIEnv* env,
     const std::string& str) {
   jstring j_str = env->NewStringUTF(str.c_str());
-  return ScopedJavaLocalRef<jobject>::Adopt(
-      env, static_cast<jobject>(j_str));
+  return ScopedJavaLocalRef<jobject>::Adopt(env, static_cast<jobject>(j_str));
 }
 
 }  // namespace jni_zero

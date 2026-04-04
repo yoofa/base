@@ -31,11 +31,10 @@ static void JNI_Logging_EnableLogTimeStamps(JNIEnv* env) {
   ave::base::LogMessage::LogTimestamps(true);
 }
 
-static void JNI_Logging_Log(
-    JNIEnv* env,
-    jint severity,
-    std::string& tag,
-    std::string& message) {
+static void JNI_Logging_Log(JNIEnv* env,
+                            jint severity,
+                            std::string& tag,
+                            std::string& message) {
   auto sev = static_cast<ave::base::LogSeverity>(severity);
   ave::base::LogMessage(__FILE__, __LINE__, sev).stream()
       << tag << ": " << message;

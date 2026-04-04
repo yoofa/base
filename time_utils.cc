@@ -256,7 +256,7 @@ int64_t TimeUTCMicros() {
     return g_clock->TimeNanos() / kNumNanosecsPerMicrosec;
   }
 #if defined(AVE_POSIX)
-  struct timeval time {};
+  struct timeval time{};
   gettimeofday(&time, nullptr);
   // Convert from second (1.0) and microsecond (1e-6).
   return (static_cast<int64_t>(time.tv_sec) * kNumMicrosecsPerSec +

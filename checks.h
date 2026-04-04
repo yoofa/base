@@ -267,9 +267,9 @@ class FatalLogCall final {
 #define AVE_CHECK(condition)                                                   \
   (condition) ? static_cast<void>(0)                                           \
   : true      ? ::ave::internal::FatalLogCall<false>(__FILE__, __LINE__, "") & \
-               ::ave::internal::LogStreamer<>()                                \
-         : ::ave::internal::FatalLogCall<false>("", 0, "") &                   \
-               ::ave::internal::LogStreamer<>()
+                    ::ave::internal::LogStreamer<>()                           \
+              : ::ave::internal::FatalLogCall<false>("", 0, "") &              \
+                    ::ave::internal::LogStreamer<>()
 
 #define AVE_CHECK_OP(name, op, val1, val2)                               \
   ::ave::base::Safe##name((val1), (val2)) ? static_cast<void>(0)         \
