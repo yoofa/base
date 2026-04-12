@@ -14,7 +14,8 @@
 namespace ave {
 namespace jni {
 
-static void JNI_Logging_EnableLogToDebugOutput(jint nativeSeverity) {
+static void JNI_Logging_EnableLogToDebugOutput(JNIEnv* env,
+                                               jint nativeSeverity) {
   if (nativeSeverity >= 0 &&
       nativeSeverity <= static_cast<int>(ave::base::LS_NONE)) {
     ave::base::LogMessage::LogToDebug(
@@ -22,15 +23,16 @@ static void JNI_Logging_EnableLogToDebugOutput(jint nativeSeverity) {
   }
 }
 
-static void JNI_Logging_EnableLogThreads() {
+static void JNI_Logging_EnableLogThreads(JNIEnv* env) {
   ave::base::LogMessage::LogThreads(true);
 }
 
-static void JNI_Logging_EnableLogTimeStamps() {
+static void JNI_Logging_EnableLogTimeStamps(JNIEnv* env) {
   ave::base::LogMessage::LogTimestamps(true);
 }
 
-static void JNI_Logging_Log(jint severity,
+static void JNI_Logging_Log(JNIEnv* env,
+                            jint severity,
                             std::string& tag,
                             std::string& message) {
   auto sev = static_cast<ave::base::LogSeverity>(severity);
