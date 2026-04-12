@@ -23,7 +23,9 @@ class HTTPConnection;
 }
 
 class HTTPSource : public DataSource, public HTTPBase {
+ public:
   HTTPSource(std::shared_ptr<net::HTTPConnection> connection);
+  ~HTTPSource() override;
 
   virtual status_t ReconnectAtOffset(off64_t offset);
 
@@ -39,9 +41,6 @@ class HTTPSource : public DataSource, public HTTPBase {
   status_t GetSize(off64_t* size) override;
   int32_t Flags() override;
   void Close() override;
-
- protected:
-  ~HTTPSource() override;
 
   // DataSource interfaces
   std::string GetUri() override;

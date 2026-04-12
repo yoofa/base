@@ -75,8 +75,14 @@ void CurlHttpConnection::Disconnect() {
 }
 
 ssize_t CurlHttpConnection::ReadAt(off64_t offset, void* data, size_t size) {
-  if (!connected_ || offset >= content_length_) {
+  if (!connected_) {
     return -1;
+  }
+  const off64_t readable_size = content_length_ >= 0
+                                    ? content_length_
+                                    : static_cast<off64_t>(buffer_.size());
+  if (offset < 0 || offset >= readable_size) {
+    return 0;
   }
 
   size_t available =
@@ -88,7 +94,8 @@ ssize_t CurlHttpConnection::ReadAt(off64_t offset, void* data, size_t size) {
 }
 
 off64_t CurlHttpConnection::GetSize() {
-  return content_length_;
+  return content_length_ >= 0 ? content_length_
+                              : static_cast<off64_t>(buffer_.size());
 }
 
 status_t CurlHttpConnection::GetMIMEType(std::string& mime_type) {
