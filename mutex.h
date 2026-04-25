@@ -14,6 +14,7 @@
 #include "types.h"
 
 namespace ave {
+namespace base {
 
 class Condition;
 
@@ -54,6 +55,7 @@ class CAPABILITY("mutex") Mutex {
 
 using lock_guard = Mutex::LockGuard;
 
+}  // namespace base
 }  // namespace ave
 
 #endif /* !AVE_MUTEX_H */

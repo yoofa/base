@@ -16,6 +16,7 @@
 #include "base/errors.h"
 
 namespace ave {
+namespace base {
 
 class DataSourceBase {
  public:
@@ -160,6 +161,7 @@ class DataSourceBase {
   }
 };
 
+}  // namespace base
 }  // namespace ave
 
 #endif /* !DATA_SOURCE_BASE_H */

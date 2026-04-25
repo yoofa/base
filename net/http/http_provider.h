@@ -14,6 +14,7 @@
 #include "base/net/http/http_connection.h"
 
 namespace ave {
+namespace base {
 namespace net {
 
 class HTTPProvider {
@@ -32,6 +33,8 @@ class HTTPProvider {
 };
 
 }  // namespace net
+}
+}  // namespace base
 }  // namespace ave
 
 #endif /* !HTTP_PROVIDER_H */

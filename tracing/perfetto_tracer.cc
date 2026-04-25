@@ -16,6 +16,7 @@
 #include "trace_categories.h"
 
 namespace ave {
+namespace base {
 namespace tracing {
 
 // Thread-local storage for section nesting
@@ -252,4 +253,6 @@ bool PerfettoTracer::setupSystemTracing() {
 }
 
 }  // namespace tracing
+}
+}  // namespace base
 }  // namespace ave

@@ -15,6 +15,7 @@
 #include "base/time_utils.h"
 
 namespace ave {
+namespace base {
 
 namespace {
 constexpr size_t kMaxReadSize = 64 * 1024;
@@ -146,4 +147,5 @@ std::string HTTPSource::GetMIMEType() {
   return "application/octet-stream";
 }
 
+}  // namespace base
 }  // namespace ave

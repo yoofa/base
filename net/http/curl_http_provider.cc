@@ -11,6 +11,7 @@
 #include "base/net/http/curl_http_provider.h"
 
 namespace ave {
+namespace base {
 namespace net {
 
 namespace {
@@ -46,4 +47,6 @@ bool CurlHttpProvider::SupportsScheme(const std::string& scheme) {
 }
 
 }  // namespace net
+}
+}  // namespace base
 }  // namespace ave

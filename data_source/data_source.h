@@ -13,6 +13,7 @@
 #include "data_source_base.h"
 
 namespace ave {
+namespace base {
 class DataSource : public DataSourceBase {
  public:
   virtual std::string GetUri() { return {}; }
@@ -24,6 +25,7 @@ class DataSource : public DataSourceBase {
 
   virtual std::string GetMimeType() { return {"application/octet-stream"}; }
 };
+}  // namespace base
 }  // namespace ave
 
 #endif /* !DATA_SOURCE_H */

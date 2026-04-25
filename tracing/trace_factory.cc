@@ -13,6 +13,7 @@
 #endif
 
 namespace ave {
+namespace base {
 namespace tracing {
 
 std::shared_ptr<AbstractTracer> TraceFactory::CreateTracer(
@@ -62,4 +63,5 @@ std::shared_ptr<AbstractTracer> TraceFactory::CreatePerfettoSystemTracer(
 #endif
 
 }  // namespace tracing
+}  // namespace base
 }  // namespace ave

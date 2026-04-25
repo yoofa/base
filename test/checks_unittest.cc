@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 
 namespace ave {
+namespace base {
 namespace {
 
 TEST(ChecksTest, ExpressionNotEvaluated) {
@@ -116,4 +117,5 @@ TEST(ChecksTest, DifferentTypes) {
 }
 
 }  // namespace
+}  // namespace base
 }  // namespace ave

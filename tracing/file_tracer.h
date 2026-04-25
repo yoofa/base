@@ -17,6 +17,7 @@
 #include "trace.h"
 
 namespace ave {
+namespace base {
 namespace tracing {
 
 /**
@@ -81,6 +82,7 @@ class FileTracer : public AbstractTracer {
 };
 
 }  // namespace tracing
+}  // namespace base
 }  // namespace ave
 
 #endif /* !AVE_BASE_TRACING_FILE_TRACER_H_ */

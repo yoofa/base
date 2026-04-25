@@ -19,7 +19,7 @@
 #define ENABLE_TRACING
 
 using namespace ave;
-using namespace ave::tracing;
+using namespace ave::base::tracing;
 
 // Example function that performs some work and uses tracing
 void performTask(const std::string& task_name, int iterations) {

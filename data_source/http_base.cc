@@ -11,6 +11,7 @@
 #include "base/time_utils.h"
 
 namespace ave {
+namespace base {
 
 HTTPBase::HTTPBase()
     : name_(std::string("HTTPBase<disconnected>")),
@@ -92,4 +93,5 @@ void HTTPBase::SetBandwidthHistorySize(size_t num_history_items) {
   max_bandwidth_history_items_ = num_history_items;
 }
 
+}  // namespace base
 }  // namespace ave

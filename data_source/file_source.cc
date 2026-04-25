@@ -18,6 +18,7 @@
 #include "base/utils.h"
 
 namespace ave {
+namespace base {
 
 FileSource::FileSource(const char* filename)
     : fd_(-1), start_offset_(0), length_(-1), offset_(0), name_("<null>") {
@@ -162,4 +163,5 @@ status_t FileSource::GetSize(off64_t* size) {
   return OK;
 }
 
+}  // namespace base
 }  // namespace ave

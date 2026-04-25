@@ -18,6 +18,7 @@
 #include "trace.h"
 
 namespace ave {
+namespace base {
 namespace tracing {
 
 /**
@@ -100,6 +101,8 @@ class PerfettoTracer : public AbstractTracer {
 };
 
 }  // namespace tracing
+}
+}  // namespace base
 }  // namespace ave
 
 #endif /* !AVE_BASE_TRACING_PERFETTO_TRACER_H_ */

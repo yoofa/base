@@ -10,6 +10,7 @@
 #include "trace_factory.h"
 
 namespace ave {
+namespace base {
 namespace tracing {
 
 // Static member initialization
@@ -164,4 +165,5 @@ void Trace::asyncStepEvent(std::string_view category,
 }
 
 }  // namespace tracing
+}  // namespace base
 }  // namespace ave

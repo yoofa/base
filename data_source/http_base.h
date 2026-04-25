@@ -16,6 +16,7 @@
 #include "base/errors.h"
 
 namespace ave {
+namespace base {
 
 class HTTPBase {
  public:
@@ -77,6 +78,7 @@ class HTTPBase {
   AVE_DISALLOW_COPY_AND_ASSIGN(HTTPBase);
 };
 
+}  // namespace base
 }  // namespace ave
 
 #endif /* !HTTP_BASE_H */

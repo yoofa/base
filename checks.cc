@@ -39,6 +39,7 @@ void AppendFormat(std::string* s, const char* fmt, ...) {
 }  // namespace
 
 namespace ave {
+namespace base {
 namespace internal {
 
 AVE_NORETURN void WriteFatalMessage(const char* file,
@@ -150,4 +151,5 @@ AVE_NORETURN void FatalLog(const char* file, int line) {
 #endif  // AVE_CHECK_MSG_ENABLED
 
 }  // namespace internal
+}  // namespace base
 }  // namespace ave

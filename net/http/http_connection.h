@@ -15,6 +15,7 @@
 #include "base/errors.h"
 
 namespace ave {
+namespace base {
 namespace net {
 
 class HTTPConnection {
@@ -36,6 +37,7 @@ class HTTPConnection {
 };
 
 }  // namespace net
+}  // namespace base
 }  // namespace ave
 
 #endif /* !HTTP_CONNECTION_H */

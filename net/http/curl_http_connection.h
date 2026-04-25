@@ -15,6 +15,7 @@
 #include "base/net/http/http_connection.h"
 
 namespace ave {
+namespace base {
 namespace net {
 
 class CurlHttpConnection : public HTTPConnection {
@@ -56,6 +57,8 @@ class CurlHttpConnection : public HTTPConnection {
 };
 
 }  // namespace net
+}
+}  // namespace base
 }  // namespace ave
 
 #endif /* !CURL_HTTP_CONNECTION_H */

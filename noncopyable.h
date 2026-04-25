@@ -9,6 +9,7 @@
 #define AVE_NONCOPYABLE_H
 
 namespace ave {
+namespace base {
 class noncopyable {
  public:
   noncopyable(const noncopyable&) = delete;
@@ -19,6 +20,7 @@ class noncopyable {
   ~noncopyable() = default;
 };
 
+}  // namespace base
 }  // namespace ave
 
 #endif /* !AVE_NONCOPYABLE_H */

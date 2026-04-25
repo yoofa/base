@@ -11,6 +11,7 @@
 #include <cstring>
 
 namespace ave {
+namespace base {
 namespace net {
 
 CurlHttpConnection::CurlHttpConnection()
@@ -166,4 +167,6 @@ bool CurlHttpConnection::ParseHeaders() {
 }
 
 }  // namespace net
+}
+}  // namespace base
 }  // namespace ave

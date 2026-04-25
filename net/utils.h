@@ -11,12 +11,14 @@
 #include <string>
 
 namespace ave {
+namespace base {
 namespace net {
 
 std::string MakeUserAgent();
 std::string UriDebugString(const std::string& uri, bool incognito = false);
 
 }  // namespace net
+}  // namespace base
 }  // namespace ave
 
 #endif /* !UTILS_H */

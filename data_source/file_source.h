@@ -15,6 +15,7 @@
 #include "data_source.h"
 
 namespace ave {
+namespace base {
 
 class FileSource : public DataSource {
  public:
@@ -56,6 +57,7 @@ class FileSource : public DataSource {
   FileSource& operator=(const FileSource&);
 };
 
+}  // namespace base
 }  // namespace ave
 
 #endif /* !FILE_SOURCE_H */

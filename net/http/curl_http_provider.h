@@ -11,6 +11,7 @@
 #include "base/net/http/http_provider.h"
 
 namespace ave {
+namespace base {
 namespace net {
 
 class CurlHttpProvider : public HTTPProvider {
@@ -26,6 +27,8 @@ class CurlHttpProvider : public HTTPProvider {
 };
 
 }  // namespace net
+}
+}  // namespace base
 }  // namespace ave
 
 #endif /* !CURL_HTTP_PROVIDER_H */

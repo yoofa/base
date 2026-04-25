@@ -12,6 +12,7 @@
 #include <thread>
 
 namespace ave {
+namespace base {
 namespace tracing {
 
 FileTracer::FileTracer(const std::string& filename,
@@ -188,4 +189,5 @@ void FileTracer::writeToFile(const std::string& message) {
 }
 
 }  // namespace tracing
+}  // namespace base
 }  // namespace ave

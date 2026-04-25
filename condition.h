@@ -16,6 +16,7 @@
 #include "types.h"
 
 namespace ave {
+namespace base {
 
 class Condition {
  public:
@@ -56,6 +57,8 @@ class Condition {
   pthread_cond_t cond_{};
 };
 
+}
+}  // namespace base
 }  // namespace ave
 
 #endif /* !AVE_CONDITION_H */

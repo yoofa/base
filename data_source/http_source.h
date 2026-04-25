@@ -17,6 +17,7 @@
 #include "http_base.h"
 
 namespace ave {
+namespace base {
 
 namespace net {
 class HTTPConnection;
@@ -60,6 +61,7 @@ class HTTPSource : public DataSource, public HTTPBase {
   AVE_DISALLOW_COPY_AND_ASSIGN(HTTPSource);
 };
 
+}  // namespace base
 }  // namespace ave
 
 #endif /* !HTTP_SOURCE_H */

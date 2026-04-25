@@ -8,6 +8,7 @@
 #include "byte_utils.h"
 
 namespace ave {
+namespace base {
 
 uint16_t U16_AT(const uint8_t* ptr) {
   return ptr[0] << 8 | ptr[1];
@@ -49,4 +50,5 @@ void MakeFourCCString(uint32_t x, char* s) {
   s[3] = static_cast<char>(x & 0xff);
   s[4] = '\0';
 }
-} /* namespace ave */
+}  // namespace base
+}  // namespace ave

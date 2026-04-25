@@ -15,6 +15,7 @@
 #include <string_view>  // For std::string_view
 
 namespace ave {
+namespace base {
 namespace tracing {
 
 enum class TraceBackendType {
@@ -238,68 +239,75 @@ class ScopedTrace {
 
 #else  // AVE_ENABLE_TRACING is defined
 
-#define AVE_TRACE_INITIALIZE(config) ::ave::tracing::Trace::initialize(config)
-#define AVE_TRACE_SHUTDOWN() ::ave::tracing::Trace::shutdown()
-#define AVE_TRACE_ENABLED() ::ave::tracing::Trace::isEnabled()
+#define AVE_TRACE_INITIALIZE(config) \
+  ::ave::base::tracing::Trace::initialize(config)
+#define AVE_TRACE_SHUTDOWN() ::ave::base::tracing::Trace::shutdown()
+#define AVE_TRACE_ENABLED() ::ave::base::tracing::Trace::isEnabled()
 #define AVE_TRACE_CATEGORY_ENABLED(category) \
-  ::ave::tracing::Trace::isCategoryEnabled(category)
+  ::ave::base::tracing::Trace::isCategoryEnabled(category)
 
 // Use macros to create ScopedTrace objects, leveraging C++ RAII to
 // automatically end sections
-#define AVE_TRACE_SCOPE(name)                              \
-  ::ave::tracing::ScopedTrace AVE_TRACE_UID(trace_scope_)( \
+#define AVE_TRACE_SCOPE(name)                                    \
+  ::ave::base::tracing::ScopedTrace AVE_TRACE_UID(trace_scope_)( \
       AVE_TRACE_DEFAULT_CATEGORY, name)
 
 #define AVE_TRACE_SCOPE_CATEGORY(category, name) \
-  ::ave::tracing::ScopedTrace AVE_TRACE_UID(trace_scope_)(category, name)
+  ::ave::base::tracing::ScopedTrace AVE_TRACE_UID(trace_scope_)(category, name)
 
-#define AVE_TRACE_EVENT(name)                                                 \
-  if (::ave::tracing::Trace::isCategoryEnabled(AVE_TRACE_DEFAULT_CATEGORY)) { \
-    ::ave::tracing::Trace::instantEvent(AVE_TRACE_DEFAULT_CATEGORY, name);    \
+#define AVE_TRACE_EVENT(name)                                             \
+  if (::ave::base::tracing::Trace::isCategoryEnabled(                     \
+          AVE_TRACE_DEFAULT_CATEGORY)) {                                  \
+    ::ave::base::tracing::Trace::instantEvent(AVE_TRACE_DEFAULT_CATEGORY, \
+                                              name);                      \
   }
-#define AVE_TRACE_EVENT_CATEGORY(category, name)            \
-  if (::ave::tracing::Trace::isCategoryEnabled(category)) { \
-    ::ave::tracing::Trace::instantEvent(category, name);    \
+#define AVE_TRACE_EVENT_CATEGORY(category, name)                  \
+  if (::ave::base::tracing::Trace::isCategoryEnabled(category)) { \
+    ::ave::base::tracing::Trace::instantEvent(category, name);    \
   }
 
 #define AVE_TRACE_COUNTER(name, value)                                        \
-  if (::ave::tracing::Trace::isCategoryEnabled(AVE_TRACE_DEFAULT_CATEGORY)) { \
-    ::ave::tracing::Trace::setCounter(AVE_TRACE_DEFAULT_CATEGORY, name,       \
-                                      value);                                 \
+  if (::ave::base::tracing::Trace::isCategoryEnabled(                         \
+          AVE_TRACE_DEFAULT_CATEGORY)) {                                      \
+    ::ave::base::tracing::Trace::setCounter(AVE_TRACE_DEFAULT_CATEGORY, name, \
+                                            value);                           \
   }
-#define AVE_TRACE_COUNTER_CATEGORY(category, name, value)     \
-  if (::ave::tracing::Trace::isCategoryEnabled(category)) {   \
-    ::ave::tracing::Trace::setCounter(category, name, value); \
-  }
-
-#define AVE_TRACE_ASYNC_BEGIN(name, cookie)                                   \
-  if (::ave::tracing::Trace::isCategoryEnabled(AVE_TRACE_DEFAULT_CATEGORY)) { \
-    ::ave::tracing::Trace::beginAsyncEvent(AVE_TRACE_DEFAULT_CATEGORY, name,  \
-                                           cookie);                           \
-  }
-#define AVE_TRACE_ASYNC_BEGIN_CATEGORY(category, name, cookie)      \
-  if (::ave::tracing::Trace::isCategoryEnabled(category)) {         \
-    ::ave::tracing::Trace::beginAsyncEvent(category, name, cookie); \
+#define AVE_TRACE_COUNTER_CATEGORY(category, name, value)           \
+  if (::ave::base::tracing::Trace::isCategoryEnabled(category)) {   \
+    ::ave::base::tracing::Trace::setCounter(category, name, value); \
   }
 
-#define AVE_TRACE_ASYNC_END(name, cookie)                                     \
-  if (::ave::tracing::Trace::isCategoryEnabled(AVE_TRACE_DEFAULT_CATEGORY)) { \
-    ::ave::tracing::Trace::endAsyncEvent(AVE_TRACE_DEFAULT_CATEGORY, name,    \
-                                         cookie);                             \
+#define AVE_TRACE_ASYNC_BEGIN(name, cookie)                                  \
+  if (::ave::base::tracing::Trace::isCategoryEnabled(                        \
+          AVE_TRACE_DEFAULT_CATEGORY)) {                                     \
+    ::ave::base::tracing::Trace::beginAsyncEvent(AVE_TRACE_DEFAULT_CATEGORY, \
+                                                 name, cookie);              \
   }
-#define AVE_TRACE_ASYNC_END_CATEGORY(category, name, cookie)      \
-  if (::ave::tracing::Trace::isCategoryEnabled(category)) {       \
-    ::ave::tracing::Trace::endAsyncEvent(category, name, cookie); \
+#define AVE_TRACE_ASYNC_BEGIN_CATEGORY(category, name, cookie)            \
+  if (::ave::base::tracing::Trace::isCategoryEnabled(category)) {         \
+    ::ave::base::tracing::Trace::beginAsyncEvent(category, name, cookie); \
   }
 
-#define AVE_TRACE_ASYNC_STEP(name, cookie, step)                              \
-  if (::ave::tracing::Trace::isCategoryEnabled(AVE_TRACE_DEFAULT_CATEGORY)) { \
-    ::ave::tracing::Trace::asyncStepEvent(AVE_TRACE_DEFAULT_CATEGORY, name,   \
-                                          cookie, step);                      \
+#define AVE_TRACE_ASYNC_END(name, cookie)                                  \
+  if (::ave::base::tracing::Trace::isCategoryEnabled(                      \
+          AVE_TRACE_DEFAULT_CATEGORY)) {                                   \
+    ::ave::base::tracing::Trace::endAsyncEvent(AVE_TRACE_DEFAULT_CATEGORY, \
+                                               name, cookie);              \
   }
-#define AVE_TRACE_ASYNC_STEP_CATEGORY(category, name, cookie, step)      \
-  if (::ave::tracing::Trace::isCategoryEnabled(category)) {              \
-    ::ave::tracing::Trace::asyncStepEvent(category, name, cookie, step); \
+#define AVE_TRACE_ASYNC_END_CATEGORY(category, name, cookie)            \
+  if (::ave::base::tracing::Trace::isCategoryEnabled(category)) {       \
+    ::ave::base::tracing::Trace::endAsyncEvent(category, name, cookie); \
+  }
+
+#define AVE_TRACE_ASYNC_STEP(name, cookie, step)                            \
+  if (::ave::base::tracing::Trace::isCategoryEnabled(                       \
+          AVE_TRACE_DEFAULT_CATEGORY)) {                                    \
+    ::ave::base::tracing::Trace::asyncStepEvent(AVE_TRACE_DEFAULT_CATEGORY, \
+                                                name, cookie, step);        \
+  }
+#define AVE_TRACE_ASYNC_STEP_CATEGORY(category, name, cookie, step)            \
+  if (::ave::base::tracing::Trace::isCategoryEnabled(category)) {              \
+    ::ave::base::tracing::Trace::asyncStepEvent(category, name, cookie, step); \
   }
 
 #endif  // AVE_ENABLE_TRACING
@@ -363,6 +371,7 @@ class AbstractTracer {
 #define AVE_TRACE_UID3(prefix, counter) prefix##counter
 
 }  // namespace tracing
+}  // namespace base
 }  // namespace ave
 
 #endif /* !AVE_BASE_TRACE_H_H_ */

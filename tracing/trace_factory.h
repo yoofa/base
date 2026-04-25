@@ -15,6 +15,7 @@
 #include "trace.h"
 
 namespace ave {
+namespace base {
 namespace tracing {
 
 /**
@@ -65,6 +66,7 @@ class TraceFactory {
 };
 
 }  // namespace tracing
+}  // namespace base
 }  // namespace ave
 
 #endif /* !AVE_BASE_TRACING_TRACE_FACTORY_H_ */

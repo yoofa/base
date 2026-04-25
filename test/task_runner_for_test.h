@@ -14,7 +14,6 @@
 #include "base/task_util/task_runner_factory.h"
 
 namespace ave {
-
 namespace base {
 
 class TaskRunnerForTest : public TaskRunner {
