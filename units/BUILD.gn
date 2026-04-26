@@ -2,6 +2,9 @@ import("../build/ave.gni")
 
 ave_library("units") {
   deps = [
+    ":data_rate",
+    ":data_size",
+    ":frequency",
     ":time_delta",
     ":timestamp",
     ":units_base",
@@ -41,10 +44,45 @@ source_set("timestamp") {
     "..:checks",
   ]
 }
+source_set("data_size") {
+  sources = [
+    "data_size.cc",
+    "data_size.h",
+  ]
+  deps = [ ":units_base" ]
+}
+
+source_set("data_rate") {
+  sources = [
+    "data_rate.cc",
+    "data_rate.h",
+  ]
+  deps = [
+    ":data_size",
+    ":time_delta",
+    ":units_base",
+    "..:checks",
+  ]
+}
+
+source_set("frequency") {
+  sources = [
+    "frequency.cc",
+    "frequency.h",
+  ]
+  deps = [
+    ":time_delta",
+    ":units_base",
+    "..:checks",
+  ]
+}
 
 source_set("units_unittests_source") {
   testonly = true
   sources = [
+    "data_rate_unittest.cc",
+    "data_size_unittest.cc",
+    "frequency_unittest.cc",
     "time_delta_unittest.cc",
     "timestamp_test.cc",
     "unit_base_unittest.cc",

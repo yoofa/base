@@ -253,37 +253,38 @@ class FatalLogCall final {
 }  // namespace ave
 
 #if AVE_CHECK_MSG_ENABLED
-#define AVE_CHECK(condition)                                                        \
-  (condition)                                                                       \
-      ? static_cast<void>(0)                                                        \
-      : ::ave::base::internal::FatalLogCall<false>(__FILE__, __LINE__, #condition) & \
-            ::ave::base::internal::LogStreamer<>()
+#define AVE_CHECK(condition)                                                   \
+  (condition) ? static_cast<void>(0)                                           \
+              : ::ave::base::internal::FatalLogCall<false>(__FILE__, __LINE__, \
+                                                           #condition) &       \
+                    ::ave::base::internal::LogStreamer<>()
 
-#define AVE_CHECK_OP(name, op, val1, val2)                                  \
-  ::ave::base::Safe##name((val1), (val2))                                   \
-      ? static_cast<void>(0)                                                \
-      : ::ave::base::internal::FatalLogCall<true>(__FILE__, __LINE__,       \
+#define AVE_CHECK_OP(name, op, val1, val2)                                   \
+  ::ave::base::Safe##name((val1), (val2))                                    \
+      ? static_cast<void>(0)                                                 \
+      : ::ave::base::internal::FatalLogCall<true>(__FILE__, __LINE__,        \
                                                   #val1 " " #op " " #val2) & \
             ::ave::base::internal::LogStreamer<>() << (val1) << (val2)
 #else
-#define AVE_CHECK(condition)                                                        \
-  (condition) ? static_cast<void>(0)                                               \
-  : true      ? ::ave::base::internal::FatalLogCall<false>(__FILE__, __LINE__, "") & \
-                    ::ave::base::internal::LogStreamer<>()                          \
-              : ::ave::base::internal::FatalLogCall<false>("", 0, "") &             \
-                    ::ave::base::internal::LogStreamer<>()
+#define AVE_CHECK(condition)                                                 \
+  (condition) ? static_cast<void>(0)                                         \
+  : true                                                                     \
+      ? ::ave::base::internal::FatalLogCall<false>(__FILE__, __LINE__, "") & \
+            ::ave::base::internal::LogStreamer<>()                           \
+      : ::ave::base::internal::FatalLogCall<false>("", 0, "") &              \
+            ::ave::base::internal::LogStreamer<>()
 
-#define AVE_CHECK_OP(name, op, val1, val2)                                    \
-  ::ave::base::Safe##name((val1), (val2)) ? static_cast<void>(0)              \
+#define AVE_CHECK_OP(name, op, val1, val2)                                     \
+  ::ave::base::Safe##name((val1), (val2)) ? static_cast<void>(0)               \
   : true ? ::ave::base::internal::FatalLogCall<true>(__FILE__, __LINE__, "") & \
                ::ave::base::internal::LogStreamer<>()                          \
          : ::ave::base::internal::FatalLogCall<false>("", 0, "") &             \
                ::ave::base::internal::LogStreamer<>()
 #endif
 
-#define AVE_EAT_STREAM_PARAMETERS(ignored)                     \
-  (true ? true : ((void)(ignored), true))                      \
-      ? static_cast<void>(0)                                   \
+#define AVE_EAT_STREAM_PARAMETERS(ignored)                      \
+  (true ? true : ((void)(ignored), true))                       \
+      ? static_cast<void>(0)                                    \
       : ::ave::base::internal::FatalLogCall<false>("", 0, "") & \
             ::ave::base::internal::LogStreamer<>()
 
