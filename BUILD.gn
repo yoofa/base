@@ -187,6 +187,18 @@ ave_library("task_util") {
   ]
 }
 
+ave_library("clock") {
+  sources = [
+    "clock.cc",
+    "clock.h",
+  ]
+  deps = [
+    ":checks",
+    ":timeutils",
+    "units",
+  ]
+}
+
 ave_library("sequence_checker") {
   sources = [
     "sequence_checker.h",
@@ -340,10 +352,21 @@ ave_source_set("checks_unittest") {
   ]
 }
 
+ave_source_set("clock_unittest") {
+  testonly = true
+  sources = [ "test/clock_unittest.cc" ]
+  deps = [
+    ":clock",
+    "units",
+    "//test:test_support",
+  ]
+}
+
 executable("base_unittests") {
   testonly = true
   deps = [
     ":checks_unittest",
+    ":clock_unittest",
     ":numerics_unittest",
     ":task_runner_unittest",
     ":task_util",
