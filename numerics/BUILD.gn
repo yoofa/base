@@ -93,7 +93,17 @@ ave_library("sequence_number_unwrapper") {
 
 source_set("numerics_unittests_source") {
   testonly = true
-  sources = [ "exp_filter_unittest.cc" ]
+  sources = [
+    "divide_round_unittest.cc",
+    "exp_filter_unittest.cc",
+    "kahan_sum_unittest.cc",
+    "mod_ops_unittest.cc",
+    "percentile_filter_unittest.cc",
+    "safe_compare_unittest.cc",
+    "safe_conversions_unittest.cc",
+    "sequence_number_unwrapper_unittest.cc",
+    "sequence_number_util_unittest.cc",
+  ]
   deps = [
     ":numerics",
     "..:logging",
