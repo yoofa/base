@@ -76,11 +76,11 @@ ave_library("timeutils") {
   deps = [ ":utils" ]
 }
 
-ave_source_set("type_traits") {
+ave_library("type_traits") {
   sources = [ "type_traits.h" ]
 }
 
-ave_source_set("macromagic") {
+ave_library("macromagic") {
   visibility = [ "*" ]
   sources = [
     "constructor_magic.h",
@@ -88,14 +88,14 @@ ave_source_set("macromagic") {
   ]
 }
 
-ave_source_set("byte_utils") {
+ave_library("byte_utils") {
   sources = [
     "byte_utils.cc",
     "byte_utils.h",
   ]
 }
 
-ave_source_set("checks") {
+ave_library("checks") {
   sources = [
     "checks.cc",
     "checks.h",
@@ -124,11 +124,11 @@ ave_library("count_down_latch") {
   ]
 }
 
-ave_source_set("ignore_wundef") {
+ave_library("ignore_wundef") {
   sources = [ "ignore_wundef.h" ]
 }
 
-ave_source_set("attributes") {
+ave_library("attributes") {
   sources = [ "attributes.h" ]
 }
 
@@ -145,7 +145,7 @@ ave_library("logging") {
   }
 }
 
-ave_source_set("thread") {
+ave_library("thread") {
   sources = [
     "thread.cc",
     "thread.h",
@@ -208,6 +208,18 @@ ave_library("sequence_checker") {
   deps = [
     ":logging",
     ":task_util",
+  ]
+}
+
+ave_library("rate_statistics") {
+  sources = [
+    "rate_statistics.cc",
+    "rate_statistics.h",
+  ]
+  deps = [
+    ":checks",
+    ":logging",
+    "numerics:safe_conversions",
   ]
 }
 
