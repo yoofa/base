@@ -223,6 +223,17 @@ ave_library("rate_statistics") {
   ]
 }
 
+ave_library("rate_limiter") {
+  sources = [
+    "rate_limiter.cc",
+    "rate_limiter.h",
+  ]
+  deps = [
+    ":clock",
+    ":rate_statistics",
+  ]
+}
+
 #--------------------
 
 #ave_source_set("unit_base") {
