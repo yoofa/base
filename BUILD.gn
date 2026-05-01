@@ -234,6 +234,17 @@ ave_library("rate_limiter") {
   ]
 }
 
+ave_library("bitrate_tracker") {
+  sources = [
+    "bitrate_tracker.cc",
+    "bitrate_tracker.h",
+  ]
+  deps = [
+    ":rate_statistics",
+    "units",
+  ]
+}
+
 #--------------------
 
 #ave_source_set("unit_base") {
