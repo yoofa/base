@@ -245,6 +245,14 @@ ave_library("bitrate_tracker") {
   ]
 }
 
+ave_library("frequency_tracker") {
+  sources = [ "frequency_tracker.h" ]
+  deps = [
+    ":rate_statistics",
+    "units",
+  ]
+}
+
 #--------------------
 
 #ave_source_set("unit_base") {
