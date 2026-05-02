@@ -333,11 +333,31 @@ ave_source_set("clock_unittest") {
   ]
 }
 
+ave_source_set("rate_statistics_unittests") {
+  testonly = true
+  sources = [
+    "test/bitrate_tracker_unittest.cc",
+    "test/frequency_tracker_unittest.cc",
+    "test/rate_limiter_unittest.cc",
+    "test/rate_statistics_unittest.cc",
+  ]
+  deps = [
+    ":bitrate_tracker",
+    ":clock",
+    ":frequency_tracker",
+    ":rate_limiter",
+    ":rate_statistics",
+    "units",
+    "//test:test_support",
+  ]
+}
+
 executable("base_unittests") {
   testonly = true
   deps = [
     ":checks_unittest",
     ":clock_unittest",
+    ":rate_statistics_unittests",
     ":task_runner_unittest",
     ":task_util",
 
