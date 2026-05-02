@@ -24,13 +24,13 @@ ave_library("base") {
 
   sources = [
     "array_view.h",
-    "buffer.h",
     "null.cc",
     "zero_memory.cc",
     "zero_memory.h",
   ]
   deps = [
     ":attributes",
+    ":buffers",
     ":count_down_latch",
     ":ignore_wundef",
     ":logging",
@@ -61,8 +61,16 @@ ave_library("base") {
   deps += [ "data_source" ]
 }
 
-ave_library("buffer") {
-  sources = [ "buffer.h" ]
+ave_library("buffers") {
+  sources = [
+    "buffer.h",
+    "buffer/bit_buffer.cc",
+    "buffer/bit_buffer.h",
+    "buffer/bitstream_reader.cc",
+    "buffer/bitstream_reader.h",
+    "copy_on_write_buffer.cc",
+    "copy_on_write_buffer.h",
+  ]
 }
 
 ave_library("timeutils") {
