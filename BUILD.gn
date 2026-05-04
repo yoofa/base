@@ -360,9 +360,24 @@ ave_source_set("rate_statistics_unittests") {
   ]
 }
 
+ave_source_set("buffers_unittests") {
+  testonly = true
+  sources = [
+    "test/bit_buffer_unittest.cc",
+    "test/bitstream_reader_unittest.cc",
+    "test/buffer_unittest.cc",
+    "test/copy_on_write_buffer_unittest.cc",
+  ]
+  deps = [
+    ":buffers",
+    "//test:test_support",
+  ]
+}
+
 executable("base_unittests") {
   testonly = true
   deps = [
+    ":buffers_unittests",
     ":checks_unittest",
     ":clock_unittest",
     ":rate_statistics_unittests",
