@@ -78,12 +78,17 @@ ave_source_set("base_net_unittests_source") {
   testonly = true
   sources = [
     "async_socket_unittest.cc",
+    "async_tcp_socket_unittest.cc",
     "ip_address_unittest.cc",
+    "network_thread_unittest.cc",
     "socket_address_unittest.cc",
+    "socket_thread_unittest.cc",
+    "utils_unittest.cc",
   ]
   deps = [
     ":async_socket",
     ":net",
+    ":net_utils",
     "//test:test_support",
   ]
 }
