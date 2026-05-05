@@ -1,5 +1,9 @@
 import("//base/build/ave.gni")
 
+ave_library("ecn_marking") {
+  sources = [ "ecn_marking.h" ]
+}
+
 ave_library("net") {
   sources = [
     "ip_address.cc",
@@ -9,6 +13,35 @@ ave_library("net") {
     "socket_address.cc",
     "socket_address.h",
     "socket_factory.h",
+  ]
+}
+
+ave_library("async_socket") {
+  sources = [
+    "async_packet_socket.h",
+    "async_tcp_socket.cc",
+    "async_tcp_socket.h",
+    "async_udp_socket.cc",
+    "async_udp_socket.h",
+    "dispatcher.h",
+    "network_buffer.h",
+    "network_thread.cc",
+    "network_thread.h",
+    "physical_socket.cc",
+    "physical_socket.h",
+    "physical_socket_server.cc",
+    "physical_socket_server.h",
+    "socket_dispatcher.cc",
+    "socket_dispatcher.h",
+    "socket_server.h",
+    "socket_thread.cc",
+    "socket_thread.h",
+  ]
+  deps = [
+    ":net",
+    "//base:buffers",
+    "//base:logging",
+    "//base/third_party/sigslot",
   ]
 }
 
@@ -44,10 +77,12 @@ ave_executable("ave_curl") {
 ave_source_set("base_net_unittests_source") {
   testonly = true
   sources = [
+    "async_socket_unittest.cc",
     "ip_address_unittest.cc",
     "socket_address_unittest.cc",
   ]
   deps = [
+    ":async_socket",
     ":net",
     "//test:test_support",
   ]
@@ -59,5 +94,38 @@ ave_executable("net_unittests") {
     ":base_net_unittests_source",
     "//test:test_main",
     "//test:test_support",
+  ]
+}
+
+# Chat room example
+ave_executable("chat_server") {
+  sources = [ "example/chat_server.cc" ]
+  deps = [
+    ":async_socket",
+    "//base:logging",
+  ]
+}
+
+ave_executable("chat_client") {
+  sources = [ "example/chat_client.cc" ]
+  deps = [
+    ":async_socket",
+    "//base:logging",
+  ]
+}
+
+ave_executable("network_thread_example") {
+  sources = [ "example/network_thread_example.cc" ]
+  deps = [
+    ":async_socket",
+    "//base:logging",
+  ]
+}
+
+ave_executable("socket_thread_example") {
+  sources = [ "example/socket_thread_example.cc" ]
+  deps = [
+    ":async_socket",
+    "//base:logging",
   ]
 }
