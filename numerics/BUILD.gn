@@ -12,7 +12,6 @@ group("numerics") {
     ":safe_minmax",
     ":sequence_number_unwrapper",
     ":sequence_number_util",
-    ":statistics",
   ]
 }
 
@@ -56,12 +55,12 @@ ave_source_set("divide_round") {
   ]
 }
 
-ave_source_set("statistics") {
-  sources = [
-    "kahan_sum.h",
-    "statistics.h",
-  ]
-}
+#ave_source_set("statistics") {
+#  sources = [
+#    "kahan_sum.h",
+#    "statistics.h",
+#  ]
+#}
 
 ave_library("mod_ops") {
   sources = [ "mod_ops.h" ]
@@ -96,7 +95,6 @@ source_set("numerics_unittests_source") {
   sources = [
     "divide_round_unittest.cc",
     "exp_filter_unittest.cc",
-    "kahan_sum_unittest.cc",
     "mod_ops_unittest.cc",
     "percentile_filter_unittest.cc",
     "safe_compare_unittest.cc",
@@ -110,12 +108,11 @@ source_set("numerics_unittests_source") {
     "//test:test_support",
   ]
 }
-
-ave_executable("statistics_benchmark") {
-  testonly = true
-  sources = [ "statistics_benchmark.cc" ]
-  deps = [
-    ":statistics",
-    "//third_party/google_benchmark",
-  ]
-}
+#ave_executable("statistics_benchmark") {
+#  testonly = true
+#  sources = [ "statistics_benchmark.cc" ]
+#  deps = [
+#    ":statistics",
+#    "//third_party/google_benchmark",
+#  ]
+#}

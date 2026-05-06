@@ -19,7 +19,7 @@ import("base.gni")
 import("build/ave.gni")
 
 ave_library("base") {
-  testonly = true
+  #testonly = true
   visibility = [ "*" ]
 
   sources = [
@@ -46,17 +46,14 @@ ave_library("base") {
     deps += [ "android" ]
   }
 
-  if (ave_base_include_test) {
-    deps += [
-      ":logging_benchmark",
-      #":statistics_benchmark",
-    ]
-    deps += [
-      ":logging_test",
-      ":task_test",
-      ":thread_test",
-    ]
-  }
+  #if (ave_base_include_test) {
+  #  deps += [ ":logging_benchmark" ]
+  #  deps += [
+  #    ":logging_test",
+  #    ":task_test",
+  #    ":thread_test",
+  #  ]
+  #}
   deps += [ "data_source" ]
 }
 

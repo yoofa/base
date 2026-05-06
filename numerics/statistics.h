@@ -141,14 +141,14 @@ class Statistics {
 
   constexpr D2 Variance() const {
     if (count_ < 2) {
-      return {};
+      return nullptr;
     }
     return m2_ / GetSampleWeight();
   }
 
   constexpr D2 PopulationVariance() const {
     if (count_ < 1) {
-      return {};
+      return nullptr;
     }
     return m2_ / weight_;
   }
