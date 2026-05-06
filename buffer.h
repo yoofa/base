@@ -9,6 +9,7 @@
 #define BASE_BUFFER_H
 
 #include <stdint.h>
+#include <span>
 
 #include <algorithm>
 #include <cstring>
@@ -16,7 +17,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "array_view.h"
+#include <span>
 #include "checks.h"
 #include "type_traits.h"
 #include "zero_memory.h"
@@ -230,12 +231,12 @@ class BufferT {
   // Replaces the data in the buffer with at most `max_elements` of data, using
   // the function `setter`, which should have the following signature:
   //
-  //   size_t setter(ArrayView<U> view)
+  //   size_t setter(std::span<U> view)
   //
-  // `setter` is given an appropriately typed ArrayView of length exactly
+  // `setter` is given an appropriately typed std::span of length exactly
   // `max_elements` that describes the area where it should write the data; it
   // should return the number of elements actually written. (If it doesn't fill
-  // the whole ArrayView, it should leave the unused space at the end.)
+  // the whole std::span, it should leave the unused space at the end.)
   template <typename U = T,
             typename F,
             typename std::enable_if<
@@ -291,12 +292,12 @@ class BufferT {
   // Appends at most `max_elements` to the end of the buffer, using the function
   // `setter`, which should have the following signature:
   //
-  //   size_t setter(ArrayView<U> view)
+  //   size_t setter(std::span<U> view)
   //
-  // `setter` is given an appropriately typed ArrayView of length exactly
+  // `setter` is given an appropriately typed std::span of length exactly
   // `max_elements` that describes the area where it should write the data; it
   // should return the number of elements actually written. (If it doesn't fill
-  // the whole ArrayView, it should leave the unused space at the end.)
+  // the whole std::span, it should leave the unused space at the end.)
   template <typename U = T,
             typename F,
             typename std::enable_if<
@@ -306,7 +307,7 @@ class BufferT {
     const size_t old_size = size_;
     SetSize(old_size + max_elements);
     U* base_ptr = data<U>() + old_size;
-    size_t written_elements = setter(ArrayView<U>(base_ptr, max_elements));
+    size_t written_elements = setter(std::span<U>(base_ptr, max_elements));
 
     AVE_CHECK_LE(written_elements, max_elements);
     size_ = old_size + written_elements;

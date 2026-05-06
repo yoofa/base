@@ -6,6 +6,7 @@
  */
 
 #include "base/byte_buffer.h"
+#include <span>
 
 #include <cstring>
 
@@ -17,7 +18,7 @@ ByteBufferWriter::ByteBufferWriter() : ByteBufferWriterT() {}
 ByteBufferWriter::ByteBufferWriter(const uint8_t* bytes, size_t len)
     : ByteBufferWriterT(bytes, len) {}
 
-ByteBufferReader::ByteBufferReader(ArrayView<const uint8_t> bytes) {
+ByteBufferReader::ByteBufferReader(std::span<const uint8_t> bytes) {
   Construct(bytes.data(), bytes.size());
 }
 
@@ -140,7 +141,7 @@ bool ByteBufferReader::ReadStringView(std::string_view* val, size_t len) {
   return true;
 }
 
-bool ByteBufferReader::ReadBytes(ArrayView<uint8_t> val) {
+bool ByteBufferReader::ReadBytes(std::span<uint8_t> val) {
   if (val.size() == 0) {
     return true;
   }

@@ -9,10 +9,11 @@
 #define ZERO_MEMORY_H
 
 #include <stddef.h>
+#include <span>
 
 #include <type_traits>
 
-#include "array_view.h"
+#include <span>
 
 namespace ave {
 namespace base {
@@ -24,7 +25,7 @@ void ExplicitZeroMemory(void* ptr, size_t len);
 template <typename T,
           typename std::enable_if<!std::is_const<T>::value &&
                                   std::is_trivial<T>::value>::type* = nullptr>
-void ExplicitZeroMemory(ArrayView<T> a) {
+void ExplicitZeroMemory(std::span<T> a) {
   ExplicitZeroMemory(a.data(), a.size());
 }
 

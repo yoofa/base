@@ -23,7 +23,6 @@ ave_library("base") {
   visibility = [ "*" ]
 
   sources = [
-    "array_view.h",
     "null.cc",
     "zero_memory.cc",
     "zero_memory.h",

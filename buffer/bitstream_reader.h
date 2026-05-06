@@ -13,7 +13,7 @@
 #include <string>
 #include <type_traits>
 
-#include "base/array_view.h"
+#include <span>
 #include "base/checks.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -28,7 +28,7 @@ namespace base {
 // That verification can be done once after multiple reads.
 class BitstreamReader {
  public:
-  explicit BitstreamReader(ArrayView<const uint8_t> bytes);
+  explicit BitstreamReader(std::span<const uint8_t> bytes);
   explicit BitstreamReader(std::string_view bytes);
   BitstreamReader(const BitstreamReader&) = default;
   BitstreamReader& operator=(const BitstreamReader&) = default;
@@ -120,7 +120,7 @@ class BitstreamReader {
   mutable bool last_read_is_verified_ = true;
 };
 
-inline BitstreamReader::BitstreamReader(ArrayView<const uint8_t> bytes)
+inline BitstreamReader::BitstreamReader(std::span<const uint8_t> bytes)
     : bytes_(bytes.data()),
       remaining_bits_(checked_cast<int>(bytes.size() * 8)) {}
 

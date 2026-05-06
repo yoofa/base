@@ -14,7 +14,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/array_view.h"
+#include <span>
 #include "base/buffer.h"
 #include "base/byte_utils.h"
 
@@ -37,8 +37,8 @@ class ByteBufferWriterT {
   const value_type* Data() const { return buffer_.data(); }
   size_t Length() const { return buffer_.size(); }
   size_t Capacity() const { return buffer_.capacity(); }
-  ArrayView<const value_type> DataView() const {
-    return MakeArrayView(Data(), Length());
+  std::span<const value_type> DataView() const {
+    return std::span(Data(), Length());
   }
   // Accessor that returns a string_view, independent of underlying type.
   std::string_view DataAsStringView() const {
@@ -94,7 +94,7 @@ class ByteBufferWriterT {
     WriteBytesInternal(reinterpret_cast<const value_type*>(val), len);
   }
 
-  void Write(ArrayView<const value_type> data) {
+  void Write(std::span<const value_type> data) {
     WriteBytesInternal(data.data(), data.size());
   }
 
@@ -145,7 +145,7 @@ class ByteBufferWriter : public ByteBufferWriterT<BufferT<uint8_t>> {
 // valid during the lifetime of the reader.
 class ByteBufferReader {
  public:
-  explicit ByteBufferReader(ArrayView<const uint8_t> bytes);
+  explicit ByteBufferReader(std::span<const uint8_t> bytes);
   explicit ByteBufferReader(const ByteBufferWriter& buf);
 
   ByteBufferReader(const ByteBufferReader&) = delete;
@@ -155,7 +155,7 @@ class ByteBufferReader {
   // Returns number of unprocessed bytes.
   size_t Length() const { return end_ - start_; }
   // Returns a view of the unprocessed data. Does not move current position.
-  ArrayView<const uint8_t> DataView() const {
+  std::span<const uint8_t> DataView() const {
     return {bytes_ + start_, end_ - start_};
   }
 
@@ -168,7 +168,7 @@ class ByteBufferReader {
   bool ReadUInt64(uint64_t* val);
   bool ReadUVarint(uint64_t* val);
   // Copies the val.size() next bytes into val.data().
-  bool ReadBytes(ArrayView<uint8_t> val);
+  bool ReadBytes(std::span<uint8_t> val);
   // Appends next `len` bytes from the buffer to `val`. Returns false
   // if there is less than `len` bytes left.
   bool ReadString(std::string* val, size_t len);

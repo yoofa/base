@@ -6,6 +6,7 @@
  */
 
 #include "base/net/async_tcp_socket.h"
+#include <array>
 
 #include <cstring>
 
