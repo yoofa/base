@@ -54,7 +54,7 @@ FileSource::FileSource(int fd, int64_t offset, int64_t length)
   if (length_ > INT64_MAX - start_offset_) {
     length_ = INT64_MAX - start_offset_;
   }
-  struct stat s = {0};
+  struct stat s = {};
   if (fstat(fd, &s) == 0) {
     if (start_offset_ > s.st_size) {
       start_offset_ = s.st_size;
@@ -85,7 +85,7 @@ status_t FileSource::InitCheck() const {
 }
 
 status_t FileSource::GetPosition(off64_t* position) {
-  std::lock_guard<std::mutex> lock(lock_);
+  std::scoped_lock lock(lock_);
   *position = offset_;
   return OK;
 }
@@ -103,7 +103,7 @@ ssize_t FileSource::Seek(off64_t position, int whence) {
     return OK;
   }
 
-  std::lock_guard<std::mutex> lock(lock_);
+  std::scoped_lock lock(lock_);
   return seek_l(position, whence);
 }
 
@@ -117,7 +117,7 @@ ssize_t FileSource::seek_l(off64_t position, int whence AVE_MAYBE_UNUSED) {
 
 ssize_t FileSource::read_l(void* data, size_t size) {
   uint64_t sizeToRead = size;
-  if (static_cast<int64_t>(offset_ + size) > length_) {
+  if (offset_ + static_cast<int64_t>(size) > length_) {
     sizeToRead = length_ - offset_;
   }
   ssize_t readSize = ::read(fd_, data, sizeToRead);
@@ -132,7 +132,7 @@ ssize_t FileSource::Read(void* data, size_t size) {
     return NO_INIT;
   }
 
-  std::lock_guard<std::mutex> lock(lock_);
+  std::scoped_lock lock(lock_);
   return read_l(data, size);
 }
 
@@ -140,7 +140,7 @@ ssize_t FileSource::ReadAt(off64_t offset, void* data, size_t size) {
   if (fd_ < 0) {
     return NO_INIT;
   }
-  std::lock_guard<std::mutex> lock(lock_);
+  std::scoped_lock lock(lock_);
 
   ssize_t seekOffset = seek_l(offset, SEEK_SET);
 
@@ -152,7 +152,7 @@ ssize_t FileSource::ReadAt(off64_t offset, void* data, size_t size) {
 }
 
 status_t FileSource::GetSize(off64_t* size) {
-  std::lock_guard<std::mutex> lock(lock_);
+  std::scoped_lock lock(lock_);
 
   if (fd_ < 0) {
     return NO_INIT;
