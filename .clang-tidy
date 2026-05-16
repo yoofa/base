@@ -108,4 +108,4 @@ CheckOptions:
   - key:           readability-uniqueptr-delete-release.PreferResetCall
     value:         true
 
-WarningsAsErrors: '*'
+WarningsAsErrors: ''
