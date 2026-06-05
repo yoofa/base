@@ -8,12 +8,9 @@
 #ifndef ZERO_MEMORY_H
 #define ZERO_MEMORY_H
 
-#include <stddef.h>
+#include <cstddef>
 #include <span>
-
 #include <type_traits>
-
-#include <span>
 
 namespace ave {
 namespace base {

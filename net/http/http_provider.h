@@ -33,7 +33,6 @@ class HTTPProvider {
 };
 
 }  // namespace net
-}
 }  // namespace base
 }  // namespace ave
 
