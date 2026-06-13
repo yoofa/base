@@ -108,7 +108,8 @@ TaskRunnerStdlib::TaskRunnerStdlib(const char* name, int priority)
             ProcessTask();
           },
           name_,
-          priority_)),
+          priority_,
+          true /* joinable */)),
       need_quit_(false),
       task_order_id_(0LL) {
   thread_->start(false);
@@ -120,6 +121,10 @@ void TaskRunnerStdlib::Destruct() {
     need_quit_ = true;
   }
   task_condition_.notify_one();
+  if (thread_) {
+    thread_->join();
+  }
+  delete this;
 }
 
 void TaskRunnerStdlib::PostTask(std::unique_ptr<Task> task) {
@@ -174,7 +179,7 @@ void TaskRunnerStdlib::PostDelayedTaskAndWait(std::unique_ptr<Task> task,
 
 bool TaskRunnerStdlib::Looping() {
   std::lock_guard<std::mutex> guard(mutex_);
-  return !need_quit_ || !task_queue_.empty();
+  return !need_quit_;
 }
 
 void TaskRunnerStdlib::ProcessTask() {
