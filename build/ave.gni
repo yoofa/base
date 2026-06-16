@@ -14,7 +14,8 @@ if (is_android) {
 }
 
 ave_include_test = true
-ave_use_ffmpeg_demuxer = enable_ffmpeg_demuxer
+ave_use_ffmpeg_demuxer = enable_ffmpeg && enable_ffmpeg_demuxer
+ave_use_ffmpeg_codec = enable_ffmpeg && enable_ffmpeg_codec
 
 ave_base_build_root = get_path_info(".", "abspath")
 ave_project_root = get_path_info("../../", "abspath")

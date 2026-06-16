@@ -1,4 +1,4 @@
-import("//base/build/ave_args.gni")
+import("//base/build/ave.gni")
 
 config("library_impl_config") {
   defines = [ "AVE_LIBRARY_IMPL" ]
@@ -46,11 +46,11 @@ config("common_inherited_config") {
     defines += [ "CHROMEOS" ]
   }
 
-  if (enable_ffmpeg_demuxer) {
+  if (ave_use_ffmpeg_demuxer) {
     defines += [ "AVE_FFMPEG_DEMUXER" ]
   }
 
-  if (enable_ffmpeg_codec) {
+  if (ave_use_ffmpeg_codec) {
     defines += [ "AVE_FFMPEG_CODEC" ]
   }
 
