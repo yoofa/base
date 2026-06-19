@@ -7,6 +7,8 @@
 
 #include "http_base.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "base/time_utils.h"
 
@@ -24,7 +26,7 @@ HTTPBase::HTTPBase()
       bandwidth_collect_freq_ms_(0) {}
 
 void HTTPBase::AddBandwidthMeasurement(size_t num_bytes, int64_t delay_us) {
-  std::lock_guard<std::mutex> l(lock_);
+  std::scoped_lock l(lock_);
   BandwidthEntry entry{};
   entry.delay_us = delay_us;
   entry.num_bytes = num_bytes;
@@ -41,8 +43,8 @@ void HTTPBase::AddBandwidthMeasurement(size_t num_bytes, int64_t delay_us) {
   --num_bandwidth_history_items_;
 
   int64_t now_us = base::TimeMicros();
-  if (now_us - prev_bandwidth_measurement_time_us_ <
-      bandwidth_collect_freq_ms_ * 1000LL) {
+  if (std::cmp_less(now_us - prev_bandwidth_measurement_time_us_,
+                    bandwidth_collect_freq_ms_ * 1000LL)) {
     return;
   }
   if (prev_bandwidth_measurement_time_us_ != 0) {
@@ -53,7 +55,7 @@ void HTTPBase::AddBandwidthMeasurement(size_t num_bytes, int64_t delay_us) {
 }
 
 bool HTTPBase::EstimateBandwidth(uint32_t* bandwidth_bps) {
-  std::lock_guard<std::mutex> l(lock_);
+  std::scoped_lock l(lock_);
   // Do not do bandwidth estimation if we don't have enough samples, or
   // total bytes download are too small (<64K).
   // Bandwidth estimation from these samples can often shoot up and cause
@@ -68,13 +70,13 @@ bool HTTPBase::EstimateBandwidth(uint32_t* bandwidth_bps) {
 }
 
 status_t HTTPBase::GetEstimatedBandwidthKbps(uint32_t* kbps) {
-  std::lock_guard<std::mutex> l(lock_);
+  std::scoped_lock l(lock_);
   *kbps = prev_estimated_bandwidth_kbps_;
   return OK;
 }
 
 status_t HTTPBase::SetBandwidthStatCollectFreq(uint32_t freq_ms) {
-  std::lock_guard<std::mutex> l(lock_);
+  std::scoped_lock l(lock_);
   if (freq_ms < kMinBandwidthCollectFreqMs ||
       freq_ms > kMaxBandwidthCollectFreqMs) {
     AVE_LOG(LS_ERROR) << "Invalid bandwidth collection frequency: " << freq_ms
@@ -89,7 +91,7 @@ status_t HTTPBase::SetBandwidthStatCollectFreq(uint32_t freq_ms) {
 }
 
 void HTTPBase::SetBandwidthHistorySize(size_t num_history_items) {
-  std::lock_guard<std::mutex> l(lock_);
+  std::scoped_lock l(lock_);
   max_bandwidth_history_items_ = num_history_items;
 }
 

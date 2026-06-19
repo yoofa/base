@@ -47,6 +47,5 @@ bool CurlHttpProvider::SupportsScheme(const std::string& scheme) {
 }
 
 }  // namespace net
-}
 }  // namespace base
 }  // namespace ave

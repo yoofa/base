@@ -57,7 +57,6 @@ class CurlHttpConnection : public HTTPConnection {
 };
 
 }  // namespace net
-}
 }  // namespace base
 }  // namespace ave
 

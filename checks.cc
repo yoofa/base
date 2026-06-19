@@ -42,8 +42,8 @@ namespace ave {
 namespace base {
 namespace internal {
 
-AVE_NORETURN void WriteFatalMessage(const char* file,
-                                    int line,
+AVE_NORETURN void WriteFatalMessage(const char* /*file*/,
+                                    int /*line*/,
                                     const std::string& msg) {
 #if defined(ANDROID)
   __android_log_print(ANDROID_LOG_FATAL, "ave", "%s\n", msg.c_str());
@@ -130,8 +130,9 @@ AVE_NORETURN void FatalLog(const char* file,
     s.append("\n# ");
   }
 
-  while (ParseArg(&args, &fmt, &s))
+  while (ParseArg(&args, &fmt, &s)) {
     ;
+  }
 
   va_end(args);
   WriteFatalMessage(file, line, s);

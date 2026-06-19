@@ -45,14 +45,7 @@ SocketAddress::SocketAddress(const SocketAddress& other) {
   literal_ = other.literal_;
 }
 
-SocketAddress& SocketAddress::operator=(const SocketAddress& other) {
-  hostname_ = other.hostname_;
-  ip_ = other.ip_;
-  port_ = other.port_;
-  scope_id_ = other.scope_id_;
-  literal_ = other.literal_;
-  return *this;
-}
+SocketAddress& SocketAddress::operator=(const SocketAddress& other) = default;
 
 void SocketAddress::Clear() {
   hostname_.clear();
@@ -133,25 +126,25 @@ uint16_t SocketAddress::port() const {
 std::string SocketAddress::HostAsURIString() const {
   // If the hostname was a literal IP string, it may need to have square
   // brackets added (for SocketAddress::ToString()).
-  if (!literal_ && !hostname_.empty())
+  if (!literal_ && !hostname_.empty()) {
     return hostname_;
+  }
   if (ip_.family() == AF_INET6) {
     return "[" + ip_.ToString() + "]";
-  } else {
-    return ip_.ToString();
   }
+  return ip_.ToString();
 }
 
 std::string SocketAddress::HostAsSensitiveURIString() const {
   // If the hostname was a literal IP string, it may need to have square
   // brackets added (for SocketAddress::ToString()).
-  if (!literal_ && !hostname_.empty())
+  if (!literal_ && !hostname_.empty()) {
     return hostname_;
+  }
   if (ip_.family() == AF_INET6) {
     return "[" + ip_.ToSensitiveString() + "]";
-  } else {
-    return ip_.ToSensitiveString();
   }
+  return ip_.ToSensitiveString();
 }
 
 std::string SocketAddress::PortAsString() const {
@@ -200,7 +193,7 @@ bool SocketAddress::FromString(const std::string& address) {
       return false;
     }
     SetIP(address.substr(1, pos - 1));
-    SetPort(strtol(address.substr(port_pos + 1).c_str(), NULL, 10));
+    SetPort(strtol(address.substr(port_pos + 1).c_str(), nullptr, 10));
   } else {
     // ipv4/host:port
     size_t pos = address.rfind(':');
@@ -208,7 +201,7 @@ bool SocketAddress::FromString(const std::string& address) {
       return false;
     }
     SetIP(address.substr(0, pos));
-    SetPort(strtol(address.substr(pos + 1).c_str(), NULL, 10));
+    SetPort(strtol(address.substr(pos + 1).c_str(), nullptr, 10));
   }
   return true;
 }
@@ -235,13 +228,15 @@ bool SocketAddress::operator==(const SocketAddress& addr) const {
 }
 
 bool SocketAddress::operator<(const SocketAddress& addr) const {
-  if (ip_ != addr.ip_)
+  if (ip_ != addr.ip_) {
     return ip_ < addr.ip_;
+  }
 
   // We only check hostnames if both IPs are ANY or unspecified.  This matches
   // EqualIPs().
-  if ((IPIsAny(ip_) || IPIsUnspec(ip_)) && hostname_ != addr.hostname_)
+  if ((IPIsAny(ip_) || IPIsUnspec(ip_)) && hostname_ != addr.hostname_) {
     return hostname_ < addr.hostname_;
+  }
 
   return port_ < addr.port_;
 }
@@ -278,8 +273,9 @@ void SocketAddress::ToSockAddr(sockaddr_in* saddr) const {
 }
 
 bool SocketAddress::FromSockAddr(const sockaddr_in& saddr) {
-  if (saddr.sin_family != AF_INET)
+  if (saddr.sin_family != AF_INET) {
     return false;
+  }
   SetIP(NetworkToHost32(saddr.sin_addr.s_addr));
   SetPort(NetworkToHost16(saddr.sin_port));
   literal_ = false;
@@ -289,10 +285,11 @@ bool SocketAddress::FromSockAddr(const sockaddr_in& saddr) {
 SocketAddress EmptySocketAddressWithFamily(int family) {
   if (family == AF_INET) {
     return SocketAddress(IPAddress(INADDR_ANY), 0);
-  } else if (family == AF_INET6) {
+  }
+  if (family == AF_INET6) {
     return SocketAddress(IPAddress(in6addr_any), 0);
   }
-  return SocketAddress();
+  return {};
 }
 
 }  // namespace net

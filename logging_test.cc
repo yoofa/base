@@ -7,7 +7,7 @@
 
 #include "base/logging.h"
 
-int main(int argc, char const* argv[]) {
+int main(int /*argc*/, char const* /*argv*/[]) {
 #ifndef AVE_ANDROID
   ave::base::LogMessage::LogTimestamps();
   ave::base::LogMessage::LogThreads();

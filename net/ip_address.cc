@@ -8,6 +8,7 @@
 #include "ip_address.h"
 
 #include <arpa/inet.h>
+#include <array>
 #include <cstring>
 
 #include <base/byte_utils.h>
@@ -44,7 +45,7 @@ IPAddress::IPAddress(uint32_t ip_in_host_byte_order) : family_(AF_INET) {
   address_.ipv4_.s_addr = htobe32(ip_in_host_byte_order);
 }
 
-IPAddress::~IPAddress() {}
+IPAddress::~IPAddress() = default;
 
 const IPAddress& IPAddress::operator=(const IPAddress& rhs) {
   if (this != &rhs) {
@@ -60,7 +61,8 @@ bool IPAddress::operator==(const IPAddress& rhs) const {
   }
   if (family_ == AF_INET) {
     return ::memcmp(&address_.ipv4_, &rhs.address_.ipv4_, sizeof(in_addr)) == 0;
-  } else if (family_ == AF_INET6) {
+  }
+  if (family_ == AF_INET6) {
     return ::memcmp(&address_.ipv6_, &rhs.address_.ipv6_, sizeof(in6_addr)) ==
            0;
   }
@@ -126,20 +128,20 @@ size_t IPAddress::Size() const {
 
 std::string IPAddress::ToString() const {
   if (family_ != AF_INET && family_ != AF_INET6) {
-    return std::string();
+    return {};
   }
 
-  char buf[INET6_ADDRSTRLEN];
+  std::array<char, INET6_ADDRSTRLEN> buf{};
   const void* src = &address_.ipv4_;
   if (family_ == AF_INET6) {
     src = &address_.ipv6_;
   }
 
-  if (inet_ntop(family_, src, buf, sizeof(buf)) == 0) {
-    return std::string();
+  if (inet_ntop(family_, src, buf.data(), buf.size()) == nullptr) {
+    return {};
   }
 
-  return std::string(buf);
+  return {buf.data()};
 }
 
 std::string IPAddress::ToSensitiveString() const {
@@ -147,8 +149,9 @@ std::string IPAddress::ToSensitiveString() const {
     case AF_INET: {
       std::string address = ToString();
       size_t find_pos = address.rfind('.');
-      if (find_pos == std::string::npos)
-        return std::string();
+      if (find_pos == std::string::npos) {
+        return {};
+      }
       address.resize(find_pos);
       address += ".x";
       return address;
@@ -165,11 +168,11 @@ std::string IPAddress::ToSensitiveString() const {
       return result;
     }
   }
-  return std::string();
+  return {};
 }
 
 static in_addr ExtractMappedAddress(const in6_addr& in6) {
-  in_addr ipv4;
+  in_addr ipv4{};
   ::memcpy(&ipv4.s_addr, &in6.s6_addr[12], sizeof(ipv4.s_addr));
   return ipv4;
 }
@@ -198,9 +201,8 @@ IPAddress IPAddress::AsIPv6Address() const {
 uint32_t IPAddress::v4AddressAsHostOrderInteger() const {
   if (family_ == AF_INET) {
     return NetworkToHost32(address_.ipv4_.s_addr);
-  } else {
-    return 0;
   }
+  return 0;
 }
 
 int IPAddress::overhead() const {
@@ -226,28 +228,28 @@ bool IPFromAddressInfo(const struct addrinfo* info, IPAddress* out) {
   }
 
   if (info->ai_addr->sa_family == AF_INET) {
-    sockaddr_in* addr = reinterpret_cast<sockaddr_in*>(info->ai_addr);
+    auto* addr = reinterpret_cast<sockaddr_in*>(info->ai_addr);
     *out = IPAddress(addr->sin_addr);
     return true;
-  } else if (info->ai_addr->sa_family == AF_INET6) {
-    sockaddr_in6* addr = reinterpret_cast<sockaddr_in6*>(info->ai_addr);
+  }
+  if (info->ai_addr->sa_family == AF_INET6) {
+    auto* addr = reinterpret_cast<sockaddr_in6*>(info->ai_addr);
     *out = IPAddress(addr->sin6_addr);
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 bool IPFromString(const std::string& str, IPAddress* out) {
   if (out == nullptr) {
     return false;
   }
-  in_addr addr;
+  in_addr addr{};
   if (inet_pton(AF_INET, str.c_str(), &addr) == 1) {
     *out = IPAddress(addr);
     return true;
   } else {
-    in6_addr addr6;
+    in6_addr addr6{};
     if (inet_pton(AF_INET6, str.c_str(), &addr6) == 1) {
       *out = IPAddress(addr6);
       return true;
@@ -259,8 +261,8 @@ bool IPFromString(const std::string& str, IPAddress* out) {
 bool IPIsAny(const IPAddress& ip) {
   if (ip.family() == AF_INET) {
     return ip == IPAddress(INADDR_ANY);
-
-  } else if (ip.family() == AF_INET6) {
+  }
+  if (ip.family() == AF_INET6) {
     return ip == IPAddress(in6addr_any);
   }
   return false;
@@ -269,8 +271,8 @@ bool IPIsAny(const IPAddress& ip) {
 bool IPIsLoopback(const IPAddress& ip) {
   if (ip.family() == AF_INET) {
     return ip == IPAddress(INADDR_LOOPBACK);
-
-  } else if (ip.family() == AF_INET6) {
+  }
+  if (ip.family() == AF_INET6) {
     return ip == IPAddress(in6addr_loopback);
   }
   return false;
@@ -359,7 +361,7 @@ size_t HashIP(const IPAddress& ip) {
     }
     case AF_INET6: {
       in6_addr v6addr = ip.ipv6();
-      const uint32_t* v6_as_ints =
+      const auto* v6_as_ints =
           reinterpret_cast<const uint32_t*>(&v6addr.s6_addr);
       return v6_as_ints[0] ^ v6_as_ints[1] ^ v6_as_ints[2] ^ v6_as_ints[3];
     }
@@ -412,12 +414,15 @@ int IPAddressPrecedence(const IPAddress& ip) {
   // Precedence values from RFC 3484-bis. Prefers native v4 over 6to4/Teredo.
   if (ip.family() == AF_INET) {
     return 30;
-  } else if (ip.family() == AF_INET6) {
+  }
+  if (ip.family() == AF_INET6) {
     if (IPIsLoopback(ip)) {
       return 60;
-    } else if (IPIsULA(ip)) {
+    }
+    if (IPIsULA(ip)) {
       return 50;
-    } else if (IPIsV4Mapped(ip)) {
+    }
+    if (IPIsV4Mapped(ip)) {
       return 30;
     } else if (IPIs6To4(ip)) {
       return 20;
@@ -435,7 +440,7 @@ int IPAddressPrecedence(const IPAddress& ip) {
 
 IPAddress TruncateIP(const IPAddress& ip, int length) {
   if (length < 0) {
-    return IPAddress();
+    return {};
   }
   if (ip.family() == AF_INET) {
     if (length > 31) {
@@ -446,10 +451,11 @@ IPAddress TruncateIP(const IPAddress& ip, int length) {
     }
     int mask = (0xFFFFFFFF << (32 - length));
     uint32_t host_order_ip = NetworkToHost32(ip.ipv4().s_addr);
-    in_addr masked;
+    in_addr masked{};
     masked.s_addr = HostToNetwork32(host_order_ip & mask);
     return IPAddress(masked);
-  } else if (ip.family() == AF_INET6) {
+  }
+  if (ip.family() == AF_INET6) {
     if (length > 127) {
       return ip;
     }
@@ -461,7 +467,7 @@ IPAddress TruncateIP(const IPAddress& ip, int length) {
     int inner_length = 32 - (length - (position * 32));
     // Note: 64bit mask constant needed to allow possible 32-bit left shift.
     uint32_t inner_mask = 0xFFFFFFFFLL << inner_length;
-    uint32_t* v6_as_ints = reinterpret_cast<uint32_t*>(&v6addr.s6_addr);
+    auto* v6_as_ints = reinterpret_cast<uint32_t*>(&v6addr.s6_addr);
     for (int i = 0; i < 4; ++i) {
       if (i == position) {
         uint32_t host_order_inner = NetworkToHost32(v6_as_ints[i]);
@@ -472,25 +478,27 @@ IPAddress TruncateIP(const IPAddress& ip, int length) {
     }
     return IPAddress(v6addr);
   }
-  return IPAddress();
+  return {};
 }
 
 IPAddress GetLoopbackAddress(int family) {
   if (family == AF_INET) {
     return IPAddress(INADDR_LOOPBACK);
-  } else if (family == AF_INET6) {
+  }
+  if (family == AF_INET6) {
     return IPAddress(in6addr_loopback);
   }
-  return IPAddress();
+  return {};
 }
 
 IPAddress GetAnyAddress(int family) {
   if (family == AF_INET) {
     return IPAddress(INADDR_ANY);
-  } else if (family == AF_INET6) {
+  }
+  if (family == AF_INET6) {
     return IPAddress(in6addr_any);
   }
-  return IPAddress();
+  return {};
 }
 
 int CountIPMaskBits(const IPAddress& mask) {
@@ -503,7 +511,7 @@ int CountIPMaskBits(const IPAddress& mask) {
     }
     case AF_INET6: {
       in6_addr v6addr = mask.ipv6();
-      const uint32_t* v6_as_ints =
+      const auto* v6_as_ints =
           reinterpret_cast<const uint32_t*>(&v6addr.s6_addr);
       int i = 0;
       for (; i < 4; ++i) {
@@ -532,18 +540,24 @@ int CountIPMaskBits(const IPAddress& mask) {
   // This could also be written word_to_count &= -word_to_count, but
   // MSVC emits warning C4146 when negating an unsigned number.
   word_to_count &= ~word_to_count + 1;  // Isolate lowest set bit.
-  if (word_to_count)
+  if (word_to_count) {
     zeroes--;
-  if (word_to_count & 0x0000FFFF)
+  }
+  if (word_to_count & 0x0000FFFF) {
     zeroes -= 16;
-  if (word_to_count & 0x00FF00FF)
+  }
+  if (word_to_count & 0x00FF00FF) {
     zeroes -= 8;
-  if (word_to_count & 0x0F0F0F0F)
+  }
+  if (word_to_count & 0x0F0F0F0F) {
     zeroes -= 4;
-  if (word_to_count & 0x33333333)
+  }
+  if (word_to_count & 0x33333333) {
     zeroes -= 2;
-  if (word_to_count & 0x55555555)
+  }
+  if (word_to_count & 0x55555555) {
     zeroes -= 1;
+  }
 
   return bits + (32 - zeroes);
 }

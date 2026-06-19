@@ -46,7 +46,7 @@ bool NetworkThread::IsCurrent() const {
 
 void NetworkThread::PostTask(std::function<void()> task) {
   {
-    std::lock_guard<std::mutex> lock(task_mutex_);
+    std::scoped_lock lock(task_mutex_);
     tasks_.push(std::move(task));
   }
   socket_server_->WakeUp();
@@ -77,7 +77,7 @@ void NetworkThread::Run() {
 void NetworkThread::ProcessTasks() {
   std::queue<std::function<void()>> tasks_to_run;
   {
-    std::lock_guard<std::mutex> lock(task_mutex_);
+    std::scoped_lock lock(task_mutex_);
     tasks_to_run.swap(tasks_);
   }
 

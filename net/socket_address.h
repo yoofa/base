@@ -107,7 +107,7 @@ class SocketAddress {
   bool IsUnresolvedIP() const;
 
   // Determines whether this address is identical to the given one.
-  bool operator==(const SocketAddress& other) const;
+  bool operator==(const SocketAddress& addr) const;
   inline bool operator!=(const SocketAddress& addr) const {
     return !this->operator==(addr);
   }
@@ -134,9 +134,9 @@ class SocketAddress {
  private:
   std::string hostname_;
   IPAddress ip_;
-  uint16_t port_;
-  int scope_id_;
-  bool literal_;  // Indicates that 'hostname_' contains a literal IP string.
+  uint16_t port_{};
+  int scope_id_{};
+  bool literal_{};  // Indicates that 'hostname_' contains a literal IP string.
 };
 
 SocketAddress EmptySocketAddressWithFamily(int family);

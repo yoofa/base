@@ -4,6 +4,7 @@
  *
  * Distributed under terms of the GPLv2 license.
  */
+#include <numbers>
 #include <string>
 
 #include <benchmark/benchmark.h>
@@ -43,7 +44,7 @@ BENCHMARK(BM_StringConcatLogging);
 // Benchmark for logging with numbers
 static void BM_NumberLogging(benchmark::State& state) {
   for (auto _ : state) {
-    AVE_LOG(LS_INFO) << "Value: " << 42 << " float: " << 3.14159;
+    AVE_LOG(LS_INFO) << "Value: " << 42 << " float: " << std::numbers::pi;
   }
 }
 BENCHMARK(BM_NumberLogging);
@@ -82,4 +83,4 @@ static void BM_LoggingWithoutThreadId(benchmark::State& state) {
 }
 BENCHMARK(BM_LoggingWithoutThreadId);
 
-BENCHMARK_MAIN();
+BENCHMARK_MAIN();  // NOLINT

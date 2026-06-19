@@ -58,15 +58,14 @@ TEST(UnitBaseTest, ConstExpr) {
   static_assert(kTestUnitMinusInf.IsMinusInfinity());
   static_assert(kTestUnitPlusInf.ToKiloOr(-1) == -1);
 
-  static_assert(kTestUnitPlusInf > kTestUnitZero, "");
+  static_assert(kTestUnitPlusInf > kTestUnitZero);
 
   constexpr TestUnit kTestUnitKilo = TestUnit::FromKilo(kValue);
   constexpr TestUnit kTestUnitValue = TestUnit::FromValue(kValue);
 
   static_assert(kTestUnitKilo.ToKiloOr(0) == kValue);
   static_assert(kTestUnitValue.ToValueOr(0) == kValue);
-  static_assert(TestUnitAddKilo(kTestUnitValue, 2).ToValue() == kValue + 2000,
-                "");
+  static_assert(TestUnitAddKilo(kTestUnitValue, 2).ToValue() == kValue + 2000);
   static_assert(TestUnit::FromValue(500) / 2 == TestUnit::FromValue(250));
 }
 

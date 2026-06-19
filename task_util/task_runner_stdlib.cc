@@ -117,7 +117,7 @@ TaskRunnerStdlib::TaskRunnerStdlib(const char* name, int priority)
 
 void TaskRunnerStdlib::Destruct() {
   {
-    std::lock_guard<std::mutex> guard(mutex_);
+    std::scoped_lock guard(mutex_);
     need_quit_ = true;
   }
   task_condition_.notify_one();
@@ -141,7 +141,7 @@ void TaskRunnerStdlib::PostDelayedTaskAndWait(std::unique_ptr<Task> task,
   std::shared_ptr<std::promise<void>> promise;
   std::future<void> future;
   {
-    std::lock_guard<std::mutex> guard(mutex_);
+    std::scoped_lock guard(mutex_);
     if (need_quit_) {
       return;
     }
@@ -178,7 +178,7 @@ void TaskRunnerStdlib::PostDelayedTaskAndWait(std::unique_ptr<Task> task,
 }
 
 bool TaskRunnerStdlib::Looping() {
-  std::lock_guard<std::mutex> guard(mutex_);
+  std::scoped_lock guard(mutex_);
   return !need_quit_;
 }
 

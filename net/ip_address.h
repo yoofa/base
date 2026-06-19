@@ -66,7 +66,7 @@ class IPAddress {
   union {
     struct in_addr ipv4_;
     struct in6_addr ipv6_;
-  } address_;
+  } address_{};
 };
 
 bool IPFromAddressInfo(const struct addrinfo* info, IPAddress* out);

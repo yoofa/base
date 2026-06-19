@@ -64,7 +64,7 @@ bool SocketThread::IsCurrent() const {
 
 void SocketThread::PostTask(std::function<void()> task) {
   {
-    std::lock_guard<std::mutex> lock(task_mutex_);
+    std::scoped_lock lock(task_mutex_);
     tasks_.push(std::move(task));
   }
   socket_server_->WakeUp();
@@ -77,7 +77,7 @@ void SocketThread::PostDelayedTask(std::function<void()> task,
   delayed.run_time_ms = CurrentTimeMs() + delay_ms;
 
   {
-    std::lock_guard<std::mutex> lock(task_mutex_);
+    std::scoped_lock lock(task_mutex_);
     delayed_tasks_.push(std::move(delayed));
   }
   socket_server_->WakeUp();
@@ -96,7 +96,7 @@ void SocketThread::Invoke(std::function<void()> task) {
   PostTask([&]() {
     task();
     {
-      std::lock_guard<std::mutex> lock(invoke_mutex_);
+      std::scoped_lock lock(invoke_mutex_);
       done = true;
     }
     invoke_cv_.notify_one();
@@ -177,7 +177,7 @@ void SocketThread::ProcessTasks() {
   // Process immediate tasks
   std::queue<std::function<void()>> tasks_to_run;
   {
-    std::lock_guard<std::mutex> lock(task_mutex_);
+    std::scoped_lock lock(task_mutex_);
     tasks_to_run.swap(tasks_);
   }
 
@@ -192,7 +192,7 @@ void SocketThread::ProcessTasks() {
   std::vector<std::function<void()>> ready_tasks;
 
   {
-    std::lock_guard<std::mutex> lock(task_mutex_);
+    std::scoped_lock lock(task_mutex_);
     while (!delayed_tasks_.empty() && delayed_tasks_.top().run_time_ms <= now) {
       // TODO(youfa): remove const_cast by changing the priority_queue to hold
       // non-const DelayedTask
@@ -210,7 +210,7 @@ void SocketThread::ProcessTasks() {
 }
 
 int64_t SocketThread::GetNextDelayMs() {
-  std::lock_guard<std::mutex> lock(task_mutex_);
+  std::scoped_lock lock(task_mutex_);
   if (delayed_tasks_.empty()) {
     return -1;
   }

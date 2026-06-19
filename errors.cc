@@ -7,9 +7,8 @@
 
 #include "errors.h"
 
+#include <cstring>
 #include <string>
-
-#include <string.h>
 
 namespace ave {
 

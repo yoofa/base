@@ -118,7 +118,7 @@ bool PhysicalSocketServer::Wait(int32_t cms) {
   int32_t timeout_ms = cms;
 
   {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::scoped_lock lock(mutex_);
     processing_ = true;
   }
 
@@ -126,7 +126,7 @@ bool PhysicalSocketServer::Wait(int32_t cms) {
       ::epoll_wait(epoll_fd_, events.data(), kMaxEpollEvents, timeout_ms);
 
   {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::scoped_lock lock(mutex_);
     processing_ = false;
   }
 
@@ -154,7 +154,7 @@ bool PhysicalSocketServer::Wait(int32_t cms) {
 
     // Check if dispatcher is still valid
     {
-      std::lock_guard<std::mutex> lock(mutex_);
+      std::scoped_lock lock(mutex_);
       if (dispatchers_.find(dispatcher) == dispatchers_.end()) {
         continue;  // Dispatcher was removed
       }
@@ -193,7 +193,7 @@ void PhysicalSocketServer::Add(Dispatcher* dispatcher) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   if (processing_) {
     pending_add_.push_back(dispatcher);
   } else {
@@ -207,7 +207,7 @@ void PhysicalSocketServer::Remove(Dispatcher* dispatcher) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   if (processing_) {
     pending_remove_.push_back(dispatcher);
   } else {
@@ -221,7 +221,7 @@ void PhysicalSocketServer::Update(Dispatcher* dispatcher) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   if (dispatchers_.find(dispatcher) != dispatchers_.end()) {
     UpdateEpoll(dispatcher, false);
   }
@@ -256,7 +256,7 @@ void PhysicalSocketServer::RemoveFromEpoll(Dispatcher* dispatcher) {
 }
 
 void PhysicalSocketServer::ProcessPendingOperations() {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   // Process pending removals first
   for (auto* dispatcher : pending_remove_) {

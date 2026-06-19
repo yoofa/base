@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 
   try {
     // Create provider and connection
-    ave::net::CurlHttpProvider provider;
+    ave::base::net::CurlHttpProvider provider;
     auto connection = provider.CreateConnection();
 
     if (!connection) {
@@ -82,7 +82,6 @@ int main(int argc, char* argv[]) {
     }
 
     connection->Disconnect();
-
   } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << std::endl;
     return 1;

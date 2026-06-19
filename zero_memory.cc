@@ -7,7 +7,7 @@
 
 #include "zero_memory.h"
 
-#include <string.h>
+#include <cstring>
 
 #include "checks.h"
 

@@ -9,10 +9,10 @@
 
 #include <string>
 
-#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cstdio>
 
 namespace ave {
 namespace base {
@@ -22,7 +22,7 @@ std::string nameForFd(int fd) {
   char buffer[SIZE];
   std::string result;
   snprintf(buffer, SIZE, "/proc/%d/fd/%d", getpid(), fd);
-  struct stat s;
+  struct stat s {};
   if (lstat(buffer, &s) == 0) {
     if ((s.st_mode & S_IFMT) == S_IFLNK) {
       char linkto[256];

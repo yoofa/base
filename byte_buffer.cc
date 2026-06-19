@@ -6,9 +6,9 @@
  */
 
 #include "base/byte_buffer.h"
-#include <span>
 
 #include <cstring>
+#include <span>
 
 namespace ave {
 namespace base {

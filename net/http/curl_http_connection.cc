@@ -167,6 +167,5 @@ bool CurlHttpConnection::ParseHeaders() {
 }
 
 }  // namespace net
-}
 }  // namespace base
 }  // namespace ave

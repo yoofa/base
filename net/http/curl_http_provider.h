@@ -27,7 +27,6 @@ class CurlHttpProvider : public HTTPProvider {
 };
 
 }  // namespace net
-}
 }  // namespace base
 }  // namespace ave
 

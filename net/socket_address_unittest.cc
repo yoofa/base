@@ -175,7 +175,7 @@ TEST(SocketAddressTest, TestFromHostname) {
 
 TEST(SocketAddressTest, TestToFromSockAddr) {
   SocketAddress from("1.2.3.4", 5678), addr;
-  sockaddr_in addr_in;
+  sockaddr_in addr_in{};
   from.ToSockAddr(&addr_in);
   EXPECT_TRUE(addr.FromSockAddr(addr_in));
   EXPECT_FALSE(addr.IsUnresolvedIP());

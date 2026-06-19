@@ -9,6 +9,7 @@
 #include <array>
 
 #include <cstring>
+#include <utility>
 
 #include "base/logging.h"
 
@@ -115,7 +116,7 @@ int32_t AsyncTCPSocket::Send(const void* data, size_t size) {
   }
 
   // If not all data was sent, buffer the rest
-  if (static_cast<size_t>(sent) < size) {
+  if (std::cmp_less(sent, size)) {
     write_buffer_.AppendData(static_cast<const uint8_t*>(data) + sent,
                              size - sent);
   }

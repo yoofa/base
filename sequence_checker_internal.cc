@@ -28,6 +28,7 @@ const void* GetSystemQueueRef() {
 
 SequenceCheckerImpl::SequenceCheckerImpl()
     : attached_(true),
+      valid_thread_(),
       valid_runner_(base::TaskRunnerBase::Current()),
       valid_system_runner_(GetSystemQueueRef()) {}
 
@@ -90,11 +91,11 @@ std::string SequenceCheckerImpl::ExpectationToString() const {
 }
 #endif  // AVE_DCHECK_IS_ON
 
-std::string ExpectationToString(const SequenceCheckerImpl* checker) {
+std::string ExpectationToString(const SequenceCheckerImpl* /*checker*/) {
 #if AVE_DCHECK_IS_ON
   return checker->ExpectationToString();
 #else
-  return std::string();
+  return {};
 #endif
 }
 

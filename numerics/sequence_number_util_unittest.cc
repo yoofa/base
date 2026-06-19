@@ -145,8 +145,8 @@ TEST(AscendingSeqNumCompTest, SortSequenceNumbers) {
   std::vector<uint16_t> sorted(s.begin(), s.end());
   EXPECT_EQ(sorted.size(), 4u);
   // Verify the comparator used is consistent (no crash, values present)
-  EXPECT_NE(std::find(sorted.begin(), sorted.end(), 1u), sorted.end());
-  EXPECT_NE(std::find(sorted.begin(), sorted.end(), 7u), sorted.end());
+  EXPECT_NE(std::ranges::find(sorted, 1u), sorted.end());
+  EXPECT_NE(std::ranges::find(sorted, 7u), sorted.end());
 }
 
 // ============================================================
@@ -160,8 +160,8 @@ TEST(DescendingSeqNumCompTest, SortDescending) {
   s.insert(20);
   std::vector<uint16_t> sorted(s.begin(), s.end());
   EXPECT_EQ(sorted.size(), 3u);
-  EXPECT_NE(std::find(sorted.begin(), sorted.end(), 5u), sorted.end());
-  EXPECT_NE(std::find(sorted.begin(), sorted.end(), 20u), sorted.end());
+  EXPECT_NE(std::ranges::find(sorted, 5u), sorted.end());
+  EXPECT_NE(std::ranges::find(sorted, 20u), sorted.end());
 }
 
 // ============================================================

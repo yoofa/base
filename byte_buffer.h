@@ -183,13 +183,13 @@ class ByteBufferReader {
   bool Consume(size_t size);
 
  private:
-  void Construct(const uint8_t* bytes, size_t size);
+  void Construct(const uint8_t* bytes, size_t len);
   bool ReadBytes(uint8_t* val, size_t len);
 
-  const uint8_t* bytes_;
-  size_t size_;
-  size_t start_;
-  size_t end_;
+  const uint8_t* bytes_{};
+  size_t size_{};
+  size_t end_{};
+  size_t start_{};
 };
 
 }  // namespace base

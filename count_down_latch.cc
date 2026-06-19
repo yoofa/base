@@ -20,7 +20,7 @@ void CountDownLatch::Wait() {
 }
 
 void CountDownLatch::CountDown() {
-  std::unique_lock<std::mutex> l(mutex_);
+  std::scoped_lock l(mutex_);
   --count_;
   if (count_ == 0) {
     condition_.notify_all();
@@ -28,7 +28,7 @@ void CountDownLatch::CountDown() {
 }
 
 int CountDownLatch::GetCount() const {
-  std::lock_guard<std::mutex> l(mutex_);
+  std::scoped_lock l(mutex_);
   return count_;
 }
 

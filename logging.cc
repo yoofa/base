@@ -27,8 +27,6 @@
 static const int kMaxLogLineSize = 1024 - 60;
 #endif
 
-#include "base/attributes.h"
-
 namespace ave {
 namespace base {
 
@@ -167,7 +165,7 @@ LogMessage::~LogMessage() {
     OutputToDebug(log_line_);
   }
 
-  std::lock_guard<std::mutex> guard(g_log_mutex_);
+  std::scoped_lock guard(g_log_mutex_);
   for (LogSink* entry = streams_; entry != nullptr; entry = entry->next_) {
     if (log_line_.severity() >= entry->min_severity_) {
       entry->OnLogMessage(log_line_);
@@ -217,7 +215,7 @@ void LogMessage::LogTimestamps(bool on) {
 
 void LogMessage::LogToDebug(LogSeverity min_sev) {
   g_dbg_sev = min_sev;
-  std::lock_guard<std::mutex> guard(g_log_mutex_);
+  std::scoped_lock guard(g_log_mutex_);
   UpdateMinLogSeverity();
 }
 
@@ -226,7 +224,7 @@ void LogMessage::SetLogToStderr(bool log_to_stderr) {
 }
 
 int LogMessage::GetLogToStream(LogSink* stream) {
-  std::lock_guard<std::mutex> guard(g_log_mutex_);
+  std::scoped_lock guard(g_log_mutex_);
   LogSeverity sev = LS_NONE;
   for (LogSink* entry = streams_; entry != nullptr; entry = entry->next_) {
     if (stream == nullptr || stream == entry) {
@@ -237,7 +235,7 @@ int LogMessage::GetLogToStream(LogSink* stream) {
 }
 
 void LogMessage::AddLogToStream(LogSink* stream, LogSeverity min_sev) {
-  std::lock_guard<std::mutex> guard(g_log_mutex_);
+  std::scoped_lock guard(g_log_mutex_);
   stream->min_severity_ = min_sev;
   stream->next_ = streams_;
   streams_ = stream;
@@ -246,7 +244,7 @@ void LogMessage::AddLogToStream(LogSink* stream, LogSeverity min_sev) {
 }
 
 void LogMessage::RemoveLogToStream(LogSink* stream) {
-  std::lock_guard<std::mutex> guard(g_log_mutex_);
+  std::scoped_lock guard(g_log_mutex_);
   for (LogSink** entry = &streams_; *entry != nullptr;
        entry = &(*entry)->next_) {
     if (*entry == stream) {
@@ -374,7 +372,8 @@ void Log(const LogArgType* fmt, ...) {
   const char* tag = nullptr;
   switch (*fmt) {
     case LogArgType::kLogMetadata: {
-      meta = {va_arg(args, LogMetadata), ERRCTX_NONE, 0};
+      meta = {
+          .meta = va_arg(args, LogMetadata), .err_ctx = ERRCTX_NONE, .err = 0};
       break;
     }
     case LogArgType::kLogMetadataErr: {

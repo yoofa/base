@@ -15,23 +15,21 @@ namespace base {
 namespace net {
 
 namespace {
-static const unsigned int kIPv4PublicAddr = 0x01020304;
-static const std::string kIPv4LoopbackString = "127.0.0.1";
-static const std::string kIPv4AnyString = "0.0.0.0";
-static const std::string kIPv4PublicAddrString = "1.2.3.4";
+const unsigned int kIPv4PublicAddr = 0x01020304;
+const std::string kIPv4LoopbackString = "127.0.0.1";
+const std::string kIPv4AnyString = "0.0.0.0";
+const std::string kIPv4PublicAddrString = "1.2.3.4";
 
-static const in6_addr kIPv6PublicAddr = {
+const in6_addr kIPv6PublicAddr = {
     {{0x24, 0x01, 0xfa, 0x00, 0x00, 0x04, 0x10, 0x00, 0xbe, 0x30, 0x5b, 0xff,
       0xfe, 0xe5, 0x00, 0xc3}}};
-static const in6_addr kIPv6PublicAddr2 = {
+const in6_addr kIPv6PublicAddr2 = {
     {{0x24, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0xbe, 0x30, 0x5b, 0xff,
       0xfe, 0xe5, 0x00, 0xc3}}};
-static const std::string kIPv6LoopbackString = "::1";
-static const std::string kIPv6AnyString = "::";
-static const std::string kIPv6PublicAddrString =
-    "2401:fa00:4:1000:be30:5bff:fee5:c3";
-static const std::string kIPv6PublicAddr2String =
-    "2401::1000:be30:5bff:fee5:c3";
+const std::string kIPv6LoopbackString = "::1";
+const std::string kIPv6AnyString = "::";
+const std::string kIPv6PublicAddrString = "2401:fa00:4:1000:be30:5bff:fee5:c3";
+const std::string kIPv6PublicAddr2String = "2401::1000:be30:5bff:fee5:c3";
 
 bool IPAddressEq(const IPAddress& ip1, const IPAddress& ip2) {
   if ((IPIsAny(ip1) != IPIsAny(ip2)) ||
@@ -46,10 +44,7 @@ bool IPAddressEq(const IPAddress& ip1, const IPAddress& ip2) {
   }
   in6_addr ipv6_1 = ip1.ipv6();
   in6_addr ipv6_2 = ip2.ipv6();
-  if (memcmp(&ipv6_1, &ipv6_2, sizeof(ipv6_1)) != 0) {
-    return false;
-  }
-  return true;
+  return memcmp(&ipv6_1, &ipv6_2, sizeof(ipv6_1)) == 0;
 }
 
 }  // namespace
@@ -64,7 +59,7 @@ TEST(IPAddressTest, TestDefaultConstructor) {
 }
 
 TEST(IPAddressTest, TestInAddrConstructor) {
-  in_addr ipv4;
+  in_addr ipv4{};
   ipv4.s_addr = htonl(INADDR_LOOPBACK);
 
   IPAddress ip(ipv4);
@@ -119,7 +114,7 @@ TEST(IPAddressTest, TestUint32Constructor) {
 }
 
 TEST(IPAddressTest, TestCopyConstructor) {
-  in_addr ipv4;
+  in_addr ipv4{};
   ipv4.s_addr = kIPv4PublicAddr;
   IPAddress ip1(ipv4);
   IPAddress ip2(ip1);
@@ -144,7 +139,7 @@ TEST(IPAddressTest, TestCopyConstructor) {
 
 TEST(IPAddressTest, TestEquality) {
   // check ipv4 equality
-  in_addr ipv4, ipv4_2;
+  in_addr ipv4{}, ipv4_2{};
   ipv4.s_addr = kIPv4PublicAddr;
   ipv4_2.s_addr = kIPv4PublicAddr + 1;
   IPAddress ip1(ipv4);
@@ -205,8 +200,8 @@ TEST(IPAddressTest, TestEquality) {
 }
 
 TEST(IPAddressTest, TestFromAddressInfo) {
-  struct sockaddr_in sockaddr_v4;
-  struct addrinfo addrinfo;
+  struct sockaddr_in sockaddr_v4 {};
+  struct addrinfo addrinfo {};
   memset(&sockaddr_v4, 0, sizeof(sockaddr_v4));
   // check we and get a valid IPv4 address.
   addrinfo.ai_addr = reinterpret_cast<struct sockaddr*>(&sockaddr_v4);
@@ -219,7 +214,7 @@ TEST(IPAddressTest, TestFromAddressInfo) {
   EXPECT_EQ(ip, expected);
 
   // check we can get a valid IPv6 address.
-  struct sockaddr_in6 sockaddr_v6;
+  struct sockaddr_in6 sockaddr_v6 {};
   sockaddr_v6.sin6_family = AF_INET6;
   sockaddr_v6.sin6_addr = kIPv6PublicAddr;
   addrinfo.ai_addr = reinterpret_cast<struct sockaddr*>(&sockaddr_v6);
