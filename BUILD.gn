@@ -29,6 +29,7 @@ ave_library("base") {
   ]
   deps = [
     ":attributes",
+    ":ave_config",
     ":buffers",
     ":count_down_latch",
     ":ignore_wundef",
@@ -55,6 +56,13 @@ ave_library("base") {
   #  ]
   #}
   deps += [ "data_source" ]
+}
+
+ave_library("ave_config") {
+  sources = [
+    "ave_config.cc",
+    "ave_config.h",
+  ]
 }
 
 ave_library("buffers") {
@@ -147,6 +155,12 @@ ave_library("logging") {
   if (is_android) {
     libs += [ "log" ]
   }
+}
+
+executable("ave_config_test") {
+  visibility = [ "*" ]
+  sources = [ "ave_config_test.cc" ]
+  deps = [ ":ave_config" ]
 }
 
 ave_library("thread") {

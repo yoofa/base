@@ -14,6 +14,7 @@ if (is_android) {
     visibility = [ "*" ]
     sources = [
       "java/io/github/yoofa/AveClassLoader.java",
+      "java/io/github/yoofa/AveConfig.java",
       "java/io/github/yoofa/ContextUtils.java",
       "java/io/github/yoofa/Loggable.java",
       "java/io/github/yoofa/Logging.java",
@@ -30,6 +31,7 @@ if (is_android) {
   generate_jni("generated_base_jni") {
     sources = [
       "java/io/github/yoofa/AveClassLoader.java",
+      "java/io/github/yoofa/AveConfig.java",
       "java/io/github/yoofa/Logging.java",
     ]
     namespace = "ave::jni"
@@ -39,6 +41,7 @@ if (is_android) {
   ave_library("ave_jni") {
     visibility = [ "*" ]
     sources = [
+      "jni/ave_config_jni.cc",
       "jni/class_loader.cc",
       "jni/class_loader.h",
       "jni/jvm.cc",
@@ -47,6 +50,7 @@ if (is_android) {
     ]
     deps = [
       ":generated_base_jni",
+      "//base:ave_config",
       "//base:checks",
       "//base:logging",
       "//third_party/jni_zero",
