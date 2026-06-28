@@ -23,5 +23,13 @@ bool AveConfig::codec_debug_enabled() const {
   return codec_debug_enabled_.load(std::memory_order_relaxed);
 }
 
+void AveConfig::SetDemuxerLogsEnabled(bool enabled) {
+  demuxer_logs_enabled_.store(enabled, std::memory_order_relaxed);
+}
+
+bool AveConfig::demuxer_logs_enabled() const {
+  return demuxer_logs_enabled_.load(std::memory_order_relaxed);
+}
+
 }  // namespace base
 }  // namespace ave

@@ -18,5 +18,12 @@ int main(int /*argc*/, char const* /*argv*/[]) {
 
   config.SetCodecDebugEnabled(false);
   assert(!config.codec_debug_enabled());
+
+  assert(!config.demuxer_logs_enabled());
+  config.SetDemuxerLogsEnabled(true);
+  assert(config.demuxer_logs_enabled());
+
+  config.SetDemuxerLogsEnabled(false);
+  assert(!config.demuxer_logs_enabled());
   return 0;
 }

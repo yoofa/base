@@ -6,6 +6,7 @@
 
 package io.github.yoofa;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 /** Process-wide AVE configuration. Set options before creating players or codecs. */
@@ -17,8 +18,15 @@ public final class AveConfig {
         AveConfigJni.get().setCodecDebugEnabled(enabled);
     }
 
+    /** Enables verbose per-frame diagnostics in all demuxer implementations. */
+    public static void setDemuxerLogsEnabled(boolean enabled) {
+        AveConfigJni.get().setDemuxerLogsEnabled(enabled);
+    }
+
     @NativeMethods
     interface Natives {
-        void setCodecDebugEnabled(boolean enabled);
+        void setCodecDebugEnabled(@JniType("bool") boolean enabled);
+
+        void setDemuxerLogsEnabled(@JniType("bool") boolean enabled);
     }
 }

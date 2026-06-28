@@ -25,10 +25,14 @@ class AveConfig final {
   void SetCodecDebugEnabled(bool enabled);
   bool codec_debug_enabled() const;
 
+  void SetDemuxerLogsEnabled(bool enabled);
+  bool demuxer_logs_enabled() const;
+
  private:
   AveConfig() = default;
 
   std::atomic_bool codec_debug_enabled_ = false;
+  std::atomic_bool demuxer_logs_enabled_ = false;
 
   AVE_DISALLOW_COPY_AND_ASSIGN(AveConfig);
 };

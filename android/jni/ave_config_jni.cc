@@ -7,15 +7,18 @@
 
 #include <jni.h>
 
-#include "base/android/jni/jni_generator_helper.h"
 #include "base/ave_config.h"
 #include "jni_headers/base/android/generated_base_jni/AveConfig_jni.h"
 
 namespace ave {
 namespace jni {
 
-static void JNI_AveConfig_SetCodecDebugEnabled(JNIEnv* env, jboolean enabled) {
-  base::AveConfig::GetInstance().SetCodecDebugEnabled(enabled == JNI_TRUE);
+static void JNI_AveConfig_SetCodecDebugEnabled(JNIEnv* /*env*/, bool enabled) {
+  base::AveConfig::GetInstance().SetCodecDebugEnabled(enabled);
+}
+
+static void JNI_AveConfig_SetDemuxerLogsEnabled(JNIEnv* /*env*/, bool enabled) {
+  base::AveConfig::GetInstance().SetDemuxerLogsEnabled(enabled);
 }
 
 }  // namespace jni
