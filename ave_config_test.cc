@@ -25,5 +25,12 @@ int main(int /*argc*/, char const* /*argv*/[]) {
 
   config.SetDemuxerLogsEnabled(false);
   assert(!config.demuxer_logs_enabled());
+
+  assert(!config.render_sync_logs_enabled());
+  config.SetRenderSyncLogsEnabled(true);
+  assert(config.render_sync_logs_enabled());
+
+  config.SetRenderSyncLogsEnabled(false);
+  assert(!config.render_sync_logs_enabled());
   return 0;
 }

@@ -28,11 +28,16 @@ class AveConfig final {
   void SetDemuxerLogsEnabled(bool enabled);
   bool demuxer_logs_enabled() const;
 
+  // Enables per-frame A/V sync decisions for renderer diagnostics.
+  void SetRenderSyncLogsEnabled(bool enabled);
+  bool render_sync_logs_enabled() const;
+
  private:
   AveConfig() = default;
 
   std::atomic_bool codec_debug_enabled_ = false;
   std::atomic_bool demuxer_logs_enabled_ = false;
+  std::atomic_bool render_sync_logs_enabled_ = false;
 
   AVE_DISALLOW_COPY_AND_ASSIGN(AveConfig);
 };

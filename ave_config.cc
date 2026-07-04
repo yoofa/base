@@ -31,5 +31,13 @@ bool AveConfig::demuxer_logs_enabled() const {
   return demuxer_logs_enabled_.load(std::memory_order_relaxed);
 }
 
+void AveConfig::SetRenderSyncLogsEnabled(bool enabled) {
+  render_sync_logs_enabled_.store(enabled, std::memory_order_relaxed);
+}
+
+bool AveConfig::render_sync_logs_enabled() const {
+  return render_sync_logs_enabled_.load(std::memory_order_relaxed);
+}
+
 }  // namespace base
 }  // namespace ave

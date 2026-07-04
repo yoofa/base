@@ -23,10 +23,17 @@ public final class AveConfig {
         AveConfigJni.get().setDemuxerLogsEnabled(enabled);
     }
 
+    /** Enables per-frame A/V sync render decisions for playback diagnosis. */
+    public static void setRenderSyncLogsEnabled(boolean enabled) {
+        AveConfigJni.get().setRenderSyncLogsEnabled(enabled);
+    }
+
     @NativeMethods
     interface Natives {
         void setCodecDebugEnabled(@JniType("bool") boolean enabled);
 
         void setDemuxerLogsEnabled(@JniType("bool") boolean enabled);
+
+        void setRenderSyncLogsEnabled(@JniType("bool") boolean enabled);
     }
 }

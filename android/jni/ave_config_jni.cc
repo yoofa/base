@@ -21,5 +21,10 @@ static void JNI_AveConfig_SetDemuxerLogsEnabled(JNIEnv* /*env*/, bool enabled) {
   base::AveConfig::GetInstance().SetDemuxerLogsEnabled(enabled);
 }
 
+static void JNI_AveConfig_SetRenderSyncLogsEnabled(JNIEnv* /*env*/,
+                                                   bool enabled) {
+  base::AveConfig::GetInstance().SetRenderSyncLogsEnabled(enabled);
+}
+
 }  // namespace jni
 }  // namespace ave
