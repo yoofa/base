@@ -1,0 +1,25 @@
+name: Format Check
+
+on:
+  push:
+    branches: [ master, main, dev ]
+  pull_request:
+    branches: [ master, main, dev ]
+  workflow_dispatch:
+
+jobs:
+  check-format:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/yoofa/ave-ci:latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Format Check
+        uses: yoofa/build-images/actions/format-check@master
+        with:
+          base_ref: ${{ github.base_ref }}
+          event_before: ${{ github.event.before }}
